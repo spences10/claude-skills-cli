@@ -16,6 +16,41 @@ export const search = (msg: string) => console.log(`🔍 ${msg}`);
 export function display_validation_stats(stats: ValidationStats): void {
   console.log(chalk.cyan('\n📊 Progressive Disclosure Stats:'));
 
+  // Level 1: Description
+  console.log(chalk.bold('\n  Level 1 (Metadata - Always Loaded):'));
+  const desc_status =
+    stats.description_length <= 200
+      ? chalk.green('✅ Optimal')
+      : stats.description_length <= 300
+        ? chalk.yellow('⚠️  Long')
+        : chalk.red('❌ Too long');
+
+  console.log(
+    `    Description: ${stats.description_length} chars, ~${stats.description_tokens} tokens ${desc_status}`
+  );
+  console.log(
+    `    ${chalk.dim('(Target: <200 chars, <30 tokens for Level 1 efficiency)')}`
+  );
+
+  // Level 2: SKILL.md Body
+  console.log(
+    chalk.bold('\n  Level 2 (SKILL.md Body - Loaded when triggered):')
+  );
+
+  // Line count
+  const line_status =
+    stats.line_count <= 50
+      ? chalk.green('✅ Excellent')
+      : stats.line_count <= 80
+        ? chalk.green('✅ Good')
+        : stats.line_count <= 150
+          ? chalk.yellow('⚠️  Consider splitting')
+          : chalk.red('❌ Too large');
+
+  console.log(
+    `    Lines: ${stats.line_count} (target: ~50, max: ~150) ${line_status}`
+  );
+
   // Word count with recommendations
   const word_status =
     stats.word_count < 500
@@ -27,7 +62,7 @@ export function display_validation_stats(stats: ValidationStats): void {
           : chalk.red('❌ Too large');
 
   console.log(
-    `  Words: ${stats.word_count} (recommended: <1000, max: <5000) ${word_status}`
+    `    Words: ${stats.word_count} (recommended: <1000, max: <5000) ${word_status}`
   );
 
   // Token estimation
@@ -38,20 +73,26 @@ export function display_validation_stats(stats: ValidationStats): void {
       : chalk.red('exceeds budget');
 
   console.log(
-    `  Est. tokens: ~${stats.estimated_tokens} (Level 2 budget: <${token_budget}) ${token_status}`
+    `    Est. tokens: ~${stats.estimated_tokens} (budget: <${token_budget}) ${token_status}`
   );
 
   // Code blocks
   const code_status =
-    stats.code_blocks > 10
-      ? chalk.yellow(' (consider references/examples.md)')
-      : '';
-  console.log(`  Code blocks: ${stats.code_blocks}${code_status}`);
+    stats.code_blocks > 3
+      ? chalk.yellow(' (recommended: 1-2)')
+      : stats.code_blocks <= 2
+        ? chalk.green(' ✅')
+        : '';
+  console.log(`    Code blocks: ${stats.code_blocks}${code_status}`);
 
   // Sections
   const section_status =
-    stats.sections > 20 ? chalk.yellow(' (consider splitting)') : '';
-  console.log(`  Sections: ${stats.sections}${section_status}`);
+    stats.sections > 8
+      ? chalk.yellow(' (recommended: 3-5)')
+      : stats.sections >= 3 && stats.sections <= 5
+        ? chalk.green(' ✅')
+        : '';
+  console.log(`    Sections: ${stats.sections}${section_status}`);
 
   // Long paragraphs
   if (stats.long_paragraphs > 0) {
@@ -59,20 +100,29 @@ export function display_validation_stats(stats: ValidationStats): void {
       stats.long_paragraphs > 3
         ? chalk.yellow(' (consider moving to references/)')
         : '';
-    console.log(`  Long paragraphs: ${stats.long_paragraphs}${para_status}`);
+    console.log(`    Long paragraphs: ${stats.long_paragraphs}${para_status}`);
   }
 
+  // Level 3 info
+  console.log(chalk.bold('\n  Level 3+ (References - Loaded as needed):'));
+  console.log(
+    `    ${chalk.dim('Use references/ directory for detailed docs (unlimited size)')}`
+  );
+
   // Overall assessment
-  if (stats.word_count < 500) {
-    console.log(chalk.green('\n  ✅ Excellent progressive disclosure!'));
-  } else if (stats.word_count < 1000) {
-    console.log(chalk.green('\n  ✅ Good progressive disclosure'));
-  } else if (stats.word_count < 5000) {
-    console.log(chalk.yellow('\n  ⚠️  Consider splitting into references/'));
+  console.log(chalk.bold('\n  Overall Assessment:'));
+  if (stats.line_count <= 50 && stats.description_length <= 200) {
+    console.log(chalk.green('    ✅ Excellent progressive disclosure!'));
+  } else if (stats.line_count <= 80 && stats.description_length <= 300) {
+    console.log(chalk.green('    ✅ Good progressive disclosure'));
+  } else if (stats.line_count <= 150 && stats.word_count < 5000) {
+    console.log(
+      chalk.yellow('    ⚠️  Consider splitting content into references/')
+    );
   } else {
     console.log(
       chalk.red(
-        '\n  ❌ Violates progressive disclosure (move content to references/)'
+        '    ❌ Violates progressive disclosure (move content to references/)'
       )
     );
   }

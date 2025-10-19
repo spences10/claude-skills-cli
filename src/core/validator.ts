@@ -9,6 +9,9 @@ export class SkillValidator {
   private stats: ValidationStats = {
     word_count: 0,
     estimated_tokens: 0,
+    line_count: 0,
+    description_length: 0,
+    description_tokens: 0,
     code_blocks: 0,
     sections: 0,
     long_paragraphs: 0,
@@ -57,6 +60,63 @@ export class SkillValidator {
   }
 
   /**
+   * Estimate tokens for a string by counting words and applying ratio
+   */
+  private estimate_string_tokens(text: string): number {
+    const word_count = this.count_words(text);
+    return this.estimate_tokens(word_count);
+  }
+
+  /**
+   * Validate Level 1 (Description in frontmatter) for progressive disclosure
+   */
+  private validate_description(description: string): void {
+    const desc_length = description.length;
+    const desc_tokens = this.estimate_string_tokens(description);
+
+    // Store stats
+    this.stats.description_length = desc_length;
+    this.stats.description_tokens = desc_tokens;
+
+    // Level 1 progressive disclosure checks
+    // Recommended: <200 chars, <30 tokens for optimal Level 1 efficiency
+    if (desc_length > 300) {
+      this.error(
+        `Description is ${desc_length} characters (MAX: 300 for Level 1)\n` +
+          `  → Level 1 is always loaded - keep it concise for token efficiency`
+      );
+    } else if (desc_length > 200) {
+      this.warning(
+        `Description is ${desc_length} characters (recommended: <200 for Level 1)\n` +
+          `  → Estimated ~${desc_tokens} tokens - consider shortening for efficiency`
+      );
+    }
+
+    // Check for trigger keywords
+    const lower_desc = description.toLowerCase();
+    const has_trigger =
+      lower_desc.includes('use when') ||
+      lower_desc.includes('use for') ||
+      lower_desc.includes('use to');
+
+    if (!has_trigger) {
+      this.warning(
+        `Description missing trigger keywords ('Use when...', 'Use for...', 'Use to...')\n` +
+          `  → Help Claude know when to activate this skill`
+      );
+    }
+
+    // Check for list bloat (multiple commas indicating detailed lists)
+    const comma_count = (description.match(/,/g) || []).length;
+    if (comma_count >= 3) {
+      this.warning(
+        `Description contains long lists (${comma_count} commas)\n` +
+          `  → Move detailed lists to Level 2 (SKILL.md body) or Level 3 (references/)`
+      );
+    }
+  }
+
+  /**
    * Analyze content structure and patterns
    */
   private analyze_content(body: string): void {
@@ -77,14 +137,16 @@ export class SkillValidator {
   }
 
   /**
-   * Validate progressive disclosure (word count and token budget)
+   * Validate progressive disclosure (word count, token budget, and line count)
    */
   private validate_progressive_disclosure(body: string): void {
     const word_count = this.count_words(body);
     const estimated_tokens = this.estimate_tokens(word_count);
+    const line_count = body.trim().split('\n').length;
 
     this.stats.word_count = word_count;
     this.stats.estimated_tokens = estimated_tokens;
+    this.stats.line_count = line_count;
 
     // Hard limit check (error)
     if (word_count > this.MAX_WORDS) {
@@ -101,25 +163,60 @@ export class SkillValidator {
       );
     }
 
-    // Content analysis warnings
-    if (this.stats.code_blocks > 10) {
+    // Line count validation (Level 2 progressive disclosure)
+    // Target: ~50 lines, Warn: >80, Error: >150
+    if (line_count > 150) {
+      this.error(
+        `SKILL.md body is ${line_count} lines (MAX: ~150 for Level 2 progressive disclosure)\n` +
+          `  → Move detailed content to references/ directory\n` +
+          `  → Target: ~50 lines for optimal scannability`
+      );
+    } else if (line_count > 80) {
       this.warning(
-        `SKILL.md contains ${this.stats.code_blocks} code examples\n` +
-          `  → Consider moving detailed examples to references/examples.md`
+        `SKILL.md body is ${line_count} lines (recommended: ~50, max: ~80)\n` +
+          `  → Consider moving detailed examples to references/ for Level 3 loading`
       );
     }
 
+    // Content analysis warnings
+    // Code blocks: Recommend 1-2, warn at >3
+    if (this.stats.code_blocks > 3) {
+      this.warning(
+        `SKILL.md contains ${this.stats.code_blocks} code examples (recommended: 1-2)\n` +
+          `  → Move additional examples to references/examples.md for Level 3 loading`
+      );
+    }
+
+    // Long paragraphs
     if (this.stats.long_paragraphs > 3) {
       this.warning(
-        `SKILL.md contains ${this.stats.long_paragraphs} lengthy paragraphs\n` +
+        `SKILL.md contains ${this.stats.long_paragraphs} lengthy paragraphs (>100 words)\n` +
           `  → Consider moving detailed explanations to references/`
       );
     }
 
-    if (this.stats.sections > 20) {
+    // Sections: Recommend 3-5, warn at >8
+    if (this.stats.sections > 8) {
       this.warning(
-        `SKILL.md contains ${this.stats.sections} sections\n` +
+        `SKILL.md contains ${this.stats.sections} sections (recommended: 3-5)\n` +
           `  → Consider splitting into focused reference files`
+      );
+    }
+
+    // Check for "Quick Start" section
+    if (!body.includes('## Quick Start') && !body.includes('## Quick start')) {
+      this.warning(
+        `Missing "## Quick Start" section\n` +
+          `  → Add one minimal working example to help Claude get started quickly`
+      );
+    }
+
+    // Check for references/ links when body is long
+    const has_references = body.includes('references/');
+    if (!has_references && line_count > 60) {
+      this.warning(
+        `No references/ links found but SKILL.md is ${line_count} lines\n` +
+          `  → Consider splitting detailed content into reference files`
       );
     }
   }
@@ -207,22 +304,20 @@ export class SkillValidator {
     if (desc_match) {
       const description = desc_match[1].trim();
 
-      // Check description length
+      // Hard limit check (Anthropic requirement)
       if (description.length > 1024) {
         this.error(
-          `Description too long (max 1024 chars): ${description.length}`
+          `Description too long (max 1024 chars per Anthropic): ${description.length}`
         );
       }
 
+      // Short description check
       if (description.length < 20) {
         this.warning('Description is very short (consider adding more detail)');
       }
 
-      // Check for "when to use" guidance
-      const lower_desc = description.toLowerCase();
-      if (!lower_desc.includes('when') && !lower_desc.includes('use')) {
-        this.warning("Consider adding 'when to use' guidance to description");
-      }
+      // Comprehensive Level 1 validation
+      this.validate_description(description);
     }
 
     // Validate progressive disclosure (word count, token budget)
@@ -250,7 +345,9 @@ export class SkillValidator {
 
   private validate_references(): boolean {
     const references_dir = join(this.skill_path, 'references');
+    const skill_md_path = join(this.skill_path, 'SKILL.md');
 
+    // Check references directory if it exists
     if (existsSync(references_dir)) {
       const files = readdirSync(references_dir);
       const md_files = files.filter((f) => f.endsWith('.md'));
@@ -260,7 +357,6 @@ export class SkillValidator {
       }
 
       // Check for references in SKILL.md
-      const skill_md_path = join(this.skill_path, 'SKILL.md');
       if (existsSync(skill_md_path)) {
         const skill_content = readFileSync(skill_md_path, 'utf-8');
 
@@ -270,6 +366,30 @@ export class SkillValidator {
               `Reference file '${md_file}' not mentioned in SKILL.md`
             );
           }
+        }
+      }
+    }
+
+    // Level 3 validation: Check that all referenced files exist
+    if (existsSync(skill_md_path)) {
+      const skill_content = readFileSync(skill_md_path, 'utf-8');
+
+      // Extract markdown links to references/ directory
+      // Matches: [text](references/file.md) or [text](references/subdir/file.md)
+      const reference_link_pattern = /\[([^\]]+)\]\((references\/[^)]+\.md)\)/g;
+      const matches = skill_content.matchAll(reference_link_pattern);
+
+      for (const match of matches) {
+        const link_text = match[1];
+        const file_path = match[2]; // e.g., "references/examples.md"
+        const full_path = join(this.skill_path, file_path);
+
+        if (!existsSync(full_path)) {
+          this.error(
+            `Referenced file not found: ${file_path}\n` +
+              `  → Linked from: [${link_text}]\n` +
+              `  → Create the file or remove the broken link`
+          );
         }
       }
     }

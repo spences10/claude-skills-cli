@@ -26,6 +26,9 @@ export interface PackageOptions {
 export interface ValidationStats {
   word_count: number;
   estimated_tokens: number;
+  line_count: number;
+  description_length: number;
+  description_tokens: number;
   code_blocks: number;
   sections: number;
   long_paragraphs: number;
