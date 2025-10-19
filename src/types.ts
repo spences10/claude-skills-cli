@@ -23,8 +23,17 @@ export interface PackageOptions {
   skip_validation?: boolean;
 }
 
+export interface ValidationStats {
+  word_count: number;
+  estimated_tokens: number;
+  code_blocks: number;
+  sections: number;
+  long_paragraphs: number;
+}
+
 export interface ValidationResult {
   errors: string[];
   warnings: string[];
   is_valid: boolean;
+  stats?: ValidationStats;
 }

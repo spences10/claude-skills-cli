@@ -1,7 +1,12 @@
 import { basename } from 'path';
-import type { ValidateOptions } from '../types.js';
 import { SkillValidator } from '../core/validator.js';
-import { info, error, warning, success } from '../utils/output.js';
+import type { ValidateOptions } from '../types.js';
+import {
+  display_validation_stats,
+  error,
+  info,
+  success,
+} from '../utils/output.js';
 
 export function validate_command(options: ValidateOptions): void {
   const { skill_path, strict } = options;
@@ -12,6 +17,11 @@ export function validate_command(options: ValidateOptions): void {
 
   const validator = new SkillValidator(skill_path);
   const result = validator.validate_all();
+
+  // Display progressive disclosure stats
+  if (result.stats) {
+    display_validation_stats(result.stats);
+  }
 
   // Print errors
   if (result.errors.length > 0) {

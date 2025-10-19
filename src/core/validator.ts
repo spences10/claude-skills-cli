@@ -1,11 +1,23 @@
-import { readFileSync, existsSync, statSync, readdirSync } from 'fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'fs';
 import { join } from 'path';
-import type { ValidationResult } from '../types.js';
+import type { ValidationResult, ValidationStats } from '../types.js';
 
 export class SkillValidator {
   private skill_path: string;
   private errors: string[] = [];
   private warnings: string[] = [];
+  private stats: ValidationStats = {
+    word_count: 0,
+    estimated_tokens: 0,
+    code_blocks: 0,
+    sections: 0,
+    long_paragraphs: 0,
+  };
+
+  // Progressive disclosure limits (from Anthropic guidelines)
+  private readonly MAX_WORDS = 5000; // Hard limit
+  private readonly RECOMMENDED_WORDS = 1000; // Sweet spot
+  private readonly IDEAL_WORDS = 500; // Minimal but effective
 
   constructor(skill_path: string) {
     this.skill_path = skill_path;
@@ -17,6 +29,99 @@ export class SkillValidator {
 
   private warning(msg: string): void {
     this.warnings.push(`⚠️  ${msg}`);
+  }
+
+  /**
+   * Extract body content from SKILL.md (excluding YAML frontmatter)
+   */
+  private extract_body(content: string): string {
+    const parts = content.split('---\n');
+    return parts.length >= 3 ? parts.slice(2).join('---\n').trim() : content;
+  }
+
+  /**
+   * Count words in text
+   */
+  private count_words(text: string): number {
+    return text
+      .trim()
+      .split(/\s+/)
+      .filter((w) => w.length > 0).length;
+  }
+
+  /**
+   * Estimate tokens (rough approximation: 1 word ≈ 1.3 tokens for English)
+   */
+  private estimate_tokens(word_count: number): number {
+    return Math.round(word_count * 1.3);
+  }
+
+  /**
+   * Analyze content structure and patterns
+   */
+  private analyze_content(body: string): void {
+    // Count code blocks
+    const code_block_matches = body.match(/```[\s\S]*?```/g);
+    this.stats.code_blocks = code_block_matches ? code_block_matches.length : 0;
+
+    // Count markdown sections (headings)
+    const heading_matches = body.match(/^#{1,6}\s/gm);
+    this.stats.sections = heading_matches ? heading_matches.length : 0;
+
+    // Count long paragraphs (>100 words)
+    const paragraphs = body.split(/\n\n+/);
+    this.stats.long_paragraphs = paragraphs.filter((p) => {
+      const words = this.count_words(p);
+      return words > 100;
+    }).length;
+  }
+
+  /**
+   * Validate progressive disclosure (word count and token budget)
+   */
+  private validate_progressive_disclosure(body: string): void {
+    const word_count = this.count_words(body);
+    const estimated_tokens = this.estimate_tokens(word_count);
+
+    this.stats.word_count = word_count;
+    this.stats.estimated_tokens = estimated_tokens;
+
+    // Hard limit check (error)
+    if (word_count > this.MAX_WORDS) {
+      this.error(
+        `SKILL.md body has ${word_count} words (MAX: ${this.MAX_WORDS} per Anthropic guidelines)\n` +
+          `  → Move detailed content to references/ directory for Level 3 loading`
+      );
+    }
+    // Recommended limit check (warning)
+    else if (word_count > this.RECOMMENDED_WORDS) {
+      this.warning(
+        `SKILL.md body has ${word_count} words (recommended: <${this.RECOMMENDED_WORDS})\n` +
+          `  → Consider moving examples/docs to references/ for better token efficiency`
+      );
+    }
+
+    // Content analysis warnings
+    if (this.stats.code_blocks > 10) {
+      this.warning(
+        `SKILL.md contains ${this.stats.code_blocks} code examples\n` +
+          `  → Consider moving detailed examples to references/examples.md`
+      );
+    }
+
+    if (this.stats.long_paragraphs > 3) {
+      this.warning(
+        `SKILL.md contains ${this.stats.long_paragraphs} lengthy paragraphs\n` +
+          `  → Consider moving detailed explanations to references/`
+      );
+    }
+
+    if (this.stats.sections > 20) {
+      this.warning(
+        `SKILL.md contains ${this.stats.sections} sections\n` +
+          `  → Consider splitting into focused reference files`
+      );
+    }
   }
 
   private validate_directory(): boolean {
@@ -120,6 +225,12 @@ export class SkillValidator {
       }
     }
 
+    // Validate progressive disclosure (word count, token budget)
+    this.validate_progressive_disclosure(body);
+
+    // Analyze content structure
+    this.analyze_content(body);
+
     // Check body content
     if (body.trim().length < 100) {
       this.warning('SKILL.md body is very short');
@@ -220,6 +331,7 @@ export class SkillValidator {
         errors: this.errors,
         warnings: this.warnings,
         is_valid: false,
+        stats: this.stats,
       };
     }
 
@@ -232,6 +344,7 @@ export class SkillValidator {
       errors: this.errors,
       warnings: this.warnings,
       is_valid: this.errors.length === 0,
+      stats: this.stats,
     };
   }
 
