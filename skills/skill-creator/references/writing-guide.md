@@ -9,6 +9,7 @@ Detailed guidelines for writing effective Claude skills.
 Claude responds best to direct instructions.
 
 #### ✅ Good Examples
+
 ```markdown
 Use prepared statements for all database queries.
 Generate IDs with nanoid() before inserting records.
@@ -17,6 +18,7 @@ Validate input before saving to database.
 ```
 
 #### ❌ Bad Examples
+
 ```markdown
 You should use prepared statements for database queries.
 You'll want to generate IDs with nanoid().
@@ -29,6 +31,7 @@ Try to validate input before saving.
 Provide concrete instructions, not general advice.
 
 #### ✅ Good Examples
+
 ```typescript
 // Use nanoid() for ID generation
 import { nanoid } from 'nanoid';
@@ -39,6 +42,7 @@ const created_at = Date.now();
 ```
 
 #### ❌ Bad Examples
+
 ```typescript
 // Use an appropriate ID generator
 const id = generateId();
@@ -52,14 +56,17 @@ const created_at = getCurrentTime();
 Focus on procedural steps, not theory.
 
 #### ✅ Good (Procedural)
+
 ```markdown
 To query contacts:
+
 1. Prepare the statement
 2. Bind user_id for security
 3. Execute with .get() or .all()
 ```
 
 #### ❌ Bad (Conceptual)
+
 ```markdown
 When thinking about database queries, consider the relational
 model and how data integrity affects your design choices...
@@ -80,22 +87,26 @@ The description determines when Claude triggers your skill. Make it count.
 ### Examples
 
 #### Database Skill
+
 ```yaml
 description: SQLite database operations using better-sqlite3 for contacts, companies, interactions, and social_links tables. Use when writing SELECT, INSERT, UPDATE, DELETE operations with prepared statements.
 ```
 
 **Breakdown**:
+
 - Technology: "SQLite", "better-sqlite3"
 - Operations: "SELECT, INSERT, UPDATE, DELETE"
 - Data types: "contacts, companies, interactions, social_links"
 - Trigger: "Use when writing...operations"
 
 #### Component Skill
+
 ```yaml
 description: Create type-safe Svelte 5 components with $props(), $derived, and snippets following devhub-crm conventions. Use when building components, implementing forms, or working with reactive stores and SvelteKit routing.
 ```
 
 **Breakdown**:
+
 - Technology: "Svelte 5", "$props(), $derived"
 - Operations: "building components", "implementing forms"
 - Data types: "reactive stores", "SvelteKit routing"
@@ -119,7 +130,7 @@ description: Create type-safe Svelte 5 components with $props(), $derived, and s
 
 Show the most common operation immediately.
 
-```markdown
+````markdown
 ## Quick Start
 
 ```typescript
@@ -128,7 +139,9 @@ import { db } from '$lib/server/db';
 const stmt = db.prepare('SELECT * FROM contacts WHERE user_id = ?');
 const contacts = stmt.all(user_id) as Contact[];
 ```
-```
+````
+
+````
 
 **Guidelines**:
 - Minimal working example
@@ -154,7 +167,7 @@ const contact = stmt.get(id) as Contact | undefined;
 // Multiple rows
 const stmt = db.prepare('SELECT * FROM contacts WHERE user_id = ?');
 const contacts = stmt.all(user_id) as Contact[];
-```
+````
 
 ### INSERT Operations
 
@@ -165,7 +178,8 @@ const stmt = db.prepare(`
 `);
 stmt.run(nanoid(), user_id, name, Date.now());
 ```
-```
+
+````
 
 **Guidelines**:
 - One pattern per subsection
@@ -185,9 +199,10 @@ For detailed information:
 - [references/schema.md](references/schema.md) - Complete database schema
 - [references/relationships.md](references/relationships.md) - Table relationships
 - [references/query-examples.md](references/query-examples.md) - 20+ query patterns
-```
+````
 
 **Guidelines**:
+
 - Brief descriptions of each reference
 - Descriptive link text
 - Organized by topic
@@ -202,6 +217,7 @@ For detailed information:
 Pull examples from actual codebase, not invented scenarios.
 
 #### ✅ Good (Real)
+
 ```typescript
 // From src/lib/server/contacts.ts
 const stmt = db.prepare(`
@@ -214,6 +230,7 @@ const stmt = db.prepare(`
 ```
 
 #### ❌ Bad (Generic)
+
 ```typescript
 // Generic example
 const result = database.query('SELECT * FROM table');
@@ -267,6 +284,7 @@ const result = stmt.get(id);
 ### When to Create References
 
 Create reference files when:
+
 - SKILL.md exceeds ~5k words
 - Content is only needed in specific scenarios
 - You have exhaustive documentation
@@ -274,7 +292,7 @@ Create reference files when:
 
 ### Reference File Structure
 
-```markdown
+````markdown
 # Topic Name
 
 ## Overview
@@ -288,6 +306,7 @@ Detailed content with examples...
 ```typescript
 // Code examples
 ```
+````
 
 ## Section 2: Another Subtopic
 
@@ -300,7 +319,8 @@ Real-world usage examples.
 ## Notes
 
 Important considerations.
-```
+
+````
 
 ### Reference File Naming
 
@@ -328,9 +348,10 @@ For complete database schema with all table definitions and relationships:
 
 For 20+ common query patterns including joins and aggregations:
 [references/query-examples.md](references/query-examples.md)
-```
+````
 
 Not just:
+
 ```markdown
 See [schema.md](references/schema.md) and [examples](references/query-examples.md).
 ```
@@ -342,6 +363,7 @@ See [schema.md](references/schema.md) and [examples](references/query-examples.m
 ### When to Create Scripts
 
 Create scripts for:
+
 - **Validation**: Check data consistency, format correctness
 - **Generation**: Create boilerplate, scaffolding
 - **Analysis**: Parse files, generate reports
@@ -413,6 +435,7 @@ if __name__ == "__main__":
 ### When to Create Assets
 
 Add assets when you have:
+
 - **Templates**: Boilerplate that gets copied/modified
 - **Images**: Logos, icons, diagrams
 - **Config**: Standard configuration files
@@ -437,16 +460,19 @@ assets/
 
 ### Using Assets
 
-```markdown
+````markdown
 ## Quick Start
 
 Copy the component template:
+
 ```bash
 cp assets/templates/component.svelte src/lib/components/new-component.svelte
 ```
+````
 
 Modify the template for your needs.
-```
+
+````
 
 ---
 
@@ -478,29 +504,38 @@ description: Helper for database stuff
 
 # ✅ Good
 description: SQLite query patterns for contacts table using better-sqlite3. Use when writing SELECT, INSERT, UPDATE operations.
-```
+````
 
 ### Mistake 2: Second Person
+
 ```markdown
 # ❌ Bad
+
 You should always validate input before saving.
 
 # ✅ Good
+
 Validate input before saving to database.
 ```
 
 ### Mistake 3: Conceptual Over Procedural
-```markdown
+
+````markdown
 # ❌ Bad
+
 Understanding the importance of prepared statements in the context
 of SQL injection vulnerabilities is crucial for security...
 
 # ✅ Good
+
 Use prepared statements for all SQL queries:
+
 ```typescript
 const stmt = db.prepare('SELECT * FROM contacts WHERE id = ?');
 ```
-```
+````
+
+````
 
 ### Mistake 4: Duplicate Content
 ```markdown
@@ -511,7 +546,7 @@ references/schema.md has complete schema
 # ✅ Good (single source of truth)
 SKILL.md has quick reference
 references/schema.md has complete schema
-```
+````
 
 ---
 
@@ -520,6 +555,7 @@ references/schema.md has complete schema
 Before finalizing a skill:
 
 ### Content
+
 - [ ] Description includes keywords and triggers
 - [ ] Imperative voice throughout
 - [ ] Specific, not vague
@@ -527,6 +563,7 @@ Before finalizing a skill:
 - [ ] No TODO placeholders
 
 ### Structure
+
 - [ ] Quick Start section present
 - [ ] 3-5 Core Patterns documented
 - [ ] Links to references working
@@ -534,6 +571,7 @@ Before finalizing a skill:
 - [ ] Under 5k words (SKILL.md body)
 
 ### Technical
+
 - [ ] YAML frontmatter valid
 - [ ] Name matches directory
 - [ ] Scripts are executable
@@ -541,6 +579,7 @@ Before finalizing a skill:
 - [ ] Validation passes
 
 ### Testing
+
 - [ ] Tested in real conversations
 - [ ] Claude triggers skill correctly
 - [ ] Instructions are clear

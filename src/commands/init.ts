@@ -1,0 +1,93 @@
+import { join } from 'path';
+import type { InitOptions } from '../types.js';
+import {
+  SKILL_MD_TEMPLATE,
+  REFERENCE_TEMPLATE,
+  SCRIPT_TEMPLATE,
+  README_TEMPLATE,
+} from '../core/templates.js';
+import {
+  ensure_dir,
+  write_file,
+  make_executable,
+  to_title_case,
+  is_kebab_case,
+  is_lowercase,
+} from '../utils/fs.js';
+import { success, error } from '../utils/output.js';
+
+export function init_command(options: InitOptions): void {
+  let skill_path: string;
+  let name: string;
+  let description: string;
+
+  // Determine path and name
+  if (options.path) {
+    skill_path = options.path;
+    name = skill_path.split('/').pop() || '';
+    description = options.description || 'TODO: Add description';
+  } else if (options.name) {
+    name = options.name;
+    description = options.description || 'TODO: Add description';
+    // Default to .claude/skills/ directory
+    skill_path = join('.claude', 'skills', name);
+  } else {
+    error('Either --name or --path must be provided');
+    console.log('\nUsage:');
+    console.log(
+      '  claude-skills init --name my-skill --description "Description"'
+    );
+    console.log('  claude-skills init --path /custom/path/my-skill');
+    process.exit(1);
+  }
+
+  // Validate name format
+  const alphanumeric_check = name.replace(/-/g, '').replace(/_/g, '');
+  if (!/^[a-z0-9]+$/.test(alphanumeric_check)) {
+    error(`Skill name must be kebab-case alphanumeric: ${name}`);
+    process.exit(1);
+  }
+
+  if (!is_lowercase(name)) {
+    error(`Skill name must be lowercase: ${name}`);
+    process.exit(1);
+  }
+
+  // Create skill
+  create_skill(skill_path, name, description);
+}
+
+function create_skill(path: string, name: string, description: string): void {
+  // Create directories
+  ensure_dir(path);
+  ensure_dir(join(path, 'references'));
+  ensure_dir(join(path, 'scripts'));
+  ensure_dir(join(path, 'assets'));
+
+  // Create SKILL.md
+  const title = to_title_case(name);
+  const skill_md = SKILL_MD_TEMPLATE(name, description, title);
+  write_file(join(path, 'SKILL.md'), skill_md);
+
+  // Create example reference
+  const reference_md = REFERENCE_TEMPLATE(title);
+  write_file(join(path, 'references', 'detailed-guide.md'), reference_md);
+
+  // Create example script
+  const script_py = SCRIPT_TEMPLATE('example.py');
+  const script_path = join(path, 'scripts', 'example.py');
+  write_file(script_path, script_py);
+  make_executable(script_path);
+
+  // Create README
+  const readme_md = README_TEMPLATE(title, description);
+  write_file(join(path, 'README.md'), readme_md);
+
+  success(`Skill created at: ${path}`);
+  console.log('\nNext steps:');
+  console.log(`1. Edit ${path}/SKILL.md with your skill instructions`);
+  console.log(`2. Add detailed documentation to references/`);
+  console.log(`3. Add executable scripts to scripts/`);
+  console.log(`4. Remove example files you don't need`);
+  console.log(`\nValidate with: claude-skills validate ${path}`);
+}

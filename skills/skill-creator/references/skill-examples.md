@@ -5,9 +5,11 @@ Real examples showing effective skill patterns for this project.
 ## Example 1: Database Patterns Skill
 
 ### Use Case
+
 Repeatedly providing database schema, query patterns, and transaction handling.
 
 ### Structure
+
 ```
 database-patterns/
 ├── SKILL.md                    # Core query patterns
@@ -21,7 +23,8 @@ database-patterns/
 ```
 
 ### SKILL.md Excerpt
-```markdown
+
+````markdown
 ---
 name: database-patterns
 description: SQLite database operations using better-sqlite3 for contacts, companies, interactions, and social_links tables. Use when writing SELECT, INSERT, UPDATE, DELETE operations with prepared statements, handling timestamps, or managing relationships.
@@ -38,8 +41,10 @@ import { db } from '$lib/server/db';
 const stmt = db.prepare('SELECT * FROM contacts WHERE id = ? AND user_id = ?');
 const contact = stmt.get(id, user_id) as Contact | undefined;
 ```
+````
 
 For complete schema: [references/schema.md](references/schema.md)
+
 ```
 
 ### Why It Works
@@ -58,18 +63,20 @@ Creating type-safe Svelte 5 components with proper runes and snippets.
 
 ### Structure
 ```
+
 sveltekit-patterns/
-├── SKILL.md                       # Core patterns and conventions
+├── SKILL.md # Core patterns and conventions
 ├── references/
-│   ├── component-library.md       # Catalog of existing components
-│   ├── reactive-stores.md         # SvelteKit load/invalidate patterns
-│   └── routing-conventions.md     # File-based routing guide
+│ ├── component-library.md # Catalog of existing components
+│ ├── reactive-stores.md # SvelteKit load/invalidate patterns
+│ └── routing-conventions.md # File-based routing guide
 └── assets/
-    └── component-templates/
-        ├── basic-component.svelte
-        ├── form-component.svelte
-        └── list-component.svelte
-```
+└── component-templates/
+├── basic-component.svelte
+├── form-component.svelte
+└── list-component.svelte
+
+````
 
 ### SKILL.md Excerpt
 ```markdown
@@ -91,9 +98,10 @@ description: Create type-safe Svelte 5 components with $props(), $derived, and s
 
 	let { title, items }: Props = $props();
 </script>
-```
+````
 
 For complete component library: [references/component-library.md](references/component-library.md)
+
 ```
 
 ### Why It Works
@@ -112,15 +120,17 @@ Implementing GitHub OAuth, fetching profiles, managing connections.
 
 ### Structure
 ```
+
 github-integration/
-├── SKILL.md                      # Auth patterns, common operations
+├── SKILL.md # Auth patterns, common operations
 ├── references/
-│   ├── api-endpoints.md          # GitHub API reference
-│   └── oauth-flow.md             # Complete OAuth implementation
+│ ├── api-endpoints.md # GitHub API reference
+│ └── oauth-flow.md # Complete OAuth implementation
 └── scripts/
-    ├── test_connection.py        # Validate GitHub credentials
-    └── check_rate_limit.py       # Monitor API usage
-```
+├── test_connection.py # Validate GitHub credentials
+└── check_rate_limit.py # Monitor API usage
+
+````
 
 ### SKILL.md Excerpt
 ```markdown
@@ -142,9 +152,10 @@ const response = await fetch('https://api.github.com/user', {
     'Accept': 'application/vnd.github.v3+json',
   },
 });
-```
+````
 
 Check rate limits: `python scripts/check_rate_limit.py`
+
 ```
 
 ### Why It Works
@@ -163,14 +174,16 @@ Consistent component styling, theme usage, form patterns.
 
 ### Structure
 ```
+
 daisyui-conventions/
-├── SKILL.md                         # Core components and patterns
+├── SKILL.md # Core components and patterns
 ├── references/
-│   ├── component-reference.md       # All DaisyUI components
-│   └── theme-tokens.md              # Color system and usage
+│ ├── component-reference.md # All DaisyUI components
+│ └── theme-tokens.md # Color system and usage
 └── assets/
-    └── theme-preview.html           # Visual reference
-```
+└── theme-preview.html # Visual reference
+
+````
 
 ### SKILL.md Excerpt
 ```markdown
@@ -190,10 +203,11 @@ description: DaisyUI v5 component styling for cards, forms, buttons, and layouts
     <p>Content</p>
   </div>
 </div>
-```
+````
 
 For all components: [references/component-reference.md](references/component-reference.md)
-```
+
+````
 
 ### Why It Works
 - ✅ Shows actual DaisyUI classes used in project
@@ -215,9 +229,10 @@ Good descriptions include:
 ### Before (Vague)
 ```yaml
 description: Helps with database stuff
-```
+````
 
 ### After (Specific)
+
 ```yaml
 description: SQLite database operations using better-sqlite3 for contacts, companies, interactions, and social_links tables. Use when writing SELECT, INSERT, UPDATE, DELETE operations with prepared statements.
 ```
@@ -227,13 +242,16 @@ description: SQLite database operations using better-sqlite3 for contacts, compa
 ## Pattern: Progressive Disclosure
 
 ### Level 1: Metadata (Always)
+
 ```yaml
 name: database-patterns
 description: [50-100 words with keywords]
 ```
+
 **Token cost**: ~100 tokens
 
 ### Level 2: SKILL.md Body (When Triggered)
+
 - Quick Start example
 - 3-5 core patterns
 - Links to references
@@ -242,6 +260,7 @@ description: [50-100 words with keywords]
 **Token cost**: ~3-5k tokens
 
 ### Level 3: Resources (As Needed)
+
 - references/schema.md (complete schema)
 - references/query-examples.md (20+ queries)
 - scripts/validate.py (runs without loading)
@@ -253,20 +272,25 @@ description: [50-100 words with keywords]
 ## Pattern: Scripts for Efficiency
 
 ### Without Script
+
 ```markdown
 Claude generates validation code every time:
 "Check that all timestamps are valid..."
 [Claude writes 50 lines of Python]
 ```
+
 **Cost**: ~500 tokens each time
 
 ### With Script
+
 ```bash
 python scripts/validate_timestamps.py
 ```
+
 **Cost**: ~50 tokens (just output)
 
 ### Script Types
+
 - **Validation**: Check data consistency
 - **Generation**: Create boilerplate
 - **Analysis**: Parse and report
@@ -277,12 +301,14 @@ python scripts/validate_timestamps.py
 ## Pattern: Assets for Templates
 
 ### Without Assets
+
 ```markdown
 "Create a basic Svelte component..."
 [Claude writes boilerplate each time]
 ```
 
 ### With Assets
+
 ```bash
 cp assets/component-templates/basic-component.svelte \
    src/lib/components/new-component.svelte
@@ -290,6 +316,7 @@ cp assets/component-templates/basic-component.svelte \
 ```
 
 ### Asset Types
+
 - Component templates (.svelte)
 - SQL schemas (.sql)
 - Configuration files (.json)
@@ -300,30 +327,39 @@ cp assets/component-templates/basic-component.svelte \
 ## Anti-Patterns to Avoid
 
 ### ❌ Generic Description
+
 ```yaml
 description: Database helper tool
 ```
+
 **Fix**: Include table names, operations, when to use
 
 ### ❌ Everything Inline
+
 ```markdown
 # Database Skill
 
 ## Complete Schema (1000 lines)
+
 ## All Queries (500 lines)
 ```
+
 **Fix**: Move to references/schema.md
 
 ### ❌ Second Person
+
 ```markdown
 You should use prepared statements...
 ```
+
 **Fix**: "Use prepared statements for all queries"
 
 ### ❌ Missing Keywords
+
 ```yaml
 description: Helps with frontend stuff
 ```
+
 **Fix**: "Svelte 5 components with $props(), forms, routing"
 
 ---
@@ -333,6 +369,7 @@ description: Helps with frontend stuff
 **User Request**: "Create a GitHub contact card with database-backed favorites"
 
 **Skills Activated**:
+
 1. `github-integration` - Fetch profile
 2. `database-patterns` - Query favorites
 3. `sveltekit-patterns` - Build component

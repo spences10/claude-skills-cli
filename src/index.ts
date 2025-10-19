@@ -1,0 +1,130 @@
+#!/usr/bin/env node
+
+import { init_command } from './commands/init.js';
+import { validate_command } from './commands/validate.js';
+import { package_command } from './commands/package.js';
+
+const args = process.argv.slice(2);
+const command = args[0];
+
+function show_help(): void {
+  console.log('claude-skills - CLI toolkit for creating Claude Agent Skills\n');
+  console.log('Usage:');
+  console.log('  claude-skills <command> [options]\n');
+  console.log('Commands:');
+  console.log('  init        Create a new skill');
+  console.log('  validate    Validate a skill');
+  console.log('  package     Package a skill to zip\n');
+  console.log('Options:');
+  console.log('  --help, -h     Show help');
+  console.log('  --version, -v  Show version\n');
+  console.log('Examples:');
+  console.log(
+    '  claude-skills init --name my-skill --description "Description"'
+  );
+  console.log('  claude-skills validate .claude/skills/my-skill');
+  console.log('  claude-skills package .claude/skills/my-skill');
+}
+
+function parse_args(args: string[]): Record<string, string | boolean> {
+  const parsed: Record<string, string | boolean> = {};
+  const positional: string[] = [];
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+
+    if (arg.startsWith('--')) {
+      const key = arg.substring(2);
+      const next = args[i + 1];
+
+      if (next && !next.startsWith('--')) {
+        parsed[key] = next;
+        i++;
+      } else {
+        parsed[key] = true;
+      }
+    } else if (arg.startsWith('-') && arg.length === 2) {
+      const key = arg.substring(1);
+      const next = args[i + 1];
+
+      if (next && !next.startsWith('-')) {
+        parsed[key] = next;
+        i++;
+      } else {
+        parsed[key] = true;
+      }
+    } else {
+      positional.push(arg);
+    }
+  }
+
+  if (positional.length > 0) {
+    parsed._positional = positional.join(' ');
+  }
+
+  return parsed;
+}
+
+async function main() {
+  if (!command || command === '--help' || command === '-h') {
+    show_help();
+    process.exit(0);
+  }
+
+  if (command === '--version' || command === '-v') {
+    console.log('claude-skills v0.0.1');
+    process.exit(0);
+  }
+
+  const parsed = parse_args(args.slice(1));
+
+  switch (command) {
+    case 'init':
+      init_command({
+        name: parsed.name as string | undefined,
+        description: parsed.description as string | undefined,
+        path: parsed.path as string | undefined,
+      });
+      break;
+
+    case 'validate': {
+      const skill_path = parsed._positional as string;
+      if (!skill_path) {
+        console.error('Error: skill path required');
+        console.log('\nUsage: claude-skills validate <skill_path>');
+        process.exit(1);
+      }
+      validate_command({
+        skill_path,
+        strict: parsed.strict === true,
+      });
+      break;
+    }
+
+    case 'package': {
+      const skill_path = parsed._positional as string;
+      if (!skill_path) {
+        console.error('Error: skill path required');
+        console.log('\nUsage: claude-skills package <skill_path>');
+        process.exit(1);
+      }
+      await package_command({
+        skill_path,
+        output: parsed.output as string | undefined,
+        skip_validation: parsed['skip-validation'] === true,
+      });
+      break;
+    }
+
+    default:
+      console.error(`Unknown command: ${command}`);
+      console.log('');
+      show_help();
+      process.exit(1);
+  }
+}
+
+main().catch((err) => {
+  console.error('Error:', err.message);
+  process.exit(1);
+});

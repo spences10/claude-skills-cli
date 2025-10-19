@@ -7,6 +7,7 @@ Real-world examples from Anthropic's Skills repository and Claude Cookbooks, wit
 ## Example 1: Brand Guidelines Skill
 
 ### Structure
+
 ```
 applying-brand-guidelines/
 ├── SKILL.md
@@ -16,6 +17,7 @@ applying-brand-guidelines/
 ```
 
 ### SKILL.md Frontmatter
+
 ```yaml
 ---
 name: applying-brand-guidelines
@@ -28,13 +30,16 @@ description: This skill applies consistent corporate branding and styling to all
 **✅ Clear Scope**: Focuses on one thing - brand consistency across documents
 
 **✅ Actionable Content**: Specific hex codes, font sizes, spacing rules
+
 ```markdown
 ### Color Palette
+
 - **Primary Blue**: #0066CC (RGB: 0, 102, 204)
 - **Navy**: #003366 (RGB: 0, 51, 102)
 ```
 
 **✅ Executable Scripts**: Validation doesn't need manual checking
+
 ```python
 # scripts/validate_brand.py
 # Checks documents for brand compliance automatically
@@ -43,7 +48,9 @@ description: This skill applies consistent corporate branding and styling to all
 **✅ "When to Use" in Description**: "applies consistent corporate branding...to all generated documents"
 
 ### Key Takeaway
+
 Brand guidelines are perfect for skills because they're:
+
 - Repeatedly needed across documents
 - Specific and rule-based
 - Easy to validate programmatically
@@ -53,6 +60,7 @@ Brand guidelines are perfect for skills because they're:
 ## Example 2: PDF Processing Skill
 
 ### Structure
+
 ```
 pdf/
 ├── SKILL.md
@@ -64,7 +72,8 @@ pdf/
 ```
 
 ### SKILL.md Excerpt
-```markdown
+
+````markdown
 ---
 name: pdf
 description: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
@@ -81,8 +90,10 @@ import pdfplumber
 with pdfplumber.open("document.pdf") as pdf:
     text = pdf.pages[0].extract_text()
 ```
+````
 
 For advanced form filling, see [forms.md](forms.md).
+
 ```
 
 ### What Makes It Good
@@ -110,15 +121,17 @@ Large domains benefit from splitting:
 
 ### Structure (from Claude Cookbooks)
 ```
+
 financial-analyzer/
 ├── SKILL.md
 ├── references/
-│   ├── formulas.md
-│   └── ratios-reference.md
+│ ├── formulas.md
+│ └── ratios-reference.md
 └── scripts/
-    ├── calculate_ratios.py
-    └── generate_dashboard.py
-```
+├── calculate_ratios.py
+└── generate_dashboard.py
+
+````
 
 ### SKILL.md Pattern
 ```markdown
@@ -136,15 +149,17 @@ description: Calculate financial ratios, analyze statements, and generate perfor
 **Current Ratio**:
 ```python
 current_ratio = current_assets / current_liabilities
-```
+````
 
 **Quick Ratio**:
+
 ```python
 quick_ratio = (current_assets - inventory) / current_liabilities
 ```
 
 For complete ratio formulas, see [references/formulas.md](references/formulas.md).
-```
+
+````
 
 ### What Makes It Good
 
@@ -154,14 +169,16 @@ For complete ratio formulas, see [references/formulas.md](references/formulas.md
 ```python
 # scripts/calculate_ratios.py
 # Runs calculations without Claude generating code each time
-```
+````
 
 **✅ References for Detail**: Full formula explanations in references/
 
 **✅ Real Use Case**: Based on actual business needs
 
 ### Key Takeaway
+
 Domain expertise skills should:
+
 - Provide quick formulas in SKILL.md
 - Include detailed theory in references/
 - Offer scripts for exact calculations
@@ -172,6 +189,7 @@ Domain expertise skills should:
 ## Example 4: Database Schema Skill
 
 ### Structure (hypothetical, based on patterns)
+
 ```
 database-schema/
 ├── SKILL.md
@@ -182,7 +200,8 @@ database-schema/
 ```
 
 ### SKILL.md Pattern
-```markdown
+
+````markdown
 ---
 name: database-schema
 description: Complete database schema with table structures, relationships, and indexes for the project. Use when writing SQL queries, understanding data models, or working with database operations.
@@ -193,6 +212,7 @@ description: Complete database schema with table structures, relationships, and 
 ## Quick Reference
 
 **Core Tables**:
+
 - `users`: User accounts and authentication
 - `contacts`: Contact management
 - `companies`: Company records
@@ -201,14 +221,18 @@ description: Complete database schema with table structures, relationships, and 
 ## Common Patterns
 
 ### User-scoped Queries
+
 ```sql
 -- Always include user_id for row-level security
 SELECT * FROM contacts WHERE user_id = ? AND id = ?
 ```
+````
 
 For complete schema with all columns and relationships:
+
 - [references/schema.md](references/schema.md)
 - [references/relationships.md](references/relationships.md)
+
 ```
 
 ### What Makes It Good
@@ -234,17 +258,19 @@ Reference-heavy skills should:
 
 ### Structure (from Anthropic examples)
 ```
+
 component-library/
 ├── SKILL.md
 ├── references/
-│   ├── button-variants.md
-│   ├── form-patterns.md
-│   └── layout-components.md
+│ ├── button-variants.md
+│ ├── form-patterns.md
+│ └── layout-components.md
 └── assets/
-    └── component-templates/
-        ├── button.tsx
-        └── form.tsx
-```
+└── component-templates/
+├── button.tsx
+└── form.tsx
+
+````
 
 ### SKILL.md Pattern
 ```markdown
@@ -266,13 +292,15 @@ interface Props {
 export const Component = ({ title, onClick }: Props) => {
   return <button onClick={onClick}>{title}</button>;
 };
-```
+````
 
 ## Component Catalog
 
 For complete component examples:
+
 - [references/button-variants.md](references/button-variants.md)
 - [references/form-patterns.md](references/form-patterns.md)
+
 ```
 
 ### What Makes It Good
@@ -298,16 +326,18 @@ Component library skills should:
 
 ### Structure
 ```
+
 github-api/
 ├── SKILL.md
 ├── references/
-│   ├── endpoints.md
-│   ├── authentication.md
-│   └── rate-limits.md
+│ ├── endpoints.md
+│ ├── authentication.md
+│ └── rate-limits.md
 └── scripts/
-    ├── test_connection.py
-    └── check_rate_limit.py
-```
+├── test_connection.py
+└── check_rate_limit.py
+
+````
 
 ### SKILL.md Pattern
 ```markdown
@@ -327,17 +357,19 @@ const response = await fetch('https://api.github.com/user', {
     'Accept': 'application/vnd.github.v3+json',
   },
 });
-```
+````
 
 ## Rate Limiting
 
 Check rate limits before making requests:
+
 ```bash
 python scripts/check_rate_limit.py
 ```
 
 For complete API reference, see [references/endpoints.md](references/endpoints.md).
-```
+
+````
 
 ### What Makes It Good
 
@@ -366,11 +398,12 @@ API integration skills should:
 name: database-helper
 description: Helps with database operations
 ---
-```
+````
 
 **Problem**: Too vague, Claude won't know when to use it
 
 **Fix**: Be specific
+
 ```yaml
 ---
 description: SQLite query patterns using better-sqlite3 for contacts, companies, and interactions tables. Use when writing SELECT, INSERT, UPDATE, or DELETE operations with prepared statements.
@@ -378,21 +411,26 @@ description: SQLite query patterns using better-sqlite3 for contacts, companies,
 ```
 
 ### ❌ Anti-Pattern 2: Everything in SKILL.md
+
 ```markdown
 # Database Skill
 
 ## Complete Schema (500 lines)
+
 ## All Query Examples (1000 lines)
+
 ## Migration History (300 lines)
 ```
 
 **Problem**: Bloated, uses excessive tokens
 
 **Fix**: Progressive disclosure
+
 ```markdown
 # Database Skill
 
 ## Quick Reference
+
 [10 common patterns]
 
 For complete schema: [references/schema.md](references/schema.md)
@@ -400,6 +438,7 @@ For all examples: [references/queries.md](references/queries.md)
 ```
 
 ### ❌ Anti-Pattern 3: Using Second Person
+
 ```markdown
 You should use prepared statements when querying...
 ```
@@ -407,11 +446,13 @@ You should use prepared statements when querying...
 **Problem**: Wrong voice for AI instructions
 
 **Fix**: Imperative
+
 ```markdown
 Use prepared statements for all queries:
 ```
 
 ### ❌ Anti-Pattern 4: Missing "When to Use"
+
 ```yaml
 ---
 name: forms
@@ -422,6 +463,7 @@ description: Handle form submissions
 **Problem**: Claude won't know when this applies
 
 **Fix**: Include triggers
+
 ```yaml
 ---
 description: Handle form submissions with validation, error handling, and reactive updates. Use when implementing forms, processing user input, or validating data before database operations.
@@ -437,6 +479,7 @@ description: Handle form submissions with validation, error handling, and reacti
 **User Request**: "Create a GitHub contact dashboard with database stats"
 
 **Skills Activated**:
+
 1. `database-patterns` - Query contacts table
 2. `github-integration` - Fetch GitHub profiles
 3. `sveltekit-patterns` - Build component structure

@@ -18,12 +18,14 @@ Skills are modular packages that extend Claude's capabilities with specialized k
 **Goal**: Clearly understand how the skill will be used in practice.
 
 **Questions to ask**:
+
 - "What specific task needs this skill?"
 - "Can you give 3-5 concrete examples of using this?"
 - "What would trigger Claude to use this skill?"
 - "What context are you repeatedly providing?"
 
 **Example**:
+
 ```
 User: "I need a database skill"
 Claude: "What specific database operations would you use this for?"
@@ -40,18 +42,19 @@ Claude: "Can you give me actual query examples you use frequently?"
 **Goal**: Determine what goes in the skill.
 
 **For each example, identify**:
+
 1. What code is rewritten repeatedly? → `scripts/`
 2. What context is repeated? → `SKILL.md` or `references/`
 3. What templates are reused? → `assets/`
 
 **Decision Matrix**:
 
-| Content | Location | Example |
-|---------|----------|---------|
-| Core workflows | SKILL.md | "Use prepared statements" |
-| Detailed docs | references/ | Complete schema with all columns |
-| Repeated code | scripts/ | Validation logic, generators |
-| Templates | assets/ | Boilerplate files, images |
+| Content        | Location    | Example                          |
+| -------------- | ----------- | -------------------------------- |
+| Core workflows | SKILL.md    | "Use prepared statements"        |
+| Detailed docs  | references/ | Complete schema with all columns |
+| Repeated code  | scripts/    | Validation logic, generators     |
+| Templates      | assets/     | Boilerplate files, images        |
 
 **Output**: List of files to create with their purposes.
 
@@ -60,6 +63,7 @@ Claude: "Can you give me actual query examples you use frequently?"
 ### Step 3: Initialize the Skill
 
 **Use the init script**:
+
 ```bash
 python .claude/scripts/init_skill.py \
   --name skill-name \
@@ -67,6 +71,7 @@ python .claude/scripts/init_skill.py \
 ```
 
 **This creates**:
+
 ```
 .claude/skills/skill-name/
 ├── SKILL.md
@@ -83,6 +88,7 @@ python .claude/scripts/init_skill.py \
 ### Step 4: Edit the Skill
 
 **Writing Guidelines**:
+
 - ✅ Use imperative voice: "Use prepared statements"
 - ❌ Not second person: "You should use prepared statements"
 - ✅ Be specific: "Generate IDs with nanoid()"
@@ -99,22 +105,27 @@ description: [What it does + when to use it, keywords for discovery]
 # Skill Title
 
 ## Overview
+
 [2-3 sentences on purpose]
 
 ## Quick Start
+
 [Minimal working example]
 
 ## Core Patterns
 
 ### Pattern 1
+
 [Common workflow with code]
 
 ### Pattern 2
+
 [Another common workflow]
 
 ## Advanced Usage
 
 For detailed information:
+
 - [references/file1.md](references/file1.md)
 - [references/file2.md](references/file2.md)
 
@@ -130,24 +141,28 @@ For detailed information:
 ```
 
 **Key Questions to Answer**:
+
 1. What is the purpose? (2-3 sentences)
 2. When should this be used? (triggers/contexts)
 3. How should Claude use this? (step-by-step)
 4. What resources are bundled? (references, scripts, assets)
 
 **References Guidelines**:
+
 - One topic per file
 - Descriptive names: `authentication-flow.md` not `auth.md`
 - Include examples and code
 - Link from SKILL.md
 
 **Scripts Guidelines**:
+
 - Include shebang (`#!/usr/bin/env python3`)
 - Make executable (`chmod +x`)
 - Add usage documentation
 - Handle errors gracefully
 
 **Assets Guidelines**:
+
 - Templates that get copied/modified
 - Images used in output
 - Boilerplate code
@@ -158,11 +173,13 @@ For detailed information:
 ### Step 5: Validate and Package
 
 **Validate first**:
+
 ```bash
 python .claude/scripts/validate_skill.py .claude/skills/skill-name
 ```
 
 **Fix any errors**, then package:
+
 ```bash
 python .claude/scripts/package_skill.py .claude/skills/skill-name
 ```
@@ -170,6 +187,7 @@ python .claude/scripts/package_skill.py .claude/skills/skill-name
 **Creates**: `dist/skill-name.zip` ready for distribution.
 
 **Validation checks**:
+
 - YAML frontmatter format
 - Required fields present
 - Name matches directory
@@ -182,11 +200,13 @@ python .claude/scripts/package_skill.py .claude/skills/skill-name
 ### Step 6: Test and Iterate
 
 **Testing**:
+
 1. Use skill in real conversations
 2. Notice struggles or inefficiencies
 3. Update based on observations
 
 **Iteration workflow**:
+
 ```bash
 # Edit skill
 vim .claude/skills/skill-name/SKILL.md
@@ -202,6 +222,7 @@ python .claude/scripts/package_skill.py .claude/skills/skill-name
 ```
 
 **Common improvements**:
+
 - Add more examples
 - Move details to references
 - Create scripts for repeated patterns
@@ -215,19 +236,25 @@ python .claude/scripts/package_skill.py .claude/skills/skill-name
 Skills load in three levels:
 
 ### Level 1: Metadata (~100 tokens)
+
 **Always in context**
+
 ```yaml
 name: skill-name
 description: What it does and when to use it
 ```
 
 ### Level 2: Instructions (<5k tokens)
+
 **Loaded when triggered**
+
 - SKILL.md body with core patterns
 - Links to references and scripts
 
 ### Level 3: Resources (unlimited)
+
 **Loaded as needed**
+
 - references/: Documentation Claude reads
 - scripts/: Code Claude executes
 - assets/: Files Claude uses in output
@@ -235,6 +262,7 @@ description: What it does and when to use it
 ## Best Practices
 
 ### Do:
+
 ✅ Start with concrete examples
 ✅ Use imperative voice
 ✅ Keep SKILL.md under 5k words
@@ -244,6 +272,7 @@ description: What it does and when to use it
 ✅ Iterate based on usage
 
 ### Don't:
+
 ❌ Use second person ("you")
 ❌ Duplicate content across files
 ❌ Include everything inline
@@ -254,24 +283,28 @@ description: What it does and when to use it
 ## devhub-crm Skill Patterns
 
 ### Database Skills
+
 - Schema in references/schema.md
 - Query patterns in SKILL.md
 - Validation scripts for consistency
 - Migration helpers
 
 ### Component Skills
+
 - Basic templates in SKILL.md
 - Component catalog in references/
 - Example components in assets/
 - Type definitions included
 
 ### Integration Skills
+
 - Auth patterns in SKILL.md
 - API docs in references/
 - Connection tests in scripts/
 - Rate limit handling
 
 ### Styling Skills
+
 - Core conventions in SKILL.md
 - Complete reference in references/
 - Theme examples in assets/
@@ -296,6 +329,7 @@ python .claude/scripts/validate_skill.py .claude/skills/my-skill --strict
 ## Resources
 
 See also:
+
 - [references/skill-examples.md](references/skill-examples.md) - Real examples from Anthropic
 - [references/writing-guide.md](references/writing-guide.md) - Detailed writing guidelines
 - [../../docs/SKILLS-ARCHITECTURE.md](../../docs/SKILLS-ARCHITECTURE.md) - Complete architecture

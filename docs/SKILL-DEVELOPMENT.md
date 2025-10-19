@@ -22,12 +22,14 @@ Based on Anthropic's skill-creator methodology, adapted for devhub-crm.
 **Goal**: Clearly understand how the skill will be used in practice.
 
 **Process**:
+
 1. Identify specific scenarios where skill is needed
 2. Collect real examples from your workflow
 3. Note what Claude struggles with currently
 4. Validate examples with actual usage
 
 **Example Questions**:
+
 - "What task am I repeating that needs this skill?"
 - "Can I give 3-5 concrete examples of using this?"
 - "What would trigger Claude to use this skill?"
@@ -42,6 +44,7 @@ Based on Anthropic's skill-creator methodology, adapted for devhub-crm.
 **Goal**: Analyze examples to determine what to include in skill.
 
 **For each example, ask**:
+
 1. What would Claude need to execute this from scratch?
 2. What code is being rewritten repeatedly? → `scripts/`
 3. What context is repeated each time? → `SKILL.md` or `references/`
@@ -49,12 +52,12 @@ Based on Anthropic's skill-creator methodology, adapted for devhub-crm.
 
 **Decision Matrix**:
 
-| Content Type | Goes In | Example |
-|--------------|---------|---------|
-| Core workflow patterns | SKILL.md | "Always use prepared statements" |
-| Detailed documentation | references/ | Complete API reference |
-| Repeated code | scripts/ | Validation logic |
-| Templates/resources | assets/ | Boilerplate HTML |
+| Content Type           | Goes In     | Example                          |
+| ---------------------- | ----------- | -------------------------------- |
+| Core workflow patterns | SKILL.md    | "Always use prepared statements" |
+| Detailed documentation | references/ | Complete API reference           |
+| Repeated code          | scripts/    | Validation logic                 |
+| Templates/resources    | assets/     | Boilerplate HTML                 |
 
 **Output**: List of files to create with their purposes
 
@@ -63,6 +66,7 @@ Based on Anthropic's skill-creator methodology, adapted for devhub-crm.
 ### Step 3: Initializing the Skill
 
 **Command**:
+
 ```bash
 python .claude/scripts/init_skill.py \
   --name database-patterns \
@@ -70,6 +74,7 @@ python .claude/scripts/init_skill.py \
 ```
 
 **What This Creates**:
+
 ```
 .claude/skills/database-patterns/
 ├── SKILL.md                    # With frontmatter template
@@ -92,18 +97,21 @@ python .claude/scripts/init_skill.py \
 #### Start with Reusable Contents
 
 1. **Add scripts** (if identified in Step 2)
+
    ```bash
    cd .claude/skills/database-patterns/scripts/
    # Create validation, generation, or analysis scripts
    ```
 
 2. **Add references** (if identified in Step 2)
+
    ```bash
    cd references/
    # Create detailed documentation files
    ```
 
 3. **Add assets** (if identified in Step 2)
+
    ```bash
    cd assets/
    # Copy templates, images, or other resources
@@ -118,6 +126,7 @@ python .claude/scripts/init_skill.py \
 #### Update SKILL.md
 
 **Writing Guidelines**:
+
 - ✅ Use imperative/infinitive form: "Use prepared statements"
 - ❌ Not second person: "You should use prepared statements"
 - ✅ Be specific: "Generate IDs with nanoid()"
@@ -134,22 +143,27 @@ description: [What it does + When to use it]
 # Skill Title
 
 ## Overview
+
 [2-3 sentences on purpose]
 
 ## Quick Start
+
 [Minimal example showing basic usage]
 
 ## Core Patterns
 
 ### Pattern 1
+
 [Common workflow with code example]
 
 ### Pattern 2
+
 [Another common workflow]
 
 ## Advanced Usage
 
 For detailed information:
+
 - [references/file1.md](references/file1.md)
 - [references/file2.md](references/file2.md)
 
@@ -165,6 +179,7 @@ For detailed information:
 ```
 
 **Questions to Answer**:
+
 1. What is the purpose? (2-3 sentences)
 2. When should this be used? (triggers/contexts)
 3. How should Claude use this? (step-by-step)
@@ -175,6 +190,7 @@ For detailed information:
 ### Step 5: Packaging the Skill
 
 **Validation First**:
+
 ```bash
 python .claude/scripts/validate_skill.py .claude/skills/database-patterns
 
@@ -185,6 +201,7 @@ python .claude/scripts/validate_skill.py .claude/skills/database-patterns
 ```
 
 **Fix Validation Issues**, then package:
+
 ```bash
 python .claude/scripts/package_skill.py .claude/skills/database-patterns
 
@@ -193,6 +210,7 @@ python .claude/scripts/package_skill.py .claude/skills/database-patterns
 ```
 
 **The package includes**:
+
 - All files from skill directory
 - Maintains directory structure
 - Excludes hidden files and temp files
@@ -203,12 +221,14 @@ python .claude/scripts/package_skill.py .claude/skills/database-patterns
 ### Step 6: Iterate
 
 **Test the Skill**:
+
 1. Use skill in real conversations
 2. Notice where it struggles or excels
 3. Collect feedback from actual usage
 4. Update SKILL.md or references based on observations
 
 **Iteration Workflow**:
+
 ```bash
 # Edit skill content
 vim .claude/skills/database-patterns/SKILL.md
@@ -224,6 +244,7 @@ python .claude/scripts/package_skill.py .claude/skills/database-patterns
 ```
 
 **Common Iterations**:
+
 - Add more examples to SKILL.md
 - Move detailed content to references
 - Create new scripts for repeated tasks
@@ -235,22 +256,31 @@ python .claude/scripts/package_skill.py .claude/skills/database-patterns
 ## Development Best Practices
 
 ### Start Small
+
 Begin with minimal SKILL.md, add complexity only as needed:
+
 ```markdown
 # Version 1: Just core patterns
+
 # Version 2: Add references
+
 # Version 3: Add scripts
+
 # Version 4: Add assets
 ```
 
 ### Test Early and Often
+
 Don't wait until skill is "complete":
+
 - Test after basic SKILL.md is written
 - Iterate based on actual usage
 - Skills are never truly "done"
 
 ### Use Real Examples
+
 Pull examples from actual code, not invented scenarios:
+
 ```typescript
 // ✅ Good: From your actual codebase
 const stmt = db.prepare('SELECT * FROM contacts WHERE user_id = ?');
@@ -261,13 +291,17 @@ const result = database.query('SELECT * FROM table');
 ```
 
 ### Keep SKILL.md Lean
+
 When it grows beyond 5k words, split content:
+
 - Core workflows → stay in SKILL.md
 - Detailed docs → move to references/
 - API reference → definitely references/
 
 ### Write for Claude, Not Humans
+
 Claude needs different information than developers:
+
 - ✅ Procedural: "To do X, follow these steps..."
 - ✅ Specific: "Use nanoid() to generate IDs"
 - ✅ Concrete: "Store timestamps as Date.now()"
@@ -275,16 +309,21 @@ Claude needs different information than developers:
 - ❌ Opinion: "We prefer approach X over Y..."
 
 ### Document Your Intent
+
 Add comments explaining WHY, not just WHAT:
+
 ```markdown
 ## ID Generation
 
 Generate IDs with nanoid() to ensure uniqueness without database overhead.
+
 <!-- Not just: "Use nanoid()" -->
 ```
 
 ### Validate Before Sharing
+
 Always run validation:
+
 ```bash
 python .claude/scripts/validate_skill.py .claude/skills/my-skill --strict
 ```
@@ -300,6 +339,7 @@ Strict mode treats warnings as errors - use before packaging for distribution.
 **Problem**: Claude doesn't use the skill when expected
 
 **Solutions**:
+
 1. Check description includes "when to use" keywords
 2. Make description more specific
 3. Test with explicit request: "Use the database-patterns skill to..."
@@ -310,6 +350,7 @@ Strict mode treats warnings as errors - use before packaging for distribution.
 **Problem**: Skill uses too many tokens
 
 **Solutions**:
+
 1. Move detailed content from SKILL.md to references/
 2. Use scripts for code instead of inline examples
 3. Split large references into focused files
@@ -320,6 +361,7 @@ Strict mode treats warnings as errors - use before packaging for distribution.
 **Problem**: Multiple skills trying to handle same task
 
 **Solutions**:
+
 1. Make descriptions more specific
 2. Define clear boundaries between skills
 3. Use skill composition intentionally
@@ -330,6 +372,7 @@ Strict mode treats warnings as errors - use before packaging for distribution.
 **Problem**: Packaged skill doesn't work
 
 **Solutions**:
+
 1. Run validator before packaging
 2. Check YAML frontmatter syntax
 3. Ensure required fields present
@@ -340,6 +383,7 @@ Strict mode treats warnings as errors - use before packaging for distribution.
 ## File Templates
 
 ### Minimal SKILL.md
+
 ```markdown
 ---
 name: my-skill
@@ -358,6 +402,7 @@ description: Brief description including when to use this skill
 ```
 
 ### Reference File
+
 ```markdown
 # Topic Reference
 
@@ -379,6 +424,7 @@ description: Brief description including when to use this skill
 ```
 
 ### Script File
+
 ```python
 #!/usr/bin/env python3
 """
