@@ -1,17 +1,18 @@
 # CLI Feedback - Real-World Usage Patterns
 
-Real feedback from Claude agents using `claude-skills-cli` in production.
+Real feedback from Claude agents using `claude-skills-cli` in
+production.
 
 **Source**: Real usage creating 3 production skills in ~15 minutes
-**CLI Version**: 0.0.3+
-**Date**: 2025-10-20
-**Last Updated**: 2025-10-20
+**CLI Version**: 0.0.3+ **Date**: 2025-10-20 **Last Updated**:
+2025-10-20
 
 ---
 
 ## ✅ UPDATE: High & Medium Priority Items IMPLEMENTED
 
-All high-priority friction points and medium-priority features have been implemented:
+All high-priority friction points and medium-priority features have
+been implemented:
 
 - ✅ Minimal scaffolding by default (no empty dirs/files to clean up)
 - ✅ `--with-examples` flag for opt-in example files
@@ -19,7 +20,8 @@ All high-priority friction points and medium-priority features have been impleme
 - ✅ HTML comments excluded from line count
 - ✅ New `stats` command for multi-skill overview
 
-**Result**: The CLI now achieves **S-tier** status for Claude's workflow! 🎯
+**Result**: The CLI now achieves **S-tier** status for Claude's
+workflow! 🎯
 
 ---
 
@@ -88,14 +90,16 @@ Validate with: claude-skills validate .claude/skills/auth-patterns
 
 ### ✅ Issue 1: Empty Directories Created by Default (FIXED)
 
-**Problem**: Every `init` creates `assets/` and `scripts/` directories, which are often empty and unused.
+**Problem**: Every `init` creates `assets/` and `scripts/`
+directories, which are often empty and unused.
 
 **Status**: ✅ **FIXED** - Now only creates `references/` by default
 
 **New behavior:**
 
 - Default: Creates only `SKILL.md`, `README.md`, and `references/`
-- With `--with-examples`: Creates full scaffolding including `assets/`, `scripts/`, and example files
+- With `--with-examples`: Creates full scaffolding including
+  `assets/`, `scripts/`, and example files
 
 ```bash
 # Minimal (default)
@@ -107,12 +111,14 @@ npx claude-skills init --name my-skill --description "..." --with-examples
 
 ### ✅ Issue 2: Template Files Need Deletion (FIXED)
 
-**Problem**: Template creates example reference files that need to be removed:
+**Problem**: Template creates example reference files that need to be
+removed:
 
 - `references/detailed-guide.md`
 - References to non-existent examples
 
-**Status**: ✅ **FIXED** - Example files only created with `--with-examples` flag
+**Status**: ✅ **FIXED** - Example files only created with
+`--with-examples` flag
 
 **New behavior:**
 
@@ -121,7 +127,8 @@ npx claude-skills init --name my-skill --description "..." --with-examples
 
 ### ✅ Issue 3: Description Comma Warning Not Always Relevant (FIXED)
 
-**Problem**: Validation warns about commas in descriptions, but for technical skills, lists are often necessary:
+**Problem**: Validation warns about commas in descriptions, but for
+technical skills, lists are often necessary:
 
 ```
 ⚠️ Description contains long lists (5 commas)
@@ -130,15 +137,20 @@ npx claude-skills init --name my-skill --description "..." --with-examples
 
 **Example description**:
 
-> "DaisyUI v5 design system. Use for backgrounds, borders, text sizes, opacity, semantic colors, and spacing."
+> "DaisyUI v5 design system. Use for backgrounds, borders, text sizes,
+> opacity, semantic colors, and spacing."
 
-This is concise (106 chars) but gets flagged for 5 commas. The alternative would be vague: "DaisyUI v5 design system for UI styling" - less useful.
+This is concise (106 chars) but gets flagged for 5 commas. The
+alternative would be vague: "DaisyUI v5 design system for UI
+styling" - less useful.
 
-**Status**: ✅ **FIXED** - Now only warns if BOTH conditions met: >150 chars AND ≥5 commas
+**Status**: ✅ **FIXED** - Now only warns if BOTH conditions met: >150
+chars AND ≥5 commas
 
 **New behavior:**
 
-- Concise technical lists (like the example above) no longer trigger warnings
+- Concise technical lists (like the example above) no longer trigger
+  warnings
 - Only warns when description is both long AND list-heavy
 
 ### Issue 4: Python Script Reference in Template
@@ -151,9 +163,11 @@ This is concise (106 chars) but gets flagged for 5 commas. The alternative would
 - `scripts/example.js` - [What this script does]
 ```
 
-This assumes JavaScript/Node.js, but many skills don't need scripts at all (especially documentation-based patterns).
+This assumes JavaScript/Node.js, but many skills don't need scripts at
+all (especially documentation-based patterns).
 
-**Status**: Fixed in latest version - scripts section removed from template
+**Status**: Fixed in latest version - scripts section removed from
+template
 
 ---
 
@@ -263,16 +277,19 @@ Created 3 production-ready skills:
 
 **Grade: A-**
 
-The CLI is excellent for its core purpose. The validation feedback is world-class, and the progressive disclosure guidance is valuable.
+The CLI is excellent for its core purpose. The validation feedback is
+world-class, and the progressive disclosure guidance is valuable.
 
 **Main issues**:
 
 1. Unnecessary scaffolding (empty dirs, template files)
 2. Some validation warnings too strict/not contextual
 
-**Would recommend**: Yes, absolutely. With minor tweaks, this would be S-tier.
+**Would recommend**: Yes, absolutely. With minor tweaks, this would be
+S-tier.
 
-**Best feature**: The detailed, actionable validation output. It teaches you best practices while validating.
+**Best feature**: The detailed, actionable validation output. It
+teaches you best practices while validating.
 
 **Biggest win**: Going from idea to validated skill in ~5 minutes.
 
@@ -282,14 +299,18 @@ The CLI is excellent for its core purpose. The validation feedback is world-clas
 
 **High Priority** (blocking efficient workflow):
 
-1. ✅ **DONE** - Don't create empty `assets/` and `scripts/` directories by default
-2. ✅ **DONE** - Don't create template reference files (use `--with-examples` flag for opt-in)
-3. ✅ **DONE** - Improve description comma warning logic (now requires >150 chars AND ≥5 commas)
+1. ✅ **DONE** - Don't create empty `assets/` and `scripts/`
+   directories by default
+2. ✅ **DONE** - Don't create template reference files (use
+   `--with-examples` flag for opt-in)
+3. ✅ **DONE** - Improve description comma warning logic (now
+   requires >150 chars AND ≥5 commas)
 4. ✅ **DONE** - Remove script section from minimal template
 
 **Medium Priority** (valuable additions):
 
-5. ✅ **DONE** - Minimal scaffolding by default (was `--minimal` flag, now default behavior)
+5. ✅ **DONE** - Minimal scaffolding by default (was `--minimal` flag,
+   now default behavior)
 6. ✅ **DONE** - Don't count HTML comments in line count validation
 7. ✅ **DONE** - Add `stats` command for multi-skill overview
 
@@ -305,7 +326,8 @@ The CLI is excellent for its core purpose. The validation feedback is world-clas
 
 > "The validation output is _fantastic_ - clear, visual, actionable."
 
-> "Going from idea to validated skill in ~5 minutes is the biggest win."
+> "Going from idea to validated skill in ~5 minutes is the biggest
+> win."
 
 > "The CLI teaches you best practices while you use it."
 

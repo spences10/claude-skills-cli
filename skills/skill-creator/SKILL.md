@@ -1,11 +1,15 @@
 ---
 name: skill-creator
-description: Create Claude Skills using claude-skills-cli. Use when building new skills, running validation, or packaging skills for distribution with TypeScript/Node.
+description:
+  Create Claude Skills using claude-skills-cli. Use when building new
+  skills, running validation, or packaging skills for distribution
+  with TypeScript/Node.
 ---
 
 # Skill Creator
 
-Create effective Claude Skills using the `claude-skills-cli` tool (TypeScript/Node).
+Create effective Claude Skills using the `claude-skills-cli` tool
+(TypeScript/Node).
 
 ## Quick Start
 
@@ -85,11 +89,16 @@ Creates uploadable zip for Claude.ai or API.
 
 For detailed guidance:
 
-- [cli-reference.md](references/cli-reference.md) - Complete CLI commands and options
-- [cli-feedback.md](references/cli-feedback.md) - Real-world usage patterns and tips
-- [anthropic-resources.md](references/anthropic-resources.md) - Official Anthropic best practices
-- [writing-guide.md](references/writing-guide.md) - Voice, structure, and code examples
-- [skill-examples.md](references/skill-examples.md) - Example skills and patterns
+- [cli-reference.md](references/cli-reference.md) - Complete CLI
+  commands and options
+- [cli-feedback.md](references/cli-feedback.md) - Real-world usage
+  patterns and tips
+- [anthropic-resources.md](references/anthropic-resources.md) -
+  Official Anthropic best practices
+- [writing-guide.md](references/writing-guide.md) - Voice, structure,
+  and code examples
+- [skill-examples.md](references/skill-examples.md) - Example skills
+  and patterns
 
 ## Notes
 

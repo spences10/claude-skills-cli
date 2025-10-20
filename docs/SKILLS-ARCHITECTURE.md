@@ -2,7 +2,10 @@
 
 ## Overview
 
-Claude Skills are modular capabilities that extend Claude's functionality through a filesystem-based architecture. They provide specialized domain expertise, workflows, and tools that transform Claude from a general-purpose agent into a specialist.
+Claude Skills are modular capabilities that extend Claude's
+functionality through a filesystem-based architecture. They provide
+specialized domain expertise, workflows, and tools that transform
+Claude from a general-purpose agent into a specialist.
 
 ## Core Concepts
 
@@ -52,8 +55,8 @@ Claude sees this at startup and knows:
 - When to use it
 - How to trigger it
 
-**Token cost**: ~100 tokens per skill (metadata only)
-**When**: At agent startup, every conversation
+**Token cost**: ~100 tokens per skill (metadata only) **When**: At
+agent startup, every conversation
 
 ### Level 2: Instructions (<5k tokens)
 
@@ -71,21 +74,21 @@ The markdown body of SKILL.md contains:
 ## Core Principles
 
 - Use prepared statements for all queries
-- Generate IDs with nanoid()
-  ...
+- Generate IDs with nanoid() ...
 
 For complete schema, see [references/schema.md](references/schema.md)
 ```
 
-**Token cost**: ~3-5k tokens typically
-**When**: Only when Claude determines skill is relevant
+**Token cost**: ~3-5k tokens typically **When**: Only when Claude
+determines skill is relevant
 
 ### Level 3: Resources (unlimited)
 
 **Loaded as needed**
 
 - **references/**: Documentation Claude reads into context as needed
-- **scripts/**: Executable code Claude runs without loading into context
+- **scripts/**: Executable code Claude runs without loading into
+  context
 - **assets/**: Files used in output (templates, images, fonts)
 
 ```bash
@@ -226,7 +229,8 @@ Detailed documentation loaded only when needed by Claude.
 ```markdown
 # In SKILL.md
 
-For complete database schema with all relationships, see [references/schema.md](references/schema.md).
+For complete database schema with all relationships, see
+[references/schema.md](references/schema.md).
 
 # Claude can then:
 
@@ -237,7 +241,8 @@ cat references/schema.md # Load when needed
 
 ### Purpose
 
-Executable code for deterministic operations that don't need token generation.
+Executable code for deterministic operations that don't need token
+generation.
 
 ### When to Use Scripts
 
@@ -309,7 +314,8 @@ Schema reference (if needed): ~2000 tokens
 Total: 100 tokens normally, 3100-5100 when used
 ```
 
-**Savings**: Skill metadata is loaded once. Without skill, you pay ~3500 tokens every conversation even if not needed.
+**Savings**: Skill metadata is loaded once. Without skill, you pay
+~3500 tokens every conversation even if not needed.
 
 ## Skill Composition
 
@@ -354,27 +360,22 @@ Each skill loads independently, shares context naturally.
 
 ### Do:
 
-✅ Keep SKILL.md concise and actionable
-✅ Use imperative voice for instructions
-✅ Provide concrete examples
-✅ Link to references for details
-✅ Include "when to use" in description
-✅ Use scripts for deterministic operations
-✅ Group related content in references
-✅ Test skills on real tasks
+✅ Keep SKILL.md concise and actionable ✅ Use imperative voice for
+instructions ✅ Provide concrete examples ✅ Link to references for
+details ✅ Include "when to use" in description ✅ Use scripts for
+deterministic operations ✅ Group related content in references ✅
+Test skills on real tasks
 
 ### Don't:
 
-❌ Duplicate content between SKILL.md and references
-❌ Use second person ("you")
-❌ Include entire documentation inline
-❌ Forget to specify when to use skill
-❌ Make descriptions too generic
-❌ Leave TODO placeholders
-❌ Skip validation before packaging
+❌ Duplicate content between SKILL.md and references ❌ Use second
+person ("you") ❌ Include entire documentation inline ❌ Forget to
+specify when to use skill ❌ Make descriptions too generic ❌ Leave
+TODO placeholders ❌ Skip validation before packaging
 
 ## Next Steps
 
-- Read [SKILL-DEVELOPMENT.md](SKILL-DEVELOPMENT.md) for creation workflow
+- Read [SKILL-DEVELOPMENT.md](SKILL-DEVELOPMENT.md) for creation
+  workflow
 - See [SKILL-EXAMPLES.md](SKILL-EXAMPLES.md) for real-world examples
 - Use `claude-skills init` to create your first skill

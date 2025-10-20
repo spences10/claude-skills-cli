@@ -11,19 +11,17 @@ Claude responds best to direct instructions.
 #### ✅ Good Examples
 
 ```markdown
-Use prepared statements for all database queries.
-Generate IDs with nanoid() before inserting records.
-Store timestamps as Unix epoch milliseconds.
-Validate input before saving to database.
+Use prepared statements for all database queries. Generate IDs with
+nanoid() before inserting records. Store timestamps as Unix epoch
+milliseconds. Validate input before saving to database.
 ```
 
 #### ❌ Bad Examples
 
 ```markdown
-You should use prepared statements for database queries.
-You'll want to generate IDs with nanoid().
-It's best if you store timestamps as Unix epoch.
-Try to validate input before saving.
+You should use prepared statements for database queries. You'll want
+to generate IDs with nanoid(). It's best if you store timestamps as
+Unix epoch. Try to validate input before saving.
 ```
 
 ### Be Specific, Not Vague
@@ -42,9 +40,9 @@ const timestamp = new Date().toISOString();
 
 // Use type-safe interfaces
 interface User {
-  id: string;
-  name: string;
-  email: string;
+	id: string;
+	name: string;
+	email: string;
 }
 ```
 
@@ -79,15 +77,16 @@ To fetch user data:
 #### ❌ Bad (Conceptual)
 
 ```markdown
-When thinking about API design, consider REST principles
-and how architectural patterns affect your implementation...
+When thinking about API design, consider REST principles and how
+architectural patterns affect your implementation...
 ```
 
 ---
 
 ## Description Writing
 
-The description determines when Claude triggers your skill. Make it count.
+The description determines when Claude triggers your skill. Make it
+count.
 
 ### Description Formula
 
@@ -100,7 +99,10 @@ The description determines when Claude triggers your skill. Make it count.
 #### API Client Skill
 
 ```yaml
-description: REST API client for user data endpoints with TypeScript types. Use when making HTTP requests, handling authentication, or working with API responses and error handling.
+description:
+  REST API client for user data endpoints with TypeScript types. Use
+  when making HTTP requests, handling authentication, or working with
+  API responses and error handling.
 ```
 
 **Breakdown**:
@@ -113,7 +115,10 @@ description: REST API client for user data endpoints with TypeScript types. Use 
 #### Component Skill
 
 ```yaml
-description: Create type-safe React components with hooks and TypeScript interfaces. Use when building UI components, implementing forms, or managing component state and props.
+description:
+  Create type-safe React components with hooks and TypeScript
+  interfaces. Use when building UI components, implementing forms, or
+  managing component state and props.
 ```
 
 **Breakdown**:
@@ -182,10 +187,10 @@ const users = await apiClient.get<User[]>('/users');
 
 ```typescript
 const newUser = await apiClient.post<User>('/users', {
-  id: nanoid(),
-  name: 'John Doe',
-  email: 'john@example.com',
-  createdAt: new Date().toISOString(),
+	id: nanoid(),
+	name: 'John Doe',
+	email: 'john@example.com',
+	createdAt: new Date().toISOString(),
 });
 ```
 
@@ -231,10 +236,10 @@ Pull examples from actual codebase, not invented scenarios.
 ```typescript
 // From src/lib/api/users.ts
 const response = await fetch(`${API_BASE}/users/${userId}/stats`, {
-  headers: {
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  },
+	headers: {
+		Authorization: `Bearer ${token}`,
+		'Content-Type': 'application/json',
+	},
 });
 const stats = (await response.json()) as UserStats;
 ```
@@ -256,15 +261,17 @@ import { nanoid } from 'nanoid';
 import type { User, CreateUserRequest } from './types';
 import { apiClient } from './client';
 
-const createUser = async (request: CreateUserRequest): Promise<User> => {
-  const user: User = {
-    id: nanoid(),
-    ...request,
-    createdAt: new Date().toISOString(),
-  };
+const createUser = async (
+	request: CreateUserRequest,
+): Promise<User> => {
+	const user: User = {
+		id: nanoid(),
+		...request,
+		createdAt: new Date().toISOString(),
+	};
 
-  const response = await apiClient.post<User>('/users', user);
-  return response.data;
+	const response = await apiClient.post<User>('/users', user);
+	return response.data;
 };
 ```
 
@@ -364,7 +371,8 @@ For 20+ common query patterns including joins and aggregations:
 Not just:
 
 ```markdown
-See [schema.md](references/schema.md) and [examples](references/query-examples.md).
+See [schema.md](references/schema.md) and
+[examples](references/query-examples.md).
 ```
 
 ---
@@ -405,27 +413,27 @@ Create scripts for:
 import { parseArgs } from 'node:util';
 
 async function main() {
-  const { values } = parseArgs({
-    options: {
-      verbose: { type: 'boolean', default: false },
-      file: { type: 'string' },
-      'check-all': { type: 'boolean', default: false },
-    },
-  });
+	const { values } = parseArgs({
+		options: {
+			verbose: { type: 'boolean', default: false },
+			file: { type: 'string' },
+			'check-all': { type: 'boolean', default: false },
+		},
+	});
 
-  try {
-    const result = await performOperation(values);
-    console.log(`✅ Success: ${result}`);
-    process.exit(0);
-  } catch (error) {
-    console.error(`❌ Error: ${error.message}`);
-    process.exit(1);
-  }
+	try {
+		const result = await performOperation(values);
+		console.log(`✅ Success: ${result}`);
+		process.exit(0);
+	} catch (error) {
+		console.error(`❌ Error: ${error.message}`);
+		process.exit(1);
+	}
 }
 
 async function performOperation(options) {
-  // Main logic here
-  return 'Operation completed';
+	// Main logic here
+	return 'Operation completed';
 }
 
 main();
@@ -545,7 +553,7 @@ Include authentication tokens in all API requests:
 
 ```typescript
 const response = await fetch(url, {
-  headers: { Authorization: `Bearer ${token}` },
+	headers: { Authorization: `Bearer ${token}` },
 });
 ```
 ````
@@ -604,6 +612,8 @@ Before finalizing a skill:
 
 ## Resources
 
-- [SKILLS-ARCHITECTURE.md](../../../docs/SKILLS-ARCHITECTURE.md) - System overview
-- [SKILL-DEVELOPMENT.md](../../../docs/SKILL-DEVELOPMENT.md) - Development workflow
+- [SKILLS-ARCHITECTURE.md](../../../docs/SKILLS-ARCHITECTURE.md) -
+  System overview
+- [SKILL-DEVELOPMENT.md](../../../docs/SKILL-DEVELOPMENT.md) -
+  Development workflow
 - [SKILL-EXAMPLES.md](../../../docs/SKILL-EXAMPLES.md) - Real examples

@@ -1,6 +1,7 @@
 # claude-skills-cli Reference
 
-Complete command-line reference for the `claude-skills-cli` tool (TypeScript/Node).
+Complete command-line reference for the `claude-skills-cli` tool
+(TypeScript/Node).
 
 ## Installation
 
@@ -94,7 +95,8 @@ npx claude-skills init --path /custom/path/my-skill \
 - Must be lowercase
 - Must be kebab-case (alphanumeric with hyphens)
 - No spaces or special characters
-- Example valid names: `database-queries`, `auth-patterns`, `ui-components`
+- Example valid names: `database-queries`, `auth-patterns`,
+  `ui-components`
 
 #### Output
 
@@ -152,8 +154,10 @@ npx claude-skills validate .claude/skills/skill-2
 
 **Level 1 (Metadata):**
 
-- Description length: <200 chars (optimal), <300 chars (warning), <1024 chars (max)
-- Description includes trigger keywords ("Use when...", "Use for...", "Use to...")
+- Description length: <200 chars (optimal), <300 chars (warning),
+  <1024 chars (max)
+- Description includes trigger keywords ("Use when...", "Use for...",
+  "Use to...")
 - Description comma count (warns if >3, suggesting list bloat)
 - Name format (lowercase, kebab-case)
 - Name length (<64 chars)
@@ -376,7 +380,8 @@ npx claude-skills init --name my-skill --description "Brief desc" && \
 
 ## Environment Variables
 
-Currently, the CLI does not use environment variables. All configuration is via command-line flags.
+Currently, the CLI does not use environment variables. All
+configuration is via command-line flags.
 
 ---
 
@@ -434,7 +439,10 @@ Currently, the CLI does not use environment variables. All configuration is via 
 ✅ Good descriptions:
 
 ```yaml
-description: SQLite database operations using better-sqlite3 for contacts, companies, and interactions. Use when writing SELECT, INSERT, UPDATE, or DELETE operations.
+description:
+  SQLite database operations using better-sqlite3 for contacts,
+  companies, and interactions. Use when writing SELECT, INSERT,
+  UPDATE, or DELETE operations.
 ```
 
 ❌ Bad descriptions:
@@ -464,16 +472,16 @@ description: Database helper
 
 ```json
 {
-  "scripts": {
-    "skill:new": "claude-skills init",
-    "skill:validate": "claude-skills validate .claude/skills/*",
-    "skill:validate:strict": "claude-skills validate .claude/skills/* --strict",
-    "skill:package": "claude-skills package",
-    "skill:check": "npm run skill:validate:strict"
-  },
-  "devDependencies": {
-    "claude-skills-cli": "^0.0.3"
-  }
+	"scripts": {
+		"skill:new": "claude-skills init",
+		"skill:validate": "claude-skills validate .claude/skills/*",
+		"skill:validate:strict": "claude-skills validate .claude/skills/* --strict",
+		"skill:package": "claude-skills package",
+		"skill:check": "npm run skill:validate:strict"
+	},
+	"devDependencies": {
+		"claude-skills-cli": "^0.0.3"
+	}
 }
 ```
 

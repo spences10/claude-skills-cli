@@ -1,10 +1,10 @@
 export const SKILL_MD_TEMPLATE = (
-  name: string,
-  description: string,
-  title: string,
-  include_examples: boolean = false
+	name: string,
+	description: string,
+	title: string,
+	include_examples: boolean = false,
 ) => {
-  const minimal_template = `---
+	const minimal_template = `---
 name: ${name}
 description: ${description}
 ---
@@ -52,7 +52,7 @@ PROGRESSIVE DISCLOSURE GUIDELINES:
 -->
 `;
 
-  const full_template = `---
+	const full_template = `---
 name: ${name}
 description: ${description}
 ---
@@ -105,10 +105,12 @@ PROGRESSIVE DISCLOSURE GUIDELINES:
 -->
 `;
 
-  return include_examples ? full_template : minimal_template;
+	return include_examples ? full_template : minimal_template;
 };
 
-export const REFERENCE_TEMPLATE = (title: string) => `# ${title} Reference
+export const REFERENCE_TEMPLATE = (
+	title: string,
+) => `# ${title} Reference
 
 <!-- This is a Level 3 resource file -->
 <!-- It's loaded on-demand when Claude needs detailed information -->
@@ -164,7 +166,9 @@ export const REFERENCE_TEMPLATE = (title: string) => `# ${title} Reference
 **Solution:** [Detailed solution]
 `;
 
-export const SCRIPT_TEMPLATE = (filename: string) => `#!/usr/bin/env node
+export const SCRIPT_TEMPLATE = (
+	filename: string,
+) => `#!/usr/bin/env node
 
 /**
  * Description of what this script does.
@@ -181,8 +185,8 @@ main();
 `;
 
 export const README_TEMPLATE = (
-  title: string,
-  description: string
+	title: string,
+	description: string,
 ) => `# ${title}
 
 ${description}

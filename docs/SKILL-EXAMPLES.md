@@ -1,6 +1,7 @@
 # Skill Examples
 
-Real-world examples from Anthropic's Skills repository and Claude Cookbooks, with analysis of what makes them effective.
+Real-world examples from Anthropic's Skills repository and Claude
+Cookbooks, with analysis of what makes them effective.
 
 ---
 
@@ -21,15 +22,19 @@ applying-brand-guidelines/
 ```yaml
 ---
 name: applying-brand-guidelines
-description: This skill applies consistent corporate branding and styling to all generated documents including colors, fonts, layouts, and messaging
+description:
+  This skill applies consistent corporate branding and styling to all
+  generated documents including colors, fonts, layouts, and messaging
 ---
 ```
 
 ### What Makes It Good
 
-**✅ Clear Scope**: Focuses on one thing - brand consistency across documents
+**✅ Clear Scope**: Focuses on one thing - brand consistency across
+documents
 
-**✅ Actionable Content**: Specific hex codes, font sizes, spacing rules
+**✅ Actionable Content**: Specific hex codes, font sizes, spacing
+rules
 
 ```markdown
 ### Color Palette
@@ -45,7 +50,8 @@ description: This skill applies consistent corporate branding and styling to all
 // Checks documents for brand compliance automatically
 ```
 
-**✅ "When to Use" in Description**: "applies consistent corporate branding...to all generated documents"
+**✅ "When to Use" in Description**: "applies consistent corporate
+branding...to all generated documents"
 
 ### Key Takeaway
 
@@ -76,7 +82,10 @@ pdf/
 ````markdown
 ---
 name: pdf
-description: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
+description:
+  Extract text and tables from PDF files, fill forms, merge documents.
+  Use when working with PDF files or when the user mentions PDFs,
+  forms, or document extraction.
 ---
 
 # PDF Processing
@@ -91,7 +100,7 @@ const pdf = require('pdf-parse');
 
 const dataBuffer = fs.readFileSync('document.pdf');
 pdf(dataBuffer).then((data) => {
-  console.log(data.text);
+	console.log(data.text);
 });
 ```
 ````
@@ -126,14 +135,9 @@ Large domains benefit from splitting:
 ### Structure (from Claude Cookbooks)
 ```
 
-financial-analyzer/
-├── SKILL.md
-├── references/
-│ ├── formulas.md
-│ └── ratios-reference.md
-└── scripts/
-├── calculate_ratios.js
-└── generate_dashboard.js
+financial-analyzer/ ├── SKILL.md ├── references/ │ ├── formulas.md │
+└── ratios-reference.md └── scripts/ ├── calculate_ratios.js └──
+generate_dashboard.js
 
 ````
 
@@ -161,7 +165,8 @@ const currentRatio = currentAssets / currentLiabilities;
 const quickRatio = (currentAssets - inventory) / currentLiabilities;
 ```
 
-For complete ratio formulas, see [references/formulas.md](references/formulas.md).
+For complete ratio formulas, see
+[references/formulas.md](references/formulas.md).
 
 ````
 
@@ -208,7 +213,10 @@ database-schema/
 ````markdown
 ---
 name: database-schema
-description: Complete database schema with table structures, relationships, and indexes for the project. Use when writing SQL queries, understanding data models, or working with database operations.
+description:
+  Complete database schema with table structures, relationships, and
+  indexes for the project. Use when writing SQL queries, understanding
+  data models, or working with database operations.
 ---
 
 # Database Schema
@@ -263,16 +271,9 @@ Reference-heavy skills should:
 ### Structure (from Anthropic examples)
 ```
 
-component-library/
-├── SKILL.md
-├── references/
-│ ├── button-variants.md
-│ ├── form-patterns.md
-│ └── layout-components.md
-└── assets/
-└── component-templates/
-├── button.tsx
-└── form.tsx
+component-library/ ├── SKILL.md ├── references/ │ ├──
+button-variants.md │ ├── form-patterns.md │ └── layout-components.md
+└── assets/ └── component-templates/ ├── button.tsx └── form.tsx
 
 ````
 
@@ -331,15 +332,9 @@ Component library skills should:
 ### Structure
 ```
 
-github-api/
-├── SKILL.md
-├── references/
-│ ├── endpoints.md
-│ ├── authentication.md
-│ └── rate-limits.md
-└── scripts/
-├── test_connection.js
-└── check_rate_limit.js
+github-api/ ├── SKILL.md ├── references/ │ ├── endpoints.md │ ├──
+authentication.md │ └── rate-limits.md └── scripts/ ├──
+test_connection.js └── check_rate_limit.js
 
 ````
 
@@ -371,7 +366,8 @@ Check rate limits before making requests:
 node scripts/check_rate_limit.js
 ```
 
-For complete API reference, see [references/endpoints.md](references/endpoints.md).
+For complete API reference, see
+[references/endpoints.md](references/endpoints.md).
 
 ````
 
@@ -410,7 +406,10 @@ description: Helps with database operations
 
 ```yaml
 ---
-description: SQLite query patterns using better-sqlite3 for contacts, companies, and interactions tables. Use when writing SELECT, INSERT, UPDATE, or DELETE operations with prepared statements.
+description:
+  SQLite query patterns using better-sqlite3 for contacts, companies,
+  and interactions tables. Use when writing SELECT, INSERT, UPDATE, or
+  DELETE operations with prepared statements.
 ---
 ```
 
@@ -437,8 +436,8 @@ description: SQLite query patterns using better-sqlite3 for contacts, companies,
 
 [10 common patterns]
 
-For complete schema: [references/schema.md](references/schema.md)
-For all examples: [references/queries.md](references/queries.md)
+For complete schema: [references/schema.md](references/schema.md) For
+all examples: [references/queries.md](references/queries.md)
 ```
 
 ### ❌ Anti-Pattern 3: Using Second Person
@@ -470,7 +469,10 @@ description: Handle form submissions
 
 ```yaml
 ---
-description: Handle form submissions with validation, error handling, and reactive updates. Use when implementing forms, processing user input, or validating data before database operations.
+description:
+  Handle form submissions with validation, error handling, and
+  reactive updates. Use when implementing forms, processing user
+  input, or validating data before database operations.
 ---
 ```
 
@@ -480,7 +482,8 @@ description: Handle form submissions with validation, error handling, and reacti
 
 ### Example: Multi-Skill Workflow
 
-**User Request**: "Create a GitHub contact dashboard with database stats"
+**User Request**: "Create a GitHub contact dashboard with database
+stats"
 
 **Skills Activated**:
 
@@ -489,7 +492,8 @@ description: Handle form submissions with validation, error handling, and reacti
 3. `sveltekit-patterns` - Build component structure
 4. `daisyui-conventions` - Apply styling
 
-**Why This Works**: Each skill handles its domain, Claude composes them naturally.
+**Why This Works**: Each skill handles its domain, Claude composes
+them naturally.
 
 ---
 
@@ -498,8 +502,10 @@ description: Handle form submissions with validation, error handling, and reacti
 ### From Anthropic Skills
 
 1. **Metadata drives discovery** - Spend time on descriptions
-2. **Progressive disclosure saves tokens** - Don't front-load everything
-3. **Scripts for determinism** - Code that doesn't change shouldn't be generated
+2. **Progressive disclosure saves tokens** - Don't front-load
+   everything
+3. **Scripts for determinism** - Code that doesn't change shouldn't be
+   generated
 4. **References for depth** - Keep SKILL.md navigable
 5. **Real examples** - Pull from actual codebases
 

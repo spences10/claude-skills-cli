@@ -15,7 +15,8 @@ claude-skills package .claude/skills/my-skill
 
 ## The 6-Step Process
 
-Based on Anthropic's skill-creator methodology, adapted for devhub-crm.
+Based on Anthropic's skill-creator methodology, adapted for
+devhub-crm.
 
 ### Step 1: Understanding with Concrete Examples
 
@@ -92,7 +93,8 @@ claude-skills init \
 
 ### Step 4: Editing the Skill
 
-**Focus**: Write content for another instance of Claude to use effectively.
+**Focus**: Write content for another instance of Claude to use
+effectively.
 
 #### Start with Reusable Contents
 
@@ -315,7 +317,8 @@ Add comments explaining WHY, not just WHAT:
 ```markdown
 ## ID Generation
 
-Generate IDs with nanoid() to ensure uniqueness without database overhead.
+Generate IDs with nanoid() to ensure uniqueness without database
+overhead.
 
 <!-- Not just: "Use nanoid()" -->
 ```
@@ -328,7 +331,8 @@ Always run validation:
 claude-skills validate .claude/skills/my-skill --strict
 ```
 
-Strict mode treats warnings as errors - use before packaging for distribution.
+Strict mode treats warnings as errors - use before packaging for
+distribution.
 
 ---
 
@@ -439,7 +443,7 @@ description: Brief description including when to use this skill
  */
 
 function main() {
-  // Script logic here
+	// Script logic here
 }
 
 main();
@@ -449,7 +453,8 @@ main();
 
 ## Next Steps
 
-1. Read [SKILLS-ARCHITECTURE.md](SKILLS-ARCHITECTURE.md) for system overview
+1. Read [SKILLS-ARCHITECTURE.md](SKILLS-ARCHITECTURE.md) for system
+   overview
 2. See [SKILL-EXAMPLES.md](SKILL-EXAMPLES.md) for real examples
 3. Create your first skill with `claude-skills init`
 4. Join skill development workflow for devhub-crm

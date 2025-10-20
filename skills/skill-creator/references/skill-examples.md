@@ -6,7 +6,8 @@ Real examples showing effective skill patterns using TypeScript/Node.
 
 ### Use Case
 
-Repeatedly making authenticated API requests with TypeScript types and error handling.
+Repeatedly making authenticated API requests with TypeScript types and
+error handling.
 
 ### Structure
 
@@ -27,7 +28,10 @@ api-client/
 ````markdown
 ---
 name: api-client
-description: REST API client with TypeScript types for user and data endpoints. Use when making HTTP requests, handling authentication, managing API errors, or working with async operations.
+description:
+  REST API client with TypeScript types for user and data endpoints.
+  Use when making HTTP requests, handling authentication, managing API
+  errors, or working with async operations.
 ---
 
 # API Client
@@ -42,7 +46,8 @@ const user = await apiClient.get<User>(`/users/${id}`);
 ```
 ````
 
-For complete endpoint docs: [references/endpoints.md](references/endpoints.md)
+For complete endpoint docs:
+[references/endpoints.md](references/endpoints.md)
 
 ```
 
@@ -63,16 +68,11 @@ Creating type-safe React components with hooks and TypeScript interfaces.
 ### Structure
 ```
 
-react-patterns/
-├── SKILL.md # Core patterns and conventions
-├── references/
-│ ├── component-library.md # Catalog of existing components
-│ ├── hooks-patterns.md # Custom hooks and state management
-│ └── routing-patterns.md # React Router conventions
-└── assets/
-└── component-templates/
-├── basic-component.tsx
-├── form-component.tsx
+react-patterns/ ├── SKILL.md # Core patterns and conventions ├──
+references/ │ ├── component-library.md # Catalog of existing
+components │ ├── hooks-patterns.md # Custom hooks and state management
+│ └── routing-patterns.md # React Router conventions └── assets/ └──
+component-templates/ ├── basic-component.tsx ├── form-component.tsx
 └── list-component.tsx
 
 ````
@@ -108,7 +108,8 @@ export function Card({ title, items }: CardProps) {
 }
 ````
 
-For complete component library: [references/component-library.md](references/component-library.md)
+For complete component library:
+[references/component-library.md](references/component-library.md)
 
 ```
 
@@ -129,14 +130,11 @@ Implementing GitHub OAuth, fetching profiles, managing connections.
 ### Structure
 ```
 
-github-integration/
-├── SKILL.md # Auth patterns, common operations
-├── references/
-│ ├── api-endpoints.md # GitHub API reference
-│ └── oauth-flow.md # Complete OAuth implementation
-└── scripts/
-├── test_connection.js # Validate GitHub credentials
-└── check_rate_limit.js # Monitor API usage
+github-integration/ ├── SKILL.md # Auth patterns, common operations
+├── references/ │ ├── api-endpoints.md # GitHub API reference │ └──
+oauth-flow.md # Complete OAuth implementation └── scripts/ ├──
+test_connection.js # Validate GitHub credentials └──
+check_rate_limit.js # Monitor API usage
 
 ````
 
@@ -183,13 +181,10 @@ Consistent component styling, theme usage, form patterns.
 ### Structure
 ```
 
-daisyui-conventions/
-├── SKILL.md # Core components and patterns
-├── references/
-│ ├── component-reference.md # All DaisyUI components
-│ └── theme-tokens.md # Color system and usage
-└── assets/
-└── theme-preview.html # Visual reference
+daisyui-conventions/ ├── SKILL.md # Core components and patterns ├──
+references/ │ ├── component-reference.md # All DaisyUI components │
+└── theme-tokens.md # Color system and usage └── assets/ └──
+theme-preview.html # Visual reference
 
 ````
 
@@ -213,7 +208,8 @@ description: DaisyUI v5 component styling for cards, forms, buttons, and layouts
 </div>
 ````
 
-For all components: [references/component-reference.md](references/component-reference.md)
+For all components:
+[references/component-reference.md](references/component-reference.md)
 
 ````
 
@@ -242,7 +238,10 @@ description: Helps with API stuff
 ### After (Specific)
 
 ```yaml
-description: REST API client with TypeScript types for user and data endpoints. Use when making HTTP requests, handling authentication, managing API errors, or working with async operations.
+description:
+  REST API client with TypeScript types for user and data endpoints.
+  Use when making HTTP requests, handling authentication, managing API
+  errors, or working with async operations.
 ```
 
 ---
@@ -282,9 +281,8 @@ description: [50-100 words with keywords]
 ### Without Script
 
 ```markdown
-Claude generates validation code every time:
-"Check that all timestamps are valid..."
-[Claude writes 50 lines of JavaScript]
+Claude generates validation code every time: "Check that all
+timestamps are valid..." [Claude writes 50 lines of JavaScript]
 ```
 
 **Cost**: ~500 tokens each time
@@ -311,8 +309,8 @@ node scripts/validate_timestamps.js
 ### Without Assets
 
 ```markdown
-"Create a basic Svelte component..."
-[Claude writes boilerplate each time]
+"Create a basic Svelte component..." [Claude writes boilerplate each
+time]
 ```
 
 ### With Assets
@@ -374,7 +372,8 @@ description: Helps with frontend stuff
 
 ## Skill Composition Example
 
-**User Request**: "Create a user profile card with API data and styling"
+**User Request**: "Create a user profile card with API data and
+styling"
 
 **Skills Activated**:
 
@@ -406,6 +405,9 @@ Before considering a skill "done":
 
 ## Resources
 
-- See main [SKILLS-ARCHITECTURE.md](../../../docs/SKILLS-ARCHITECTURE.md) for system design
-- See [SKILL-EXAMPLES.md](../../../docs/SKILL-EXAMPLES.md) for Anthropic examples
+- See main
+  [SKILLS-ARCHITECTURE.md](../../../docs/SKILLS-ARCHITECTURE.md) for
+  system design
+- See [SKILL-EXAMPLES.md](../../../docs/SKILL-EXAMPLES.md) for
+  Anthropic examples
 - See skill-creator SKILL.md for 6-step process
