@@ -1,20 +1,19 @@
 import { join } from 'path';
-import type { InitOptions } from '../types.js';
 import {
-  SKILL_MD_TEMPLATE,
+  README_TEMPLATE,
   REFERENCE_TEMPLATE,
   SCRIPT_TEMPLATE,
-  README_TEMPLATE,
+  SKILL_MD_TEMPLATE,
 } from '../core/templates.js';
+import type { InitOptions } from '../types.js';
 import {
   ensure_dir,
-  write_file,
+  is_lowercase,
   make_executable,
   to_title_case,
-  is_kebab_case,
-  is_lowercase,
+  write_file,
 } from '../utils/fs.js';
-import { success, error } from '../utils/output.js';
+import { error, success } from '../utils/output.js';
 
 export function init_command(options: InitOptions): void {
   let skill_path: string;
@@ -74,9 +73,9 @@ function create_skill(path: string, name: string, description: string): void {
   write_file(join(path, 'references', 'detailed-guide.md'), reference_md);
 
   // Create example script
-  const script_py = SCRIPT_TEMPLATE('example.py');
-  const script_path = join(path, 'scripts', 'example.py');
-  write_file(script_path, script_py);
+  const script_js = SCRIPT_TEMPLATE('example.js');
+  const script_path = join(path, 'scripts', 'example.js');
+  write_file(script_path, script_js);
   make_executable(script_path);
 
   // Create README

@@ -142,10 +142,10 @@ This is concise (106 chars) but gets flagged for 5 commas. The alternative would
 ```markdown
 ## Scripts
 
-- `scripts/example.py` - [What this script does]
+- `scripts/example.js` - [What this script does]
 ```
 
-This assumes Python, but many skills don't need scripts at all (especially documentation-based patterns).
+This assumes JavaScript/Node.js, but many skills don't need scripts at all (especially documentation-based patterns).
 
 **Status**: Fixed in latest version - scripts section removed from template
 

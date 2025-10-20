@@ -4,13 +4,13 @@
 
 ```bash
 # Create a new skill
-python .claude/scripts/init_skill.py --name my-skill --description "What it does"
+claude-skills init --name my-skill --description "What it does"
 
 # Validate the skill
-python .claude/scripts/validate_skill.py .claude/skills/my-skill
+claude-skills validate .claude/skills/my-skill
 
 # Package for distribution
-python .claude/scripts/package_skill.py .claude/skills/my-skill
+claude-skills package .claude/skills/my-skill
 ```
 
 ## The 6-Step Process
@@ -68,7 +68,7 @@ Based on Anthropic's skill-creator methodology, adapted for devhub-crm.
 **Command**:
 
 ```bash
-python .claude/scripts/init_skill.py \
+claude-skills init \
   --name database-patterns \
   --description "Guide for SQLite operations..."
 ```
@@ -82,7 +82,7 @@ python .claude/scripts/init_skill.py \
 ├── references/
 │   └── detailed-guide.md       # Example reference
 ├── scripts/
-│   └── example.py              # Example script
+│   └── example.js              # Example script
 └── assets/                     # Empty directory
 ```
 
@@ -169,8 +169,8 @@ For detailed information:
 
 ## Scripts
 
-- `scripts/validate.py`: Description
-- `scripts/generate.py`: Description
+- `scripts/validate.js`: Description
+- `scripts/generate.js`: Description
 
 ## Notes
 
@@ -192,7 +192,7 @@ For detailed information:
 **Validation First**:
 
 ```bash
-python .claude/scripts/validate_skill.py .claude/skills/database-patterns
+claude-skills validate .claude/skills/database-patterns
 
 # Output shows:
 # ✅ All required fields present
@@ -203,7 +203,7 @@ python .claude/scripts/validate_skill.py .claude/skills/database-patterns
 **Fix Validation Issues**, then package:
 
 ```bash
-python .claude/scripts/package_skill.py .claude/skills/database-patterns
+claude-skills package .claude/skills/database-patterns
 
 # Creates:
 # dist/database-patterns.zip
@@ -234,13 +234,13 @@ python .claude/scripts/package_skill.py .claude/skills/database-patterns
 vim .claude/skills/database-patterns/SKILL.md
 
 # Validate changes
-python .claude/scripts/validate_skill.py .claude/skills/database-patterns
+claude-skills validate .claude/skills/database-patterns
 
 # Test in conversation
 # (Skills auto-reload in Claude Code)
 
 # Package new version if needed
-python .claude/scripts/package_skill.py .claude/skills/database-patterns
+claude-skills package .claude/skills/database-patterns
 ```
 
 **Common Iterations**:
@@ -325,7 +325,7 @@ Generate IDs with nanoid() to ensure uniqueness without database overhead.
 Always run validation:
 
 ```bash
-python .claude/scripts/validate_skill.py .claude/skills/my-skill --strict
+claude-skills validate .claude/skills/my-skill --strict
 ```
 
 Strict mode treats warnings as errors - use before packaging for distribution.
@@ -425,26 +425,24 @@ description: Brief description including when to use this skill
 
 ### Script File
 
-```python
-#!/usr/bin/env python3
-"""
-Description of what this script does.
+```javascript
+#!/usr/bin/env node
 
-Usage:
-    python script_name.py [arguments]
+/**
+ * Description of what this script does.
+ *
+ * Usage:
+ *   node script_name.js [arguments]
+ *
+ * Example:
+ *   node validate.js --check-all
+ */
 
-Example:
-    python validate.py --check-all
-"""
+function main() {
+  // Script logic here
+}
 
-import sys
-
-def main():
-    # Script logic here
-    pass
-
-if __name__ == "__main__":
-    main()
+main();
 ```
 
 ---
@@ -453,5 +451,5 @@ if __name__ == "__main__":
 
 1. Read [SKILLS-ARCHITECTURE.md](SKILLS-ARCHITECTURE.md) for system overview
 2. See [SKILL-EXAMPLES.md](SKILL-EXAMPLES.md) for real examples
-3. Create your first skill with `python .claude/scripts/init_skill.py`
+3. Create your first skill with `claude-skills init`
 4. Join skill development workflow for devhub-crm

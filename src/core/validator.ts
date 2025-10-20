@@ -403,7 +403,11 @@ export class SkillValidator {
     if (existsSync(scripts_dir)) {
       const files = readdirSync(scripts_dir);
       const script_files = files.filter(
-        (f) => f.endsWith('.py') || f.endsWith('.sh')
+        (f) =>
+          f.endsWith('.js') ||
+          f.endsWith('.ts') ||
+          f.endsWith('.mjs') ||
+          f.endsWith('.sh')
       );
 
       if (script_files.length === 0) {

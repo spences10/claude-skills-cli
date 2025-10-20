@@ -12,8 +12,8 @@ Real-world examples from Anthropic's Skills repository and Claude Cookbooks, wit
 applying-brand-guidelines/
 ├── SKILL.md
 └── scripts/
-    ├── apply_brand.py
-    └── validate_brand.py
+    ├── apply_brand.js
+    └── validate_brand.js
 ```
 
 ### SKILL.md Frontmatter
@@ -40,9 +40,9 @@ description: This skill applies consistent corporate branding and styling to all
 
 **✅ Executable Scripts**: Validation doesn't need manual checking
 
-```python
-# scripts/validate_brand.py
-# Checks documents for brand compliance automatically
+```javascript
+// scripts/validate_brand.js
+// Checks documents for brand compliance automatically
 ```
 
 **✅ "When to Use" in Description**: "applies consistent corporate branding...to all generated documents"
@@ -68,7 +68,7 @@ pdf/
 │   ├── forms.md
 │   └── reference.md
 └── scripts/
-    └── extract_fields.py
+    └── extract_fields.js
 ```
 
 ### SKILL.md Excerpt
@@ -83,12 +83,16 @@ description: Extract text and tables from PDF files, fill forms, merge documents
 
 ## Quick Start
 
-Use pdfplumber to extract text from PDFs:
+Use pdf-parse to extract text from PDFs:
 
-```python
-import pdfplumber
-with pdfplumber.open("document.pdf") as pdf:
-    text = pdf.pages[0].extract_text()
+```javascript
+const fs = require('fs');
+const pdf = require('pdf-parse');
+
+const dataBuffer = fs.readFileSync('document.pdf');
+pdf(dataBuffer).then((data) => {
+  console.log(data.text);
+});
 ```
 ````
 
@@ -128,8 +132,8 @@ financial-analyzer/
 │ ├── formulas.md
 │ └── ratios-reference.md
 └── scripts/
-├── calculate_ratios.py
-└── generate_dashboard.py
+├── calculate_ratios.js
+└── generate_dashboard.js
 
 ````
 
@@ -147,14 +151,14 @@ description: Calculate financial ratios, analyze statements, and generate perfor
 ### Liquidity Ratios
 
 **Current Ratio**:
-```python
-current_ratio = current_assets / current_liabilities
+```javascript
+const currentRatio = currentAssets / currentLiabilities;
 ````
 
 **Quick Ratio**:
 
-```python
-quick_ratio = (current_assets - inventory) / current_liabilities
+```javascript
+const quickRatio = (currentAssets - inventory) / currentLiabilities;
 ```
 
 For complete ratio formulas, see [references/formulas.md](references/formulas.md).
@@ -166,9 +170,9 @@ For complete ratio formulas, see [references/formulas.md](references/formulas.md
 **✅ Domain-Specific**: Tailored to financial analysis
 
 **✅ Executable Calculations**: Scripts provide exact formulas
-```python
-# scripts/calculate_ratios.py
-# Runs calculations without Claude generating code each time
+```javascript
+// scripts/calculate_ratios.js
+// Runs calculations without Claude generating code each time
 ````
 
 **✅ References for Detail**: Full formula explanations in references/
@@ -334,8 +338,8 @@ github-api/
 │ ├── authentication.md
 │ └── rate-limits.md
 └── scripts/
-├── test_connection.py
-└── check_rate_limit.py
+├── test_connection.js
+└── check_rate_limit.js
 
 ````
 
@@ -364,7 +368,7 @@ const response = await fetch('https://api.github.com/user', {
 Check rate limits before making requests:
 
 ```bash
-python scripts/check_rate_limit.py
+node scripts/check_rate_limit.js
 ```
 
 For complete API reference, see [references/endpoints.md](references/endpoints.md).

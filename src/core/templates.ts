@@ -38,7 +38,7 @@ For detailed documentation, see:
 
 ## Scripts
 
-- \`scripts/example.py\` - [What this script does]
+- \`scripts/example.js\` - [What this script does]
 
 ## Notes
 
@@ -111,19 +111,20 @@ export const REFERENCE_TEMPLATE = (title: string) => `# ${title} Reference
 **Solution:** [Detailed solution]
 `;
 
-export const SCRIPT_TEMPLATE = (filename: string) => `#!/usr/bin/env python3
-"""
-Description of what this script does.
+export const SCRIPT_TEMPLATE = (filename: string) => `#!/usr/bin/env node
 
-Usage:
-    python ${filename}
-"""
+/**
+ * Description of what this script does.
+ *
+ * Usage:
+ *   node ${filename}
+ */
 
-def main():
-    print("Script executed successfully")
+function main() {
+  console.log('Script executed successfully');
+}
 
-if __name__ == "__main__":
-    main()
+main();
 `;
 
 export const README_TEMPLATE = (

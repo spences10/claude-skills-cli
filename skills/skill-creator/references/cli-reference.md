@@ -284,10 +284,9 @@ npx claude-skills package .claude/skills/my-skill --skip-validation
 
 The packager automatically excludes:
 
-- Hidden files (`.gitignore`, `.DS_Store`, etc.)
-- Python bytecode (`.pyc`, `__pycache__/`)
-- Editor files (`.swp`, `~`, `.bak`)
-- Node modules (`node_modules/`)
+- Hidden files (`.gitignore`, `.git/`, `.env`, etc.)
+- Editor temp files (`.swp`, `~`, `.bak`)
+- OS files (`.DS_Store`)
 
 #### Output
 

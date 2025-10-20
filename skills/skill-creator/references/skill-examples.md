@@ -135,8 +135,8 @@ github-integration/
 │ ├── api-endpoints.md # GitHub API reference
 │ └── oauth-flow.md # Complete OAuth implementation
 └── scripts/
-├── test_connection.py # Validate GitHub credentials
-└── check_rate_limit.py # Monitor API usage
+├── test_connection.js # Validate GitHub credentials
+└── check_rate_limit.js # Monitor API usage
 
 ````
 
@@ -162,7 +162,7 @@ const response = await fetch('https://api.github.com/user', {
 });
 ````
 
-Check rate limits: `python scripts/check_rate_limit.py`
+Check rate limits: `node scripts/check_rate_limit.js`
 
 ```
 
@@ -284,7 +284,7 @@ description: [50-100 words with keywords]
 ```markdown
 Claude generates validation code every time:
 "Check that all timestamps are valid..."
-[Claude writes 50 lines of Python]
+[Claude writes 50 lines of JavaScript]
 ```
 
 **Cost**: ~500 tokens each time
@@ -292,7 +292,7 @@ Claude generates validation code every time:
 ### With Script
 
 ```bash
-python scripts/validate_timestamps.py
+node scripts/validate_timestamps.js
 ```
 
 **Cost**: ~50 tokens (just output)

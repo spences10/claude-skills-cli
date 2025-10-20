@@ -90,16 +90,11 @@ function package_skill(
         }
 
         // Skip common temporary files
-        if (
-          item.endsWith('.pyc') ||
-          item.endsWith('.pyo') ||
-          item.endsWith('.swp') ||
-          item.endsWith('~')
-        ) {
+        if (item.endsWith('.swp') || item.endsWith('~')) {
           continue;
         }
 
-        if (item === '__pycache__' || item === '.DS_Store') {
+        if (item === '.DS_Store') {
           continue;
         }
 

@@ -90,7 +90,7 @@ For complete schema, see [references/schema.md](references/schema.md)
 
 ```bash
 # Claude can execute scripts without reading them
-python scripts/validate_schema.py
+node scripts/validate_schema.js
 
 # Or read references when needed
 cat references/detailed-schema.md
@@ -147,8 +147,8 @@ my-skill/
 │   ├── examples.md
 │   └── troubleshooting.md
 ├── scripts/                    # Executable code
-│   ├── validate.py
-│   ├── generate.py
+│   ├── validate.js
+│   ├── generate.js
 │   └── test.sh
 └── assets/                     # Templates & resources
     ├── template.sql
@@ -248,21 +248,21 @@ Executable code for deterministic operations that don't need token generation.
 
 ### Why Scripts Are Efficient
 
-```python
-# Option 1: Claude generates code every time (expensive)
-"Claude, write Python to validate these timestamps..."
-# Result: ~500 tokens each time
+```javascript
+// Option 1: Claude generates code every time (expensive)
+"Claude, write JavaScript to validate these timestamps..."
+// Result: ~500 tokens each time
 
-# Option 2: Claude runs existing script (cheap)
-python scripts/validate_timestamps.py
-# Result: ~50 tokens (just the output)
+// Option 2: Claude runs existing script (cheap)
+node scripts/validate_timestamps.js
+// Result: ~50 tokens (just the output)
 ```
 
 ### Best Practices
 
-- Include shebang (`#!/usr/bin/env python3`)
+- Include shebang (`#!/usr/bin/env node`)
 - Make executable (`chmod +x`)
-- Add docstrings with usage
+- Add JSDoc comments with usage
 - Handle errors gracefully
 - Return meaningful output
 
@@ -281,7 +281,7 @@ Files used in output, not loaded into context.
 
 ### Usage Pattern
 
-```python
+```bash
 # Claude copies/modifies assets without reading into context
 cp assets/template.html output/index.html
 # Modify the template as needed
@@ -377,4 +377,4 @@ Each skill loads independently, shares context naturally.
 
 - Read [SKILL-DEVELOPMENT.md](SKILL-DEVELOPMENT.md) for creation workflow
 - See [SKILL-EXAMPLES.md](SKILL-EXAMPLES.md) for real-world examples
-- Use `python init_skill.py` to create your first skill
+- Use `claude-skills init` to create your first skill

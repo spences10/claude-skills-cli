@@ -27,7 +27,7 @@ Creates a skill directory with:
 - **SKILL.md** - Streamlined ~50 line template with progressive disclosure guidelines
 - **README.md** - Skill documentation
 - **references/** - Directory for Level 3 detailed documentation
-- **scripts/** - Directory for executable Python scripts
+- **scripts/** - Directory for executable JavaScript/shell scripts
 - **assets/** - Directory for templates and resources
 
 The generated SKILL.md template follows best practices:
@@ -94,7 +94,7 @@ claude-skills package .claude/skills/my-skill --skip-validation
 Creates a zip file ready to upload to Claude.ai, excluding:
 
 - Hidden files (.\*)
-- Python bytecode (.pyc, **pycache**)
+- Build artifacts (dist/, build/)
 - Swap files (~, .swp)
 
 Runs validation first unless `--skip-validation` is specified.

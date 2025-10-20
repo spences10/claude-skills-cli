@@ -67,7 +67,7 @@ bash: cat pdf-skill/SKILL.md
 bash: cat pdf-skill/references/forms.md
 
 # Claude executes scripts (only output enters context)
-bash: python pdf-skill/scripts/validate_form.py
+bash: node pdf-skill/scripts/validate_form.js
 ```
 
 **Key insight**: Script code never enters the context window. Only the output does. This makes scripts far more token-efficient than generating equivalent code on the fly.
@@ -190,7 +190,7 @@ skill-name/
 │   ├── detailed-guide.md
 │   └── api-reference.md
 ├── scripts/                    # Level 3: Executable code
-│   ├── validate.py
+│   ├── validate.js
 │   └── generate.sh
 └── assets/                     # Level 3: Resources
     ├── template.json
@@ -259,7 +259,7 @@ For form filling, see [forms.md](forms.md)
 **Level 3 (As needed):**
 
 - `references/forms.md` - Form-filling guide (only if filling forms)
-- `scripts/extract_fields.py` - Executable script (runs, doesn't load)
+- `scripts/extract_fields.js` - Executable script (runs, doesn't load)
 
 **Total token cost if NOT filling forms**: ~3,100 tokens (Level 1 + Level 2)
 **Total token cost if filling forms**: ~6,000 tokens (Level 1 + Level 2 + forms.md)
@@ -284,7 +284,7 @@ For form filling, see [forms.md](forms.md)
 
 ```bash
 # Claude runs script
-bash: python scripts/validate_form.py form.pdf
+bash: node scripts/validate_form.js form.pdf
 
 # Output (only this enters context)
 ✅ All form fields valid
