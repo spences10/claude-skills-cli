@@ -17,7 +17,9 @@ function show_help(): void {
 	console.log('  claude-skills <command> [options]\n');
 	console.log('Commands:');
 	console.log('  init        Create a new skill');
-	console.log('  install     Install a bundled skill (e.g., skill-creator)');
+	console.log(
+		'  install     Install a bundled skill (e.g., skill-creator)',
+	);
 	console.log('  validate    Validate a skill');
 	console.log('  package     Package a skill to zip');
 	console.log(
