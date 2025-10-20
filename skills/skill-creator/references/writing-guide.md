@@ -37,8 +37,15 @@ Provide concrete instructions, not general advice.
 import { nanoid } from 'nanoid';
 const id = nanoid();
 
-// Store timestamps with Date.now()
-const created_at = Date.now();
+// Store timestamps as ISO strings
+const timestamp = new Date().toISOString();
+
+// Use type-safe interfaces
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 ```
 
 #### ❌ Bad Examples
@@ -49,6 +56,9 @@ const id = generateId();
 
 // Store timestamps in a suitable format
 const created_at = getCurrentTime();
+
+// Use appropriate types
+const user: any;
 ```
 
 ### Avoid Conceptual Explanations
@@ -58,18 +68,19 @@ Focus on procedural steps, not theory.
 #### ✅ Good (Procedural)
 
 ```markdown
-To query contacts:
+To fetch user data:
 
-1. Prepare the statement
-2. Bind user_id for security
-3. Execute with .get() or .all()
+1. Import the API client
+2. Call the endpoint with typed parameters
+3. Handle the response with type checking
+4. Return the typed result
 ```
 
 #### ❌ Bad (Conceptual)
 
 ```markdown
-When thinking about database queries, consider the relational
-model and how data integrity affects your design choices...
+When thinking about API design, consider REST principles
+and how architectural patterns affect your implementation...
 ```
 
 ---
@@ -86,30 +97,30 @@ The description determines when Claude triggers your skill. Make it count.
 
 ### Examples
 
-#### Database Skill
+#### API Client Skill
 
 ```yaml
-description: SQLite database operations using better-sqlite3 for contacts, companies, interactions, and social_links tables. Use when writing SELECT, INSERT, UPDATE, DELETE operations with prepared statements.
+description: REST API client for user data endpoints with TypeScript types. Use when making HTTP requests, handling authentication, or working with API responses and error handling.
 ```
 
 **Breakdown**:
 
-- Technology: "SQLite", "better-sqlite3"
-- Operations: "SELECT, INSERT, UPDATE, DELETE"
-- Data types: "contacts, companies, interactions, social_links"
-- Trigger: "Use when writing...operations"
+- Technology: "REST API", "TypeScript"
+- Operations: "HTTP requests", "authentication", "error handling"
+- Data types: "user data endpoints", "API responses"
+- Trigger: "Use when making...or working with"
 
 #### Component Skill
 
 ```yaml
-description: Create type-safe Svelte 5 components with $props(), $derived, and snippets following devhub-crm conventions. Use when building components, implementing forms, or working with reactive stores and SvelteKit routing.
+description: Create type-safe React components with hooks and TypeScript interfaces. Use when building UI components, implementing forms, or managing component state and props.
 ```
 
 **Breakdown**:
 
-- Technology: "Svelte 5", "$props(), $derived"
+- Technology: "React", "hooks", "TypeScript"
 - Operations: "building components", "implementing forms"
-- Data types: "reactive stores", "SvelteKit routing"
+- Data types: "component state", "props"
 - Trigger: "Use when building...or working with"
 
 ### Description Checklist
@@ -134,10 +145,10 @@ Show the most common operation immediately.
 ## Quick Start
 
 ```typescript
-import { db } from '$lib/server/db';
+import { apiClient } from './lib/api';
 
-const stmt = db.prepare('SELECT * FROM contacts WHERE user_id = ?');
-const contacts = stmt.all(user_id) as Contact[];
+const response = await apiClient.get<User[]>('/users');
+const users = response.data;
 ```
 ````
 
@@ -157,26 +168,25 @@ Provide 3-5 essential patterns.
 ```markdown
 ## Core Patterns
 
-### SELECT Operations
+### GET Requests
 
 ```typescript
-// Single row
-const stmt = db.prepare('SELECT * FROM contacts WHERE id = ?');
-const contact = stmt.get(id) as Contact | undefined;
+// Single resource
+const user = await apiClient.get<User>(`/users/${id}`);
 
-// Multiple rows
-const stmt = db.prepare('SELECT * FROM contacts WHERE user_id = ?');
-const contacts = stmt.all(user_id) as Contact[];
+// Collection
+const users = await apiClient.get<User[]>('/users');
 ````
 
-### INSERT Operations
+### POST Requests
 
 ```typescript
-const stmt = db.prepare(`
-  INSERT INTO contacts (id, user_id, name, created_at)
-  VALUES (?, ?, ?, ?)
-`);
-stmt.run(nanoid(), user_id, name, Date.now());
+const newUser = await apiClient.post<User>('/users', {
+  id: nanoid(),
+  name: 'John Doe',
+  email: 'john@example.com',
+  createdAt: new Date().toISOString(),
+});
 ```
 
 ````
@@ -196,9 +206,9 @@ Link to detailed references.
 ## Advanced Usage
 
 For detailed information:
-- [references/schema.md](references/schema.md) - Complete database schema
-- [references/relationships.md](references/relationships.md) - Table relationships
-- [references/query-examples.md](references/query-examples.md) - 20+ query patterns
+- [references/api-docs.md](references/api-docs.md) - Complete API reference
+- [references/authentication.md](references/authentication.md) - Auth patterns
+- [references/examples.md](references/examples.md) - 20+ usage examples
 ````
 
 **Guidelines**:
@@ -219,21 +229,21 @@ Pull examples from actual codebase, not invented scenarios.
 #### ✅ Good (Real)
 
 ```typescript
-// From src/lib/server/contacts.ts
-const stmt = db.prepare(`
-  SELECT c.*, COUNT(i.id) as interaction_count
-  FROM contacts c
-  LEFT JOIN interactions i ON c.id = i.contact_id
-  WHERE c.user_id = ?
-  GROUP BY c.id
-`);
+// From src/lib/api/users.ts
+const response = await fetch(`${API_BASE}/users/${userId}/stats`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  },
+});
+const stats = (await response.json()) as UserStats;
 ```
 
 #### ❌ Bad (Generic)
 
 ```typescript
 // Generic example
-const result = database.query('SELECT * FROM table');
+const result = await api.getData();
 ```
 
 ### Include Context
@@ -242,18 +252,19 @@ Show imports, types, and surrounding context.
 
 ```typescript
 // ✅ Complete context
-import { db } from '$lib/server/db';
 import { nanoid } from 'nanoid';
-import type { Contact } from '$lib/types';
+import type { User, CreateUserRequest } from './types';
+import { apiClient } from './client';
 
-const create_contact = (user_id: string, name: string): Contact => {
-  const stmt = db.prepare(`
-    INSERT INTO contacts (id, user_id, name, created_at)
-    VALUES (?, ?, ?, ?)
-  `);
-  const id = nanoid();
-  stmt.run(id, user_id, name, Date.now());
-  return { id, user_id, name, created_at: Date.now() };
+const createUser = async (request: CreateUserRequest): Promise<User> => {
+  const user: User = {
+    id: nanoid(),
+    ...request,
+    createdAt: new Date().toISOString(),
+  };
+
+  const response = await apiClient.post<User>('/users', user);
+  return response.data;
 };
 ```
 
@@ -263,18 +274,18 @@ Explain WHY, not WHAT.
 
 ```typescript
 // ✅ Good comments (explain why)
-// Use prepared statements to prevent SQL injection
-const stmt = db.prepare('SELECT * FROM contacts WHERE id = ?');
+// Use Authorization header to verify JWT token
+const headers = { Authorization: `Bearer ${token}` };
 
-// Always include user_id for row-level security
-const stmt = db.prepare('SELECT * FROM contacts WHERE id = ? AND user_id = ?');
+// Always validate input to prevent injection attacks
+const sanitized = validator.escape(userInput);
 
 // ❌ Bad comments (state the obvious)
-// This prepares a statement
-const stmt = db.prepare('SELECT * FROM contacts WHERE id = ?');
+// This creates headers
+const headers = { Authorization: `Bearer ${token}` };
 
-// This runs the query
-const result = stmt.get(id);
+// This makes a request
+const response = await fetch(url);
 ```
 
 ---
@@ -371,62 +382,64 @@ Create scripts for:
 
 ### Script Structure
 
-```python
-#!/usr/bin/env python3
-"""
-Clear description of what this script does.
+```javascript
+#!/usr/bin/env node
+/**
+ * Clear description of what this script does.
+ *
+ * This script [main purpose] by [method]. Use it to [when to use].
+ *
+ * Usage:
+ *   node script-name.js [arguments]
+ *
+ * Example:
+ *   node validate-config.js --check-all
+ *   node validate-config.js --file config.json
+ *
+ * Options:
+ *   --check-all    Check all config files
+ *   --file NAME    Check specific file
+ *   --verbose      Show detailed output
+ */
 
-This script [main purpose] by [method]. Use it to [when to use].
+import { parseArgs } from 'node:util';
 
-Usage:
-    python script_name.py [arguments]
+async function main() {
+  const { values } = parseArgs({
+    options: {
+      verbose: { type: 'boolean', default: false },
+      file: { type: 'string' },
+      'check-all': { type: 'boolean', default: false },
+    },
+  });
 
-Example:
-    python validate_schema.py --check-all
-    python validate_schema.py --table contacts
+  try {
+    const result = await performOperation(values);
+    console.log(`✅ Success: ${result}`);
+    process.exit(0);
+  } catch (error) {
+    console.error(`❌ Error: ${error.message}`);
+    process.exit(1);
+  }
+}
 
-Options:
-    --check-all    Check all tables
-    --table NAME   Check specific table
-    --verbose      Show detailed output
-"""
+async function performOperation(options) {
+  // Main logic here
+  return 'Operation completed';
+}
 
-import argparse
-import sys
-
-
-def main():
-    parser = argparse.ArgumentParser(description="Script description")
-    parser.add_argument("--verbose", action="store_true")
-
-    args = parser.parse_args()
-
-    try:
-        result = perform_operation(args)
-        print(f"✅ Success: {result}")
-        return 0
-    except Exception as e:
-        print(f"❌ Error: {e}", file=sys.stderr)
-        return 1
-
-
-def perform_operation(args):
-    """Main logic here."""
-    pass
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+main();
 ```
 
 ### Script Best Practices
 
-- Include shebang (`#!/usr/bin/env python3`)
-- Detailed docstring with usage examples
-- Argument parsing with help text
+- Include shebang (`#!/usr/bin/env node`)
+- Detailed JSDoc comment with usage examples
+- Argument parsing with node:util or commander
 - Error handling with meaningful messages
 - Exit codes (0 = success, 1 = error)
 - Clear output formatting (✅ ❌ ⚠️)
+- Use ES modules (import/export) or CommonJS (require)
 
 ---
 
@@ -500,10 +513,10 @@ Modify the template for your needs.
 ### Mistake 1: Vague Descriptions
 ```yaml
 # ❌ Bad
-description: Helper for database stuff
+description: Helper for API stuff
 
 # ✅ Good
-description: SQLite query patterns for contacts table using better-sqlite3. Use when writing SELECT, INSERT, UPDATE operations.
+description: REST API client with TypeScript types for user endpoints. Use when making HTTP requests, handling auth, or managing API errors.
 ````
 
 ### Mistake 2: Second Person
@@ -523,15 +536,17 @@ Validate input before saving to database.
 ````markdown
 # ❌ Bad
 
-Understanding the importance of prepared statements in the context
-of SQL injection vulnerabilities is crucial for security...
+Understanding the importance of authentication tokens in the context
+of secure API communication is crucial for security...
 
 # ✅ Good
 
-Use prepared statements for all SQL queries:
+Include authentication tokens in all API requests:
 
 ```typescript
-const stmt = db.prepare('SELECT * FROM contacts WHERE id = ?');
+const response = await fetch(url, {
+  headers: { Authorization: `Bearer ${token}` },
+});
 ```
 ````
 

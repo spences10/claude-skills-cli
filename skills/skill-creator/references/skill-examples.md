@@ -1,103 +1,111 @@
-# Skill Examples for devhub-crm
+# Skill Examples with claude-skills-cli
 
-Real examples showing effective skill patterns for this project.
+Real examples showing effective skill patterns using TypeScript/Node.
 
-## Example 1: Database Patterns Skill
+## Example 1: API Client Skill
 
 ### Use Case
 
-Repeatedly providing database schema, query patterns, and transaction handling.
+Repeatedly making authenticated API requests with TypeScript types and error handling.
 
 ### Structure
 
 ```
-database-patterns/
-├── SKILL.md                    # Core query patterns
+api-client/
+├── SKILL.md                    # Core request patterns
 ├── references/
-│   ├── schema.md               # Complete database schema
-│   ├── relationships.md        # Table relationships diagram
-│   └── query-examples.md       # 20+ common queries
+│   ├── endpoints.md            # Complete API endpoint reference
+│   ├── authentication.md       # Auth patterns and token management
+│   └── error-handling.md       # Error codes and retry strategies
 └── scripts/
-    ├── validate_timestamps.py  # Check data consistency
-    └── analyze_schema.py       # Generate relationship graph
+    ├── validate-token.js       # Check token validity
+    └── test-endpoints.js       # Verify endpoint availability
 ```
 
 ### SKILL.md Excerpt
 
 ````markdown
 ---
-name: database-patterns
-description: SQLite database operations using better-sqlite3 for contacts, companies, interactions, and social_links tables. Use when writing SELECT, INSERT, UPDATE, DELETE operations with prepared statements, handling timestamps, or managing relationships.
+name: api-client
+description: REST API client with TypeScript types for user and data endpoints. Use when making HTTP requests, handling authentication, managing API errors, or working with async operations.
 ---
 
-# Database Patterns
+# API Client
 
 ## Quick Start
 
 ```typescript
-import { db } from '$lib/server/db';
+import { apiClient } from './lib/api';
 
-// SELECT single row
-const stmt = db.prepare('SELECT * FROM contacts WHERE id = ? AND user_id = ?');
-const contact = stmt.get(id, user_id) as Contact | undefined;
+// GET single resource with type safety
+const user = await apiClient.get<User>(`/users/${id}`);
 ```
 ````
 
-For complete schema: [references/schema.md](references/schema.md)
+For complete endpoint docs: [references/endpoints.md](references/endpoints.md)
 
 ```
 
 ### Why It Works
-- ✅ Description includes table names for keyword matching
-- ✅ Quick Start shows most common pattern
-- ✅ Complete schema in references (not inline)
-- ✅ Scripts validate data consistency
-- ✅ Keyword-rich: "SELECT, INSERT, UPDATE, DELETE"
+- ✅ Description includes operation keywords for matching
+- ✅ Quick Start shows most common pattern with types
+- ✅ Complete API docs in references (not inline)
+- ✅ Scripts validate connectivity and tokens
+- ✅ Keyword-rich: "HTTP requests", "authentication", "async operations"
 
 ---
 
-## Example 2: SvelteKit Component Patterns
+## Example 2: React Component Patterns
 
 ### Use Case
-Creating type-safe Svelte 5 components with proper runes and snippets.
+Creating type-safe React components with hooks and TypeScript interfaces.
 
 ### Structure
 ```
 
-sveltekit-patterns/
+react-patterns/
 ├── SKILL.md # Core patterns and conventions
 ├── references/
 │ ├── component-library.md # Catalog of existing components
-│ ├── reactive-stores.md # SvelteKit load/invalidate patterns
-│ └── routing-conventions.md # File-based routing guide
+│ ├── hooks-patterns.md # Custom hooks and state management
+│ └── routing-patterns.md # React Router conventions
 └── assets/
 └── component-templates/
-├── basic-component.svelte
-├── form-component.svelte
-└── list-component.svelte
+├── basic-component.tsx
+├── form-component.tsx
+└── list-component.tsx
 
 ````
 
 ### SKILL.md Excerpt
 ```markdown
 ---
-name: sveltekit-patterns
-description: Create type-safe Svelte 5 components with $props(), $derived, and snippets following devhub-crm conventions. Use when building components, implementing forms, or working with reactive stores and SvelteKit routing.
+name: react-patterns
+description: Create type-safe React components with hooks, TypeScript interfaces, and functional patterns. Use when building UI components, implementing forms, or managing component state with hooks.
 ---
 
-# SvelteKit Patterns
+# React Patterns
 
 ## Component Template
 
-```svelte
-<script lang="ts">
-	interface Props {
-		title: string;
-		items: Array<{id: string; label: string}>;
-	}
+```typescript
+interface CardProps {
+  title: string;
+  items: Array<{ id: string; label: string }>;
+}
 
-	let { title, items }: Props = $props();
-</script>
+export function Card({ title, items }: CardProps) {
+  return (
+    <div className="card">
+      <h2>{title}</h2>
+      <ul>
+        {items.map(item => (
+          <li key={item.id}>{item.label}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 ````
 
 For complete component library: [references/component-library.md](references/component-library.md)
@@ -105,11 +113,11 @@ For complete component library: [references/component-library.md](references/com
 ```
 
 ### Why It Works
-- ✅ Shows current Svelte 5 syntax ($props, $derived)
-- ✅ Type-safe patterns emphasized
+- ✅ Shows TypeScript-first React patterns
+- ✅ Type-safe props interfaces
 - ✅ Component catalog in references
 - ✅ Templates in assets for copying
-- ✅ Keywords: "components, forms, reactive stores"
+- ✅ Keywords: "hooks", "TypeScript interfaces", "component state"
 
 ---
 
@@ -221,20 +229,20 @@ For all components: [references/component-reference.md](references/component-ref
 ## Pattern: Description Keywords
 
 Good descriptions include:
-- **Technology names**: "SQLite", "GitHub API", "DaisyUI v5"
-- **Operations**: "SELECT, INSERT, UPDATE", "OAuth flow"
-- **Data types**: "contacts, companies, interactions"
-- **Triggers**: "Use when...", "implementing", "working with"
+- **Technology names**: "TypeScript", "REST API", "React", "Node.js"
+- **Operations**: "HTTP requests", "OAuth flow", "async/await"
+- **Data types**: "users, posts, comments", "API responses"
+- **Triggers**: "Use when...", "Use for...", "Use to..."
 
 ### Before (Vague)
 ```yaml
-description: Helps with database stuff
+description: Helps with API stuff
 ````
 
 ### After (Specific)
 
 ```yaml
-description: SQLite database operations using better-sqlite3 for contacts, companies, interactions, and social_links tables. Use when writing SELECT, INSERT, UPDATE, DELETE operations with prepared statements.
+description: REST API client with TypeScript types for user and data endpoints. Use when making HTTP requests, handling authentication, managing API errors, or working with async operations.
 ```
 
 ---
@@ -244,7 +252,7 @@ description: SQLite database operations using better-sqlite3 for contacts, compa
 ### Level 1: Metadata (Always)
 
 ```yaml
-name: database-patterns
+name: api-client
 description: [50-100 words with keywords]
 ```
 
@@ -261,9 +269,9 @@ description: [50-100 words with keywords]
 
 ### Level 3: Resources (As Needed)
 
-- references/schema.md (complete schema)
-- references/query-examples.md (20+ queries)
-- scripts/validate.py (runs without loading)
+- references/endpoints.md (complete API docs)
+- references/examples.md (20+ examples)
+- scripts/validate-token.js (runs without loading)
 
 **Token cost**: Only what's accessed
 
@@ -360,20 +368,20 @@ You should use prepared statements...
 description: Helps with frontend stuff
 ```
 
-**Fix**: "Svelte 5 components with $props(), forms, routing"
+**Fix**: "React components with hooks, TypeScript, forms"
 
 ---
 
 ## Skill Composition Example
 
-**User Request**: "Create a GitHub contact card with database-backed favorites"
+**User Request**: "Create a user profile card with API data and styling"
 
 **Skills Activated**:
 
-1. `github-integration` - Fetch profile
-2. `database-patterns` - Query favorites
-3. `sveltekit-patterns` - Build component
-4. `daisyui-conventions` - Style card
+1. `api-client` - Fetch user data
+2. `react-patterns` - Build component
+3. `css-conventions` - Apply styling
+4. `error-handling` - Handle fetch errors
 
 **Result**: Skills work together naturally, each handling its domain.
 
@@ -389,7 +397,7 @@ Before considering a skill "done":
 - [ ] Detailed docs in references/
 - [ ] Scripts for repeated code
 - [ ] Assets for templates
-- [ ] Validated with validate_skill.py
+- [ ] Validated with `npx claude-skills validate`
 - [ ] Tested in real conversations
 - [ ] No TODO placeholders
 - [ ] Imperative voice throughout
