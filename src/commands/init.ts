@@ -34,9 +34,9 @@ export function init_command(options: InitOptions): void {
 		error('Either --name or --path must be provided');
 		console.log('\nUsage:');
 		console.log(
-			'  claude-skills init --name my-skill --description "Description"',
+			'  claude-skills-cli init --name my-skill --description "Description"',
 		);
-		console.log('  claude-skills init --path /custom/path/my-skill');
+		console.log('  claude-skills-cli init --path /custom/path/my-skill');
 		process.exit(1);
 	}
 
@@ -120,6 +120,6 @@ function create_skill(
 		);
 	}
 	console.log(`\n⚠️  REQUIRED: Validate the skill before use:`);
-	console.log(`   claude-skills validate ${path}`);
+	console.log(`   claude-skills-cli validate ${path}`);
 	console.log(`   Fix all errors immediately.`);
 }

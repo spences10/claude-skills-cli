@@ -4,13 +4,13 @@
 
 ```bash
 # Create a new skill
-claude-skills init --name my-skill --description "What it does"
+claude-skills-cli init --name my-skill --description "What it does"
 
 # Validate the skill
-claude-skills validate .claude/skills/my-skill
+claude-skills-cli validate .claude/skills/my-skill
 
 # Package for distribution
-claude-skills package .claude/skills/my-skill
+claude-skills-cli package .claude/skills/my-skill
 ```
 
 ## The 6-Step Process
@@ -69,7 +69,7 @@ devhub-crm.
 **Command**:
 
 ```bash
-claude-skills init \
+claude-skills-cli init \
   --name database-patterns \
   --description "Guide for SQLite operations..."
 ```
@@ -194,7 +194,7 @@ For detailed information:
 **Validation First**:
 
 ```bash
-claude-skills validate .claude/skills/database-patterns
+claude-skills-cli validate .claude/skills/database-patterns
 
 # Output shows:
 # ✅ All required fields present
@@ -205,7 +205,7 @@ claude-skills validate .claude/skills/database-patterns
 **Fix Validation Issues**, then package:
 
 ```bash
-claude-skills package .claude/skills/database-patterns
+claude-skills-cli package .claude/skills/database-patterns
 
 # Creates:
 # dist/database-patterns.zip
@@ -236,13 +236,13 @@ claude-skills package .claude/skills/database-patterns
 vim .claude/skills/database-patterns/SKILL.md
 
 # Validate changes
-claude-skills validate .claude/skills/database-patterns
+claude-skills-cli validate .claude/skills/database-patterns
 
 # Test in conversation
 # (Skills auto-reload in Claude Code)
 
 # Package new version if needed
-claude-skills package .claude/skills/database-patterns
+claude-skills-cli package .claude/skills/database-patterns
 ```
 
 **Common Iterations**:
@@ -328,7 +328,7 @@ overhead.
 Always run validation:
 
 ```bash
-claude-skills validate .claude/skills/my-skill --strict
+claude-skills-cli validate .claude/skills/my-skill --strict
 ```
 
 Strict mode treats warnings as errors - use before packaging for
@@ -456,5 +456,5 @@ main();
 1. Read [SKILLS-ARCHITECTURE.md](SKILLS-ARCHITECTURE.md) for system
    overview
 2. See [SKILL-EXAMPLES.md](SKILL-EXAMPLES.md) for real examples
-3. Create your first skill with `claude-skills init`
+3. Create your first skill with `claude-skills-cli init`
 4. Join skill development workflow for devhub-crm

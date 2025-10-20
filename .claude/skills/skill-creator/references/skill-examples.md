@@ -396,7 +396,7 @@ Before considering a skill "done":
 - [ ] Detailed docs in references/
 - [ ] Scripts for repeated code
 - [ ] Assets for templates
-- [ ] Validated with `npx claude-skills validate`
+- [ ] Validated with `npx claude-skills-cli validate`
 - [ ] Tested in real conversations
 - [ ] No TODO placeholders
 - [ ] Imperative voice throughout

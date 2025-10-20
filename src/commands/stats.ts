@@ -38,7 +38,7 @@ export function stats_command(options: StatsOptions): void {
 	if (skills.length === 0) {
 		console.log(`No skills found in ${directory}`);
 		console.log(
-			'\nCreate a skill with: claude-skills init --name my-skill --description "..."\n',
+			'\nCreate a skill with: claude-skills-cli init --name my-skill --description "..."\n',
 		);
 		return;
 	}

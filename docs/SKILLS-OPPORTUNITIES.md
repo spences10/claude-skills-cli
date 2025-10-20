@@ -444,9 +444,9 @@ general-purpose skills:
 **Implementation**:
 
 ```bash
-claude-skills search "testing"
-claude-skills install test-runner
-claude-skills browse --domain security
+claude-skills-cli search "testing"
+claude-skills-cli install test-runner
+claude-skills-cli browse --domain security
 ```
 
 ### 2. Skill Testing Framework
@@ -456,7 +456,7 @@ claude-skills browse --domain security
 **Solution**: Provide subagent testing harness:
 
 ```bash
-claude-skills test my-skill --scenarios test_cases.json
+claude-skills-cli test my-skill --scenarios test_cases.json
 ```
 
 **Test format**:
@@ -486,9 +486,9 @@ examples.
 **Solution**: Provide hook templates and common patterns:
 
 ```bash
-claude-skills add-hook --template pre-commit-checks
-claude-skills add-hook --template post-edit-validation
-claude-skills add-hook --template resource-tracking
+claude-skills-cli add-hook --template pre-commit-checks
+claude-skills-cli add-hook --template post-edit-validation
+claude-skills-cli add-hook --template resource-tracking
 ```
 
 ### 4. Skill Analytics
@@ -511,7 +511,7 @@ claude-skills add-hook --template resource-tracking
 **Solution**: Automated skill maintenance:
 
 ```bash
-claude-skills audit my-skill --suggest-improvements
+claude-skills-cli audit my-skill --suggest-improvements
 ```
 
 **Suggestions**:

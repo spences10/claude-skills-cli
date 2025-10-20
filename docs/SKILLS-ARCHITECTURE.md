@@ -378,4 +378,4 @@ TODO placeholders ❌ Skip validation before packaging
 - Read [SKILL-DEVELOPMENT.md](SKILL-DEVELOPMENT.md) for creation
   workflow
 - See [SKILL-EXAMPLES.md](SKILL-EXAMPLES.md) for real-world examples
-- Use `claude-skills init` to create your first skill
+- Use `claude-skills-cli init` to create your first skill

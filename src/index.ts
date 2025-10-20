@@ -101,7 +101,7 @@ async function main() {
 	}
 
 	if (command === '--version' || command === '-v') {
-		console.log('claude-skills v0.0.1');
+		console.log('claude-skills-cli v0.0.1');
 		process.exit(0);
 	}
 

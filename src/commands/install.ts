@@ -21,7 +21,7 @@ export function install_command(options: InstallOptions): void {
 	if (!skill_name) {
 		error('Skill name required');
 		console.log('\nUsage:');
-		console.log('  claude-skills install <skill-name>');
+		console.log('  claude-skills-cli install <skill-name>');
 		console.log('\nAvailable bundled skills:');
 		AVAILABLE_SKILLS.forEach((name) => console.log(`  - ${name}`));
 		process.exit(1);

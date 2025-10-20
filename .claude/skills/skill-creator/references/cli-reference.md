@@ -9,13 +9,13 @@ Complete command-line reference for the `claude-skills-cli` tool
 
 ```bash
 npm install -g claude-skills-cli
-claude-skills --version
+claude-skills-cli --version
 ```
 
 ### Using npx (No Installation)
 
 ```bash
-npx claude-skills <command>
+npx claude-skills-cli <command>
 ```
 
 ### Using pnpm
@@ -32,9 +32,9 @@ npm install --save-dev claude-skills-cli
 # Use via package.json scripts
 {
   "scripts": {
-    "skill:init": "claude-skills init",
-    "skill:validate": "claude-skills validate",
-    "skill:package": "claude-skills package"
+    "skill:init": "claude-skills-cli init",
+    "skill:validate": "claude-skills-cli validate",
+    "skill:package": "claude-skills-cli package"
   }
 }
 ```
@@ -50,7 +50,7 @@ Create a new skill directory with standard structure.
 #### Syntax
 
 ```bash
-claude-skills init [options]
+claude-skills-cli init [options]
 ```
 
 #### Options
@@ -67,17 +67,17 @@ claude-skills init [options]
 
 ```bash
 # Create skill with default location (.claude/skills/)
-npx claude-skills init --name my-skill
+npx claude-skills-cli init --name my-skill
 
 # With description
-npx claude-skills init --name my-skill \
+npx claude-skills-cli init --name my-skill \
   --description "SQLite queries. Use when writing database operations"
 
 # Custom path
-npx claude-skills init --path /custom/path/my-skill
+npx claude-skills-cli init --path /custom/path/my-skill
 
 # Custom path with description
-npx claude-skills init --path /custom/path/my-skill \
+npx claude-skills-cli init --path /custom/path/my-skill \
   --description "Brief description"
 ```
 
@@ -109,7 +109,7 @@ Next steps:
 3. Add executable scripts to scripts/
 4. Remove example files you don't need
 
-Validate with: claude-skills validate .claude/skills/my-skill
+Validate with: claude-skills-cli validate .claude/skills/my-skill
 ```
 
 ---
@@ -121,7 +121,7 @@ Validate skill structure and progressive disclosure compliance.
 #### Syntax
 
 ```bash
-claude-skills validate <skill_path> [options]
+claude-skills-cli validate <skill_path> [options]
 ```
 
 #### Arguments
@@ -140,14 +140,14 @@ claude-skills validate <skill_path> [options]
 
 ```bash
 # Validate skill
-npx claude-skills validate .claude/skills/my-skill
+npx claude-skills-cli validate .claude/skills/my-skill
 
 # Strict mode (warnings = errors)
-npx claude-skills validate .claude/skills/my-skill --strict
+npx claude-skills-cli validate .claude/skills/my-skill --strict
 
 # Validate multiple skills
-npx claude-skills validate .claude/skills/skill-1
-npx claude-skills validate .claude/skills/skill-2
+npx claude-skills-cli validate .claude/skills/skill-1
+npx claude-skills-cli validate .claude/skills/skill-2
 ```
 
 #### Validation Checks
@@ -255,7 +255,7 @@ Package skill into a zip file for distribution.
 #### Syntax
 
 ```bash
-claude-skills package <skill_path> [options]
+claude-skills-cli package <skill_path> [options]
 ```
 
 #### Arguments
@@ -275,13 +275,13 @@ claude-skills package <skill_path> [options]
 
 ```bash
 # Package skill (validates first)
-npx claude-skills package .claude/skills/my-skill
+npx claude-skills-cli package .claude/skills/my-skill
 
 # Custom output directory
-npx claude-skills package .claude/skills/my-skill --output builds/
+npx claude-skills-cli package .claude/skills/my-skill --output builds/
 
 # Skip validation (not recommended)
-npx claude-skills package .claude/skills/my-skill --skip-validation
+npx claude-skills-cli package .claude/skills/my-skill --skip-validation
 ```
 
 #### Excluded Files
@@ -325,7 +325,7 @@ The created zip can be:
 
 ```bash
 # 1. Create skill
-npx claude-skills init --name database-queries \
+npx claude-skills-cli init --name database-queries \
   --description "SQLite queries. Use when writing SELECT, INSERT, UPDATE"
 
 # 2. Edit SKILL.md
@@ -335,13 +335,13 @@ vim .claude/skills/database-queries/SKILL.md
 vim .claude/skills/database-queries/references/schema.md
 
 # 4. Validate
-npx claude-skills validate .claude/skills/database-queries
+npx claude-skills-cli validate .claude/skills/database-queries
 
 # 5. Fix any issues, re-validate
-npx claude-skills validate .claude/skills/database-queries
+npx claude-skills-cli validate .claude/skills/database-queries
 
 # 6. Package
-npx claude-skills package .claude/skills/database-queries
+npx claude-skills-cli package .claude/skills/database-queries
 ```
 
 ### Strict Validation in CI
@@ -350,7 +350,7 @@ npx claude-skills package .claude/skills/database-queries
 # package.json
 {
   "scripts": {
-    "test:skills": "claude-skills validate .claude/skills/* --strict"
+    "test:skills": "claude-skills-cli validate .claude/skills/* --strict"
   }
 }
 
@@ -364,7 +364,7 @@ npm run test:skills
 # Bash script to validate all skills
 for skill in .claude/skills/*/; do
   echo "Validating $skill"
-  npx claude-skills validate "$skill" || exit 1
+  npx claude-skills-cli validate "$skill" || exit 1
 done
 ```
 
@@ -372,8 +372,8 @@ done
 
 ```bash
 # One-liner with validation
-npx claude-skills init --name my-skill --description "Brief desc" && \
-  npx claude-skills validate .claude/skills/my-skill
+npx claude-skills-cli init --name my-skill --description "Brief desc" && \
+  npx claude-skills-cli validate .claude/skills/my-skill
 ```
 
 ---
@@ -473,10 +473,10 @@ description: Database helper
 ```json
 {
 	"scripts": {
-		"skill:new": "claude-skills init",
-		"skill:validate": "claude-skills validate .claude/skills/*",
-		"skill:validate:strict": "claude-skills validate .claude/skills/* --strict",
-		"skill:package": "claude-skills package",
+		"skill:new": "claude-skills-cli init",
+		"skill:validate": "claude-skills-cli validate .claude/skills/*",
+		"skill:validate:strict": "claude-skills-cli validate .claude/skills/* --strict",
+		"skill:package": "claude-skills-cli package",
 		"skill:check": "npm run skill:validate:strict"
 	},
 	"devDependencies": {
@@ -491,11 +491,11 @@ description: Database helper
 
 ```bash
 # Check CLI version
-npx claude-skills --version
+npx claude-skills-cli --version
 
 # Show help
-npx claude-skills --help
-npx claude-skills init --help
+npx claude-skills-cli --help
+npx claude-skills-cli init --help
 ```
 
 ---
