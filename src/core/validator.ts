@@ -22,10 +22,9 @@ export class SkillValidator {
 		long_paragraphs: 0,
 	};
 
-	// Progressive disclosure limits (from Anthropic guidelines)
-	private readonly MAX_WORDS = 5000; // Hard limit
-	private readonly RECOMMENDED_WORDS = 1000; // Sweet spot
-	private readonly IDEAL_WORDS = 500; // Minimal but effective
+	// Progressive disclosure limits (enforced as hard limits)
+	private readonly MAX_WORDS = 1000; // Hard limit (was recommended)
+	private readonly RECOMMENDED_WORDS = 500; // Warning threshold
 
 	constructor(skill_path: string) {
 		this.skill_path = skill_path;
@@ -171,33 +170,34 @@ export class SkillValidator {
 		this.stats.estimated_tokens = estimated_tokens;
 		this.stats.line_count = line_count;
 
-		// Hard limit check (error)
+		// Hard limit check (error) - enforced at 1000 words
 		if (word_count > this.MAX_WORDS) {
 			this.error(
-				`SKILL.md body has ${word_count} words (MAX: ${this.MAX_WORDS} per Anthropic guidelines)\n` +
-					`  → Move detailed content to references/ directory for Level 3 loading`,
+				`SKILL.md body has ${word_count} words (MAX: ${this.MAX_WORDS})\n` +
+					`  → Move detailed content to references/ directory for Level 3 loading\n` +
+					`  → This is a hard limit - skills must be concise`,
 			);
 		}
-		// Recommended limit check (warning)
+		// Warning threshold at 500 words
 		else if (word_count > this.RECOMMENDED_WORDS) {
 			this.warning(
-				`SKILL.md body has ${word_count} words (recommended: <${this.RECOMMENDED_WORDS})\n` +
+				`SKILL.md body has ${word_count} words (recommended: <${this.RECOMMENDED_WORDS}, max: ${this.MAX_WORDS})\n` +
 					`  → Consider moving examples/docs to references/ for better token efficiency`,
 			);
 		}
 
 		// Line count validation (Level 2 progressive disclosure)
-		// Target: ~50 lines, Warn: >80, Error: >150
-		if (line_count > 150) {
+		// Hard limit: 50 lines (enforced)
+		if (line_count > 50) {
 			this.error(
-				`SKILL.md body is ${line_count} lines (MAX: ~150 for Level 2 progressive disclosure)\n` +
+				`SKILL.md body is ${line_count} lines (MAX: 50 for Level 2 progressive disclosure)\n` +
 					`  → Move detailed content to references/ directory\n` +
-					`  → Target: ~50 lines for optimal scannability`,
+					`  → This is a hard limit - skills must be concise`,
 			);
-		} else if (line_count > 80) {
+		} else if (line_count > 40) {
 			this.warning(
-				`SKILL.md body is ${line_count} lines (recommended: ~50, max: ~80)\n` +
-					`  → Consider moving detailed examples to references/ for Level 3 loading`,
+				`SKILL.md body is ${line_count} lines (recommended: ~40, max: 50)\n` +
+					`  → Consider moving examples to references/ for Level 3 loading`,
 			);
 		}
 

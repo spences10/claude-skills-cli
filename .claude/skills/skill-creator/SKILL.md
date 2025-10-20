@@ -125,8 +125,6 @@ For detailed guidance:
   patterns and anti-patterns
 - [cli-reference.md](references/cli-reference.md) - Tool commands
   (claude-skills-cli)
-- [cli-feedback.md](references/cli-feedback.md) - Real-world CLI usage
-  patterns
 
 ## Notes
 

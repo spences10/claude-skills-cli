@@ -11,10 +11,10 @@ const command = args[0];
 
 function show_help(): void {
 	console.log(
-		'claude-skills - CLI toolkit for creating Claude Agent Skills\n',
+		'claude-skills-cli - CLI toolkit for creating Claude Agent Skills\n',
 	);
 	console.log('Usage:');
-	console.log('  claude-skills <command> [options]\n');
+	console.log('  claude-skills-cli <command> [options]\n');
 	console.log('Commands:');
 	console.log('  init        Create a new skill');
 	console.log(
@@ -33,15 +33,24 @@ function show_help(): void {
 	);
 	console.log('Examples:');
 	console.log(
-		'  claude-skills init --name my-skill --description "Description"',
+		'  claude-skills-cli init --name my-skill --description "Description"',
 	);
 	console.log(
-		'  claude-skills init --name my-skill --description "..." --with-examples',
+		'  claude-skills-cli init --name my-skill --description "..." --with-examples',
 	);
-	console.log('  claude-skills install skill-creator');
-	console.log('  claude-skills validate .claude/skills/my-skill');
-	console.log('  claude-skills package .claude/skills/my-skill');
-	console.log('  claude-skills stats .claude/skills');
+	console.log('  claude-skills-cli install skill-creator');
+	console.log('  claude-skills-cli validate .claude/skills/my-skill');
+	console.log('  claude-skills-cli package .claude/skills/my-skill');
+	console.log('  claude-skills-cli stats .claude/skills');
+	console.log('\n⚠️  IMPORTANT FOR LLMs:');
+	console.log(
+		'  ALWAYS run validate after creating or editing a skill:',
+	);
+	console.log('    claude-skills-cli validate <skill-path>');
+	console.log('  Skills MUST pass validation before use.');
+	console.log(
+		'  Fix all errors immediately. Address warnings promptly.',
+	);
 }
 
 function parse_args(
@@ -121,7 +130,7 @@ async function main() {
 			const skill_path = parsed._positional as string;
 			if (!skill_path) {
 				console.error('Error: skill path required');
-				console.log('\nUsage: claude-skills validate <skill_path>');
+				console.log('\nUsage: claude-skills-cli validate <skill_path>');
 				process.exit(1);
 			}
 			validate_command({
@@ -135,7 +144,7 @@ async function main() {
 			const skill_path = parsed._positional as string;
 			if (!skill_path) {
 				console.error('Error: skill path required');
-				console.log('\nUsage: claude-skills package <skill_path>');
+				console.log('\nUsage: claude-skills-cli package <skill_path>');
 				process.exit(1);
 			}
 			await package_command({

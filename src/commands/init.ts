@@ -119,5 +119,7 @@ function create_skill(
 			`3. Use --with-examples flag if you need scripts/ and example files`,
 		);
 	}
-	console.log(`\nValidate with: claude-skills validate ${path}`);
+	console.log(`\n⚠️  REQUIRED: Validate the skill before use:`);
+	console.log(`   claude-skills validate ${path}`);
+	console.log(`   Fix all errors immediately.`);
 }
