@@ -7,9 +7,9 @@ TypeScript CLI toolkit for creating, validating, and packaging Claude Agent Skil
 A command-line tool for managing Claude Agent Skills. It enforces the 3-level progressive disclosure system from [Anthropic's Skills documentation](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview), ensuring skills are token-efficient and scannable.
 
 ```bash
-npx claude-skills init my-skill
+npx claude-skills init --name my-skill --description "Brief description"
 npx claude-skills validate .claude/skills/my-skill
-npx claude-skills validate .claude/skills/my-skill --strict
+npx claude-skills stats .claude/skills
 npx claude-skills package .claude/skills/my-skill
 ```
 
@@ -18,24 +18,31 @@ npx claude-skills package .claude/skills/my-skill
 ### `init` - Create a new skill
 
 ```bash
-claude-skills init my-skill
-claude-skills init my-skill --description "Brief description with trigger keywords"
+claude-skills init --name my-skill --description "Brief description with trigger keywords"
+
+# With example files (for learning)
+claude-skills init --name my-skill --description "..." --with-examples
 ```
 
-Creates a skill directory with:
+**Default behavior** (minimal scaffolding):
 
-- **SKILL.md** - Streamlined ~50 line template with progressive disclosure guidelines
+- **SKILL.md** - Minimal ~30 line template with progressive disclosure guidelines
 - **README.md** - Skill documentation
-- **references/** - Directory for Level 3 detailed documentation
-- **scripts/** - Directory for executable JavaScript/shell scripts
+- **references/** - Empty directory for Level 3 detailed documentation
+
+**With `--with-examples` flag** (full scaffolding):
+
+- All of the above, plus:
+- **scripts/example.js** - Example executable script
 - **assets/** - Directory for templates and resources
+- **references/detailed-guide.md** - Example reference file
 
 The generated SKILL.md template follows best practices:
 
 - 1-2 code blocks maximum
 - Clear "Quick Start" section
 - Links to references/ for detailed content
-- Progressive disclosure comments inline
+- Progressive disclosure comments inline (not counted in line validation)
 
 ### `validate` - Validate skill structure
 
@@ -46,11 +53,11 @@ claude-skills validate .claude/skills/my-skill --strict
 
 **Progressive Disclosure Validation** (3-Level System):
 
-| Level                      | Content           | Checks                                                                                                                                                                                                              |
-| -------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Level 1: Metadata**      | YAML frontmatter  | Description <200 chars (warn), <300 chars (error)<br>Trigger keywords present ("Use when/for/to")<br>No list bloat (>3 commas)                                                                                      |
-| **Level 2: SKILL.md Body** | Main instructions | Line count ~50 (warn >80, error >150)<br>Word count <1000 (warn), <5000 (error)<br>Code blocks ≤3 (recommend 1-2)<br>Sections ≤8 (recommend 3-5)<br>"Quick Start" section present<br>Links to references/ when long |
-| **Level 3: References**    | Bundled files     | Referenced files exist (error on broken links)<br>No empty directories                                                                                                                                              |
+| Level                      | Content           | Checks                                                                                                                                                                                                                                       |
+| -------------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Level 1: Metadata**      | YAML frontmatter  | Description <200 chars (warn), <300 chars (error)<br>Trigger keywords present ("Use when/for/to")<br>No list bloat (warn if >150 chars AND ≥5 commas)                                                                                        |
+| **Level 2: SKILL.md Body** | Main instructions | Line count ~50 (warn >80, error >150) - excludes HTML comments<br>Word count <1000 (warn), <5000 (error)<br>Code blocks ≤3 (recommend 1-2)<br>Sections ≤8 (recommend 3-5)<br>"Quick Start" section present<br>Links to references/ when long |
+| **Level 3: References**    | Bundled files     | Referenced files exist (error on broken links)<br>No empty directories                                                                                                                                                                       |
 
 **Validation Output:**
 
@@ -99,6 +106,44 @@ Creates a zip file ready to upload to Claude.ai, excluding:
 
 Runs validation first unless `--skip-validation` is specified.
 
+### `stats` - View all skills overview
+
+```bash
+claude-skills stats
+claude-skills stats .claude/skills
+```
+
+Displays an overview of all skills in a directory with:
+
+- Validation status (✅ valid, ⚠️ warnings, ❌ errors)
+- Description length and quality rating
+- Body size (lines, words) with quality rating
+- Reference file count and total size
+- Summary statistics
+
+**Example output:**
+
+```
+📊 Skills Overview
+============================================================
+3 skills found:
+
+auth-patterns (✅ valid)
+  Description: 127 chars (optimal)
+  Body: 76 lines, 258 words (excellent)
+  References: 3 files (20.8 KB)
+
+styling-patterns (⚠️  warnings)
+  Description: 106 chars (optimal)
+  Body: 85 lines, 284 words (good)
+  References: 1 file (11.2 KB)
+  2 warnings
+
+Summary:
+  Valid: 2
+  With warnings: 1
+```
+
 ## The Progressive Disclosure System
 
 Claude Skills use a 3-level loading system to optimize token usage:
@@ -140,22 +185,25 @@ npx claude-skills-cli init my-skill
 ## Example Workflow
 
 ```bash
-# 1. Create a new skill
-npx claude-skills init database-queries \
+# 1. Create a new skill (minimal by default)
+npx claude-skills init --name database-queries \
   --description "SQLite queries for contacts and companies. Use when querying the database."
 
 # 2. Edit the generated SKILL.md
 # - Keep it under 50 lines
 # - Use 1 minimal code example in Quick Start
-# - Link to references/ for detailed docs
+# - Add detailed docs to references/ directory
 
 # 3. Validate before using
 npx claude-skills validate .claude/skills/database-queries
 
-# 4. Fix any warnings (or use --strict to enforce)
+# 4. View all skills
+npx claude-skills stats .claude/skills
+
+# 5. Fix any warnings (or use --strict to enforce)
 npx claude-skills validate .claude/skills/database-queries --strict
 
-# 5. Package for sharing
+# 6. Package for sharing
 npx claude-skills package .claude/skills/database-queries
 ```
 
@@ -267,4 +315,4 @@ Contributions welcome! This tool is designed to help Claude use skills efficient
 2. **Ergonomics for Claude** - Is it easy for Claude to understand and use?
 3. **Progressive disclosure** - Does it enforce the 3-level system?
 
-See the feedback document at [CLI-FEEDBACK.md](CLI-FEEDBACK.md) for detailed validation requirements.
+See the feedback document at [skills/skill-creator/references/cli-feedback.md](skills/skill-creator/references/cli-feedback.md) for real-world usage patterns and implemented improvements.
