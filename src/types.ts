@@ -28,6 +28,11 @@ export interface StatsOptions {
 	directory?: string;
 }
 
+export interface InstallOptions {
+	skill_name?: string;
+	force?: boolean;
+}
+
 export interface ValidationStats {
 	word_count: number;
 	estimated_tokens: number;

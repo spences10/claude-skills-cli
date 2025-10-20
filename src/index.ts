@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { init_command } from './commands/init.js';
+import { install_command } from './commands/install.js';
 import { package_command } from './commands/package.js';
 import { stats_command } from './commands/stats.js';
 import { validate_command } from './commands/validate.js';
@@ -16,6 +17,7 @@ function show_help(): void {
 	console.log('  claude-skills <command> [options]\n');
 	console.log('Commands:');
 	console.log('  init        Create a new skill');
+	console.log('  install     Install a bundled skill (e.g., skill-creator)');
 	console.log('  validate    Validate a skill');
 	console.log('  package     Package a skill to zip');
 	console.log(
@@ -34,6 +36,7 @@ function show_help(): void {
 	console.log(
 		'  claude-skills init --name my-skill --description "..." --with-examples',
 	);
+	console.log('  claude-skills install skill-creator');
 	console.log('  claude-skills validate .claude/skills/my-skill');
 	console.log('  claude-skills package .claude/skills/my-skill');
 	console.log('  claude-skills stats .claude/skills');
@@ -102,6 +105,15 @@ async function main() {
 				with_examples: parsed['with-examples'] === true,
 			});
 			break;
+
+		case 'install': {
+			const skill_name = parsed._positional as string;
+			install_command({
+				skill_name,
+				force: parsed.force === true,
+			});
+			break;
+		}
 
 		case 'validate': {
 			const skill_path = parsed._positional as string;
