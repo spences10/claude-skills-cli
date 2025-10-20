@@ -1,5 +1,12 @@
 # claude-skills-cli
 
+## 0.0.6
+
+### Patch Changes
+
+- 94f20b5: copy the whole .cllaude/skills folder on postbuild
+- e296b2e: remove double skill-creator nesting
+
 ## 0.0.5
 
 ### Patch Changes
