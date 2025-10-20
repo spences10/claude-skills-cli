@@ -1,5 +1,12 @@
 # claude-skills-cli
 
+## 0.0.5
+
+### Patch Changes
+
+- 3c655c0: add meta skil-creator skill
+- 699b536: add cli option for skill-creator skill
+
 ## 0.0.4
 
 ### Patch Changes
