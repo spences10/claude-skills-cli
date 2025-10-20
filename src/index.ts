@@ -3,6 +3,7 @@
 import { init_command } from './commands/init.js';
 import { validate_command } from './commands/validate.js';
 import { package_command } from './commands/package.js';
+import { stats_command } from './commands/stats.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -14,16 +15,24 @@ function show_help(): void {
   console.log('Commands:');
   console.log('  init        Create a new skill');
   console.log('  validate    Validate a skill');
-  console.log('  package     Package a skill to zip\n');
+  console.log('  package     Package a skill to zip');
+  console.log('  stats       Show overview of all skills in a directory\n');
   console.log('Options:');
-  console.log('  --help, -h     Show help');
-  console.log('  --version, -v  Show version\n');
+  console.log('  --help, -h          Show help');
+  console.log('  --version, -v       Show version');
+  console.log(
+    '  --with-examples     Include example files when creating skill\n'
+  );
   console.log('Examples:');
   console.log(
     '  claude-skills init --name my-skill --description "Description"'
   );
+  console.log(
+    '  claude-skills init --name my-skill --description "..." --with-examples'
+  );
   console.log('  claude-skills validate .claude/skills/my-skill');
   console.log('  claude-skills package .claude/skills/my-skill');
+  console.log('  claude-skills stats .claude/skills');
 }
 
 function parse_args(args: string[]): Record<string, string | boolean> {
@@ -84,6 +93,7 @@ async function main() {
         name: parsed.name as string | undefined,
         description: parsed.description as string | undefined,
         path: parsed.path as string | undefined,
+        with_examples: parsed['with-examples'] === true,
       });
       break;
 
@@ -112,6 +122,14 @@ async function main() {
         skill_path,
         output: parsed.output as string | undefined,
         skip_validation: parsed['skip-validation'] === true,
+      });
+      break;
+    }
+
+    case 'stats': {
+      const directory = parsed._positional as string | undefined;
+      stats_command({
+        directory,
       });
       break;
     }

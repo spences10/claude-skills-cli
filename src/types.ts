@@ -10,6 +10,7 @@ export interface InitOptions {
   name?: string;
   description?: string;
   path?: string;
+  with_examples?: boolean;
 }
 
 export interface ValidateOptions {
@@ -21,6 +22,10 @@ export interface PackageOptions {
   skill_path: string;
   output?: string;
   skip_validation?: boolean;
+}
+
+export interface StatsOptions {
+  directory?: string;
 }
 
 export interface ValidationStats {

@@ -53,40 +53,56 @@ export function init_command(options: InitOptions): void {
   }
 
   // Create skill
-  create_skill(skill_path, name, description);
+  create_skill(skill_path, name, description, options.with_examples || false);
 }
 
-function create_skill(path: string, name: string, description: string): void {
-  // Create directories
+function create_skill(
+  path: string,
+  name: string,
+  description: string,
+  with_examples: boolean = false
+): void {
+  // Create base directories
   ensure_dir(path);
   ensure_dir(join(path, 'references'));
-  ensure_dir(join(path, 'scripts'));
-  ensure_dir(join(path, 'assets'));
 
   // Create SKILL.md
   const title = to_title_case(name);
-  const skill_md = SKILL_MD_TEMPLATE(name, description, title);
+  const skill_md = SKILL_MD_TEMPLATE(name, description, title, with_examples);
   write_file(join(path, 'SKILL.md'), skill_md);
-
-  // Create example reference
-  const reference_md = REFERENCE_TEMPLATE(title);
-  write_file(join(path, 'references', 'detailed-guide.md'), reference_md);
-
-  // Create example script
-  const script_js = SCRIPT_TEMPLATE('example.js');
-  const script_path = join(path, 'scripts', 'example.js');
-  write_file(script_path, script_js);
-  make_executable(script_path);
 
   // Create README
   const readme_md = README_TEMPLATE(title, description);
   write_file(join(path, 'README.md'), readme_md);
 
+  // Only create example files if requested
+  if (with_examples) {
+    // Create example directories
+    ensure_dir(join(path, 'scripts'));
+    ensure_dir(join(path, 'assets'));
+
+    // Create example reference
+    const reference_md = REFERENCE_TEMPLATE(title);
+    write_file(join(path, 'references', 'detailed-guide.md'), reference_md);
+
+    // Create example script
+    const script_js = SCRIPT_TEMPLATE('example.js');
+    const script_path = join(path, 'scripts', 'example.js');
+    write_file(script_path, script_js);
+    make_executable(script_path);
+  }
+
   success(`Skill created at: ${path}`);
   console.log('\nNext steps:');
   console.log(`1. Edit ${path}/SKILL.md with your skill instructions`);
   console.log(`2. Add detailed documentation to references/`);
-  console.log(`3. Add executable scripts to scripts/`);
-  console.log(`4. Remove example files you don't need`);
+  if (with_examples) {
+    console.log(`3. Add executable scripts to scripts/`);
+    console.log(`4. Remove example files you don't need`);
+  } else {
+    console.log(
+      `3. Use --with-examples flag if you need scripts/ and example files`
+    );
+  }
   console.log(`\nValidate with: claude-skills validate ${path}`);
 }

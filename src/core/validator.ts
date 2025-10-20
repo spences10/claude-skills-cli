@@ -107,13 +107,21 @@ export class SkillValidator {
     }
 
     // Check for list bloat (multiple commas indicating detailed lists)
+    // Only warn if BOTH long description AND many commas (allows concise technical lists)
     const comma_count = (description.match(/,/g) || []).length;
-    if (comma_count >= 3) {
+    if (desc_length > 150 && comma_count >= 5) {
       this.warning(
-        `Description contains long lists (${comma_count} commas)\n` +
+        `Description contains long lists (${comma_count} commas, ${desc_length} chars)\n` +
           `  → Move detailed lists to Level 2 (SKILL.md body) or Level 3 (references/)`
       );
     }
+  }
+
+  /**
+   * Remove HTML comments from content (for line counting)
+   */
+  private strip_html_comments(text: string): string {
+    return text.replace(/<!--[\s\S]*?-->/g, '');
   }
 
   /**
@@ -142,7 +150,9 @@ export class SkillValidator {
   private validate_progressive_disclosure(body: string): void {
     const word_count = this.count_words(body);
     const estimated_tokens = this.estimate_tokens(word_count);
-    const line_count = body.trim().split('\n').length;
+    // Strip HTML comments before counting lines (progressive disclosure guidance shouldn't inflate count)
+    const body_without_comments = this.strip_html_comments(body);
+    const line_count = body_without_comments.trim().split('\n').length;
 
     this.stats.word_count = word_count;
     this.stats.estimated_tokens = estimated_tokens;

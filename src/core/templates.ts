@@ -1,8 +1,58 @@
 export const SKILL_MD_TEMPLATE = (
   name: string,
   description: string,
-  title: string
-) => `---
+  title: string,
+  include_examples: boolean = false
+) => {
+  const minimal_template = `---
+name: ${name}
+description: ${description}
+---
+
+# ${title}
+
+## Quick Start
+
+[Provide ONE minimal working example - the most common use case]
+
+\`\`\`typescript
+// Keep this concise - show essential code only
+// Move detailed examples to references/ for Level 3 loading
+\`\`\`
+
+## Core Principles
+
+- Principle 1: [Key concept]
+- Principle 2: [Key concept]
+- Principle 3: [Key concept]
+
+## Common Patterns
+
+### [Most Frequent Pattern]
+
+[Brief description - keep under 100 words]
+
+## Reference Files
+
+For detailed documentation, see:
+- [references/](references/) - Add detailed guides here
+
+## Notes
+
+- Important note 1
+- Important note 2
+
+<!--
+PROGRESSIVE DISCLOSURE GUIDELINES:
+- Keep this file ~50 lines total (max ~150 lines)
+- Use 1-2 code blocks only (recommend 1)
+- Keep description <200 chars for Level 1 efficiency
+- Move detailed docs to references/ for Level 3 loading
+- This is Level 2 - quick reference ONLY, not a manual
+-->
+`;
+
+  const full_template = `---
 name: ${name}
 description: ${description}
 ---
@@ -54,6 +104,9 @@ PROGRESSIVE DISCLOSURE GUIDELINES:
 - This is Level 2 - quick reference ONLY, not a manual
 -->
 `;
+
+  return include_examples ? full_template : minimal_template;
+};
 
 export const REFERENCE_TEMPLATE = (title: string) => `# ${title} Reference
 

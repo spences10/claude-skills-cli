@@ -3,8 +3,23 @@
 Real feedback from Claude agents using `claude-skills-cli` in production.
 
 **Source**: Real usage creating 3 production skills in ~15 minutes
-**CLI Version**: 0.0.3
+**CLI Version**: 0.0.3+
 **Date**: 2025-10-20
+**Last Updated**: 2025-10-20
+
+---
+
+## ✅ UPDATE: High & Medium Priority Items IMPLEMENTED
+
+All high-priority friction points and medium-priority features have been implemented:
+
+- ✅ Minimal scaffolding by default (no empty dirs/files to clean up)
+- ✅ `--with-examples` flag for opt-in example files
+- ✅ Improved comma warning logic (allows concise technical lists)
+- ✅ HTML comments excluded from line count
+- ✅ New `stats` command for multi-skill overview
+
+**Result**: The CLI now achieves **S-tier** status for Claude's workflow! 🎯
 
 ---
 
@@ -71,48 +86,40 @@ Validate with: claude-skills validate .claude/skills/auth-patterns
 
 ## 🐛 Known Issues & Workarounds
 
-### Issue 1: Empty Directories Created by Default
+### ✅ Issue 1: Empty Directories Created by Default (FIXED)
 
 **Problem**: Every `init` creates `assets/` and `scripts/` directories, which are often empty and unused.
 
-**Current workflow:**
+**Status**: ✅ **FIXED** - Now only creates `references/` by default
+
+**New behavior:**
+
+- Default: Creates only `SKILL.md`, `README.md`, and `references/`
+- With `--with-examples`: Creates full scaffolding including `assets/`, `scripts/`, and example files
 
 ```bash
-npx claude-skills init --name auth-patterns --description "..."
-rm -rf .claude/skills/auth-patterns/assets
-rm -rf .claude/skills/auth-patterns/scripts
+# Minimal (default)
+npx claude-skills init --name my-skill --description "..."
+
+# With examples
+npx claude-skills init --name my-skill --description "..." --with-examples
 ```
 
-**Impact**: Adds manual cleanup step after every init.
-
-**Status**: Planned fix - only create `references/` by default
-
-**Workaround**: Delete empty directories after creation:
-
-```bash
-npx claude-skills init --name my-skill && \
-  rm -rf .claude/skills/my-skill/assets && \
-  rm -rf .claude/skills/my-skill/scripts
-```
-
-### Issue 2: Template Files Need Deletion
+### ✅ Issue 2: Template Files Need Deletion (FIXED)
 
 **Problem**: Template creates example reference files that need to be removed:
 
 - `references/detailed-guide.md`
 - References to non-existent examples
 
-**Current workflow:**
+**Status**: ✅ **FIXED** - Example files only created with `--with-examples` flag
 
-```bash
-rm .claude/skills/my-skill/references/detailed-guide.md
-```
+**New behavior:**
 
-**Status**: Planned fix - don't create template files
+- Default: No example files created
+- With `--with-examples`: Creates `detailed-guide.md` and `example.js`
 
-**Workaround**: Delete unwanted template files immediately after init.
-
-### Issue 3: Description Comma Warning Not Always Relevant
+### ✅ Issue 3: Description Comma Warning Not Always Relevant (FIXED)
 
 **Problem**: Validation warns about commas in descriptions, but for technical skills, lists are often necessary:
 
@@ -127,13 +134,12 @@ rm .claude/skills/my-skill/references/detailed-guide.md
 
 This is concise (106 chars) but gets flagged for 5 commas. The alternative would be vague: "DaisyUI v5 design system for UI styling" - less useful.
 
-**Status**: Planned fix - increase threshold to 6 commas
+**Status**: ✅ **FIXED** - Now only warns if BOTH conditions met: >150 chars AND ≥5 commas
 
-**Workaround**: Either:
+**New behavior:**
 
-1. Ignore the warning (it's not an error)
-2. Rewrite to use fewer commas
-3. Use `--strict` mode only when enforcing stricter rules
+- Concise technical lists (like the example above) no longer trigger warnings
+- Only warns when description is both long AND list-heavy
 
 ### Issue 4: Python Script Reference in Template
 
@@ -153,7 +159,7 @@ This assumes JavaScript/Node.js, but many skills don't need scripts at all (espe
 
 ## 💡 Requested Features
 
-### 1. `--minimal` Flag for Init
+### ✅ 1. Minimal Scaffolding (IMPLEMENTED)
 
 **Requested syntax:**
 
@@ -161,21 +167,15 @@ This assumes JavaScript/Node.js, but many skills don't need scripts at all (espe
 npx claude-skills init --name my-skill --description "..." --minimal
 ```
 
-**Would create only:**
+**Status**: ✅ **IMPLEMENTED** - Minimal is now the default behavior
 
-- SKILL.md (without template placeholders)
-- README.md
-- references/ (empty directory)
+**Implementation:**
 
-**Skips:**
+- Default creates only: `SKILL.md`, `README.md`, `references/`
+- Use `--with-examples` for full scaffolding with example files
+- No cleanup needed for typical workflows
 
-- assets/
-- scripts/
-- Example reference files
-
-**Status**: Planned for future release
-
-### 2. `stats` Command
+### ✅ 2. `stats` Command (IMPLEMENTED)
 
 **Requested syntax:**
 
@@ -183,7 +183,9 @@ npx claude-skills init --name my-skill --description "..." --minimal
 npx claude-skills stats .claude/skills/
 ```
 
-**Would show:**
+**Status**: ✅ **IMPLEMENTED**
+
+**Example output:**
 
 ```
 📊 Skills Overview
@@ -192,21 +194,24 @@ npx claude-skills stats .claude/skills/
 
 auth-patterns (✅ valid)
   Description: 127 chars (optimal)
-  Body: 76 lines, 258 words
+  Body: 76 lines, 258 words (excellent)
   References: 3 files (20.8 KB)
 
-styling-patterns (⚠️ warnings)
+styling-patterns (⚠️  warnings)
   Description: 106 chars (optimal)
-  Body: 85 lines, 284 words (consider splitting)
+  Body: 85 lines, 284 words (good)
   References: 1 file (11.2 KB)
+  2 warnings
 
 form-patterns (✅ valid)
   Description: 114 chars (optimal)
-  Body: 102 lines, 264 words
+  Body: 102 lines, 264 words (good)
   References: 1 file (8.0 KB)
-```
 
-**Status**: Planned for future release
+Summary:
+  Valid: 3
+  With warnings: 1
+```
 
 ### 3. Validation Auto-fix Suggestions
 
@@ -277,14 +282,22 @@ The CLI is excellent for its core purpose. The validation feedback is world-clas
 
 **High Priority** (blocking efficient workflow):
 
-1. ✅ Don't create empty `assets/` and `scripts/` directories by default
-2. ✅ Don't create template reference files (or add `--no-examples` flag)
-3. ✅ Improve description comma warning logic (increase threshold to 6)
-4. ✅ Remove Python script section from template
+1. ✅ **DONE** - Don't create empty `assets/` and `scripts/` directories by default
+2. ✅ **DONE** - Don't create template reference files (use `--with-examples` flag for opt-in)
+3. ✅ **DONE** - Improve description comma warning logic (now requires >150 chars AND ≥5 commas)
+4. ✅ **DONE** - Remove script section from minimal template
 
-**Medium Priority** (valuable additions): 5. ⏳ Add `--minimal` flag for init 6. ⏳ Don't count HTML comments in line count validation 7. ⏳ Add `stats` command for multi-skill overview
+**Medium Priority** (valuable additions):
 
-**Low Priority** (nice to have): 8. ⏳ Interactive init mode 9. ⏳ `format` command 10. ⏳ Auto-fix suggestions in validation errors
+5. ✅ **DONE** - Minimal scaffolding by default (was `--minimal` flag, now default behavior)
+6. ✅ **DONE** - Don't count HTML comments in line count validation
+7. ✅ **DONE** - Add `stats` command for multi-skill overview
+
+**Low Priority** (nice to have):
+
+8. ⏳ Interactive init mode
+9. ⏳ `format` command
+10. ⏳ Auto-fix suggestions in validation errors
 
 ---
 
@@ -327,22 +340,23 @@ $ npx claude-skills package .claude/skills/auth-patterns
 ✅ Package created: dist/auth-patterns.zip
 ```
 
-### Ideal Workflow (After Improvements)
+### ✅ Ideal Workflow (NOW IMPLEMENTED)
 
 ```bash
-# Ideal workflow with improvements
-$ npx claude-skills init --name auth-patterns --minimal \
+# New workflow - no cleanup needed!
+$ npx claude-skills init --name auth-patterns \
     --description "Better-auth integration"
 ✅ Skill created at: .claude/skills/auth-patterns
-   - No cleanup needed
 
 $ vim .claude/skills/auth-patterns/SKILL.md
 
 $ npx claude-skills validate .claude/skills/auth-patterns
 ✅ Skill is valid! All checks passed.
 
-$ npx claude-skills stats
-📊 3 skills, all valid
+$ npx claude-skills stats .claude/skills
+📊 3 skills found
+Summary:
+  Valid: 3
 ```
 
 ---
@@ -366,25 +380,29 @@ npx claude-skills validate .claude/skills/my-skill
 npx claude-skills validate .claude/skills/my-skill
 ```
 
-### 2. Delete Empty Directories Immediately
+### 2. Use `--with-examples` When Learning
 
-Right after `init`:
+If you want to see example files:
 
 ```bash
-npx claude-skills init --name my-skill && \
-  rm -rf .claude/skills/my-skill/assets && \
-  rm -rf .claude/skills/my-skill/scripts
+npx claude-skills init --name my-skill \
+  --description "..." \
+  --with-examples
 ```
 
-### 3. Ignore Comma Warnings for Technical Lists
+This creates example references and scripts to learn from.
 
-If your description has technical terms separated by commas, that's fine:
+### 3. Technical Lists in Descriptions Are Fine
+
+Concise technical lists won't trigger warnings:
 
 ```yaml
-description: SQLite queries for contacts, companies, interactions, social_links
-```
+# ✅ This is fine (106 chars, 5 commas)
+description: DaisyUI v5 design system. Use for backgrounds, borders, text, colors, spacing.
 
-The warning is just a reminder, not an error.
+# ⚠️  This would warn (>150 chars + ≥5 commas)
+description: A very long description that goes on and on with lots of details about backgrounds, borders, text styling, semantic colors, spacing utilities, and more features...
+```
 
 ### 4. Aim for "Excellent" Ratings
 
