@@ -1,5 +1,18 @@
 # claude-skills-cli
 
+## 0.0.7
+
+### Patch Changes
+
+- 00b0642: triggering optimization features
+- dd4ca69: refactor validator
+- 39195bc: Add nesting depth analysis and progressive disclosure
+  validation
+- 36561a4: refactor: dedupe validator types, move to types.ts
+- 36a7c9b: recommended is hard limit
+- 409683f: update skill-creator with new CLI
+- 152d417: add validation for name and directory
+
 ## 0.0.6
 
 ### Patch Changes
