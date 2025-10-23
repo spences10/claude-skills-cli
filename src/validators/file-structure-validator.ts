@@ -9,17 +9,10 @@ import {
 	statSync,
 } from 'node:fs';
 import { join } from 'node:path';
-
-export interface PathFormatIssue {
-	line_number: number;
-	path: string;
-	error: string;
-	suggested_fix: string;
-}
-
-export interface PathFormatValidation {
-	invalid_paths: PathFormatIssue[];
-}
+import type {
+	PathFormatValidation,
+	PathFormatIssue,
+} from '../types.js';
 
 export interface PathFormatError {
 	type: 'windows_path';

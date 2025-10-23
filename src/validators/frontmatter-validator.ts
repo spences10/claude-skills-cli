@@ -2,35 +2,11 @@
  * YAML frontmatter validation for SKILL.md
  */
 
-export interface FrontmatterValidation {
-	valid: boolean;
-	has_frontmatter: boolean;
-	parse_error: string | null;
-	missing_fields: string[];
-}
-
-export interface NameValidation {
-	name: string;
-	format_valid: boolean;
-	directory_name: string;
-	matches_directory: boolean;
-	errors: string[];
-}
-
-export interface HardLimits {
-	name: {
-		length: number;
-		limit: number;
-		valid: boolean;
-		error: string | null;
-	};
-	description: {
-		length: number;
-		limit: number;
-		valid: boolean;
-		error: string | null;
-	};
-}
+import type {
+	HardLimitValidation,
+	NameFormatValidation,
+	YAMLValidation,
+} from '../types.js';
 
 export interface FrontmatterData {
 	name: string | null;
@@ -81,8 +57,8 @@ export function extract_frontmatter(
  */
 export function validate_frontmatter_structure(
 	content: string,
-): FrontmatterValidation {
-	const validation: FrontmatterValidation = {
+): YAMLValidation {
+	const validation: YAMLValidation = {
 		valid: true,
 		has_frontmatter: false,
 		parse_error: null,
@@ -126,8 +102,8 @@ export function validate_frontmatter_structure(
 export function validate_name_format(
 	name: string,
 	directory_name: string,
-): NameValidation {
-	const validation: NameValidation = {
+): NameFormatValidation {
+	const validation: NameFormatValidation = {
 		name,
 		format_valid: true,
 		directory_name,
@@ -160,8 +136,8 @@ export function validate_name_format(
 export function validate_hard_limits(
 	name: string | null,
 	description: string | null,
-): HardLimits {
-	const limits: HardLimits = {
+): HardLimitValidation {
+	const limits: HardLimitValidation = {
 		name: { length: 0, limit: 64, valid: true, error: null },
 		description: { length: 0, limit: 1024, valid: true, error: null },
 	};

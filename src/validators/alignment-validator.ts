@@ -3,23 +3,7 @@
  */
 
 import { extract_keywords } from './text-analysis.js';
-
-export interface KeywordAnalysis {
-	description_keywords: string[];
-	content_keywords: string[];
-	overlap: string[];
-	description_only: string[];
-	content_only: string[];
-}
-
-export interface AlignmentAnalysis {
-	severity: 'good' | 'moderate' | 'critical';
-	description_focus: string[];
-	content_focus: string[];
-	matches: string[];
-	mismatches: string[];
-	explanation: string;
-}
+import type { KeywordAnalysis, AlignmentAnalysis } from '../types.js';
 
 export interface AlignmentWarning {
 	type: 'low_overlap';

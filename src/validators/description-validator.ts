@@ -6,29 +6,14 @@ import {
 	count_words,
 	estimate_string_tokens,
 } from './text-analysis.js';
+import type {
+	TriggerPhraseAnalysis,
+	UserPhrasingAnalysis,
+} from '../types.js';
 
 export interface DescriptionStats {
 	description_length: number;
 	description_tokens: number;
-}
-
-export interface TriggerPhraseAnalysis {
-	has_explicit_trigger: boolean;
-	trigger_phrase: string | null;
-	trigger_type: 'specific' | 'generic' | 'missing';
-}
-
-export interface UserPhrasingAnalysis {
-	style_checks: {
-		is_third_person: boolean;
-		uses_gerund_form: boolean;
-		is_action_oriented: boolean;
-	};
-	issues: Array<{
-		type: 'first_person' | 'passive_voice' | 'vague';
-		text: string;
-		suggestion: string;
-	}>;
 }
 
 export interface DescriptionWarning {

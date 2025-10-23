@@ -4,13 +4,7 @@
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-
-export interface ReferenceNesting {
-	file: string;
-	references: string[];
-	depth: number;
-	warning: string | null;
-}
+import type { ReferenceNesting } from '../types.js';
 
 export interface ReferencesValidation {
 	files_found: string[];

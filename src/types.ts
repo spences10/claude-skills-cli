@@ -75,13 +75,15 @@ export interface YAMLValidation {
 	missing_fields: string[];
 }
 
+export interface PathFormatIssue {
+	line_number: number;
+	path: string;
+	error: string;
+	suggested_fix: string;
+}
+
 export interface PathFormatValidation {
-	invalid_paths: Array<{
-		line_number: number;
-		path: string;
-		error: string;
-		suggested_fix: string;
-	}>;
+	invalid_paths: PathFormatIssue[];
 }
 
 export interface TriggerPhraseAnalysis {
@@ -127,6 +129,13 @@ export interface TriggeringValidation {
 	alignment: AlignmentAnalysis;
 }
 
+export interface ReferenceNesting {
+	file: string;
+	references: string[];
+	depth: number;
+	warning: string | null;
+}
+
 export interface ProgressiveDisclosureValidation {
 	skill_md_size: {
 		lines: number;
@@ -140,12 +149,7 @@ export interface ProgressiveDisclosureValidation {
 		files_referenced: string[];
 		missing_files: string[];
 		orphaned_files: string[];
-		nesting: Array<{
-			file: string;
-			references: string[];
-			depth: number;
-			warning: string | null;
-		}>;
+		nesting: ReferenceNesting[];
 		max_nesting_depth: number;
 	};
 }
