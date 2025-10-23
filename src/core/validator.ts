@@ -5,7 +5,11 @@ import {
 	statSync,
 } from 'node:fs';
 import { join } from 'node:path';
-import type { ValidationResult, ValidationStats } from '../types.js';
+import type {
+	StructuredValidation,
+	ValidationResult,
+	ValidationStats,
+} from '../types.js';
 
 export class SkillValidator {
 	private skill_path: string;
@@ -20,6 +24,35 @@ export class SkillValidator {
 		code_blocks: 0,
 		sections: 0,
 		long_paragraphs: 0,
+	};
+
+	// Structured validation data
+	private structured_validation: StructuredValidation = {
+		hard_limits: {
+			name: { length: 0, limit: 64, valid: true, error: null },
+			description: {
+				length: 0,
+				limit: 1024,
+				valid: true,
+				error: null,
+			},
+		},
+		name_format: {
+			name: '',
+			format_valid: true,
+			directory_name: '',
+			matches_directory: true,
+			errors: [],
+		},
+		yaml_validation: {
+			valid: true,
+			has_frontmatter: false,
+			parse_error: null,
+			missing_fields: [],
+		},
+		path_format: {
+			invalid_paths: [],
+		},
 	};
 
 	// Progressive disclosure limits (enforced as hard limits)
@@ -84,17 +117,17 @@ export class SkillValidator {
 		this.stats.description_length = desc_length;
 		this.stats.description_tokens = desc_tokens;
 
-		// Level 1 progressive disclosure checks
-		// Recommended: <200 chars, <30 tokens for optimal Level 1 efficiency
+		// Enforced limit: 300 chars (prevents Claude from bloating descriptions)
+		// Anthropic allows 1024, but that leads to verbose, inefficient descriptions
 		if (desc_length > 300) {
 			this.error(
-				`Description is ${desc_length} characters (MAX: 300 for Level 1)\n` +
-					`  → Level 1 is always loaded - keep it concise for token efficiency`,
+				`Description is ${desc_length} characters (MAX: 300 for efficiency)\n` +
+					`  → Keep descriptions concise - quality over quantity`,
 			);
 		} else if (desc_length > 200) {
 			this.warning(
-				`Description is ${desc_length} characters (recommended: <200 for Level 1)\n` +
-					`  → Estimated ~${desc_tokens} tokens - consider shortening for efficiency`,
+				`Description is ${desc_length} characters (recommended: <200)\n` +
+					`  → Estimated ~${desc_tokens} tokens - consider shortening`,
 			);
 		}
 
@@ -264,6 +297,44 @@ export class SkillValidator {
 		return true;
 	}
 
+	private validate_path_formats(
+		content: string,
+		file_name: string = 'SKILL.md',
+	): void {
+		const lines = content.split('\n');
+
+		lines.forEach((line, index) => {
+			// Skip code blocks (they might legitimately show Windows paths as examples)
+			if (line.trim().startsWith('```')) return;
+
+			// Detect backslashes in file paths
+			// Match patterns like: scripts\file.py, references\doc.md, etc.
+			const backslash_pattern =
+				/(?:scripts|references|assets|examples)\\[\w\\.-]+/g;
+			const matches = line.match(backslash_pattern);
+
+			if (matches) {
+				matches.forEach((match) => {
+					const fixed = match.replace(/\\/g, '/');
+
+					// Store in structured validation
+					this.structured_validation.path_format.invalid_paths.push({
+						line_number: index + 1,
+						path: match,
+						error: 'Windows-style backslash detected',
+						suggested_fix: fixed,
+					});
+
+					this.error(
+						`Windows-style path in ${file_name}:${index + 1}\n` +
+							`  → Found: ${match}\n` +
+							`  → Use: ${fixed}`,
+					);
+				});
+			}
+		});
+	}
+
 	private validate_skill_md(): boolean {
 		const skill_md_path = join(this.skill_path, 'SKILL.md');
 
@@ -274,15 +345,30 @@ export class SkillValidator {
 
 		const content = readFileSync(skill_md_path, 'utf-8');
 
+		// Validate path formats (no Windows backslashes)
+		this.validate_path_formats(content);
+
 		// Check for YAML frontmatter
-		if (!content.startsWith('---\n')) {
+		if (
+			!content.startsWith('---\n') &&
+			!content.startsWith('---\r\n')
+		) {
+			this.structured_validation.yaml_validation.has_frontmatter = false;
+			this.structured_validation.yaml_validation.valid = false;
+			this.structured_validation.yaml_validation.parse_error =
+				'Missing YAML frontmatter';
 			this.error('SKILL.md must start with YAML frontmatter (---)');
 			return false;
 		}
 
+		this.structured_validation.yaml_validation.has_frontmatter = true;
+
 		// Extract frontmatter
 		const parts = content.split('---\n');
 		if (parts.length < 3) {
+			this.structured_validation.yaml_validation.valid = false;
+			this.structured_validation.yaml_validation.parse_error =
+				'Malformed YAML frontmatter';
 			this.error('SKILL.md has malformed YAML frontmatter');
 			return false;
 		}
@@ -292,11 +378,19 @@ export class SkillValidator {
 
 		// Validate required fields
 		if (!frontmatter.includes('name:')) {
+			this.structured_validation.yaml_validation.missing_fields.push(
+				'name',
+			);
+			this.structured_validation.yaml_validation.valid = false;
 			this.error("SKILL.md frontmatter missing 'name' field");
 			return false;
 		}
 
 		if (!frontmatter.includes('description:')) {
+			this.structured_validation.yaml_validation.missing_fields.push(
+				'description',
+			);
+			this.structured_validation.yaml_validation.valid = false;
 			this.error("SKILL.md frontmatter missing 'description' field");
 			return false;
 		}
@@ -305,27 +399,37 @@ export class SkillValidator {
 		const name_match = frontmatter.match(/name:\s*(.+)/);
 		if (name_match) {
 			const name = name_match[1].trim();
+			const dir_name = this.skill_path.split('/').pop() || '';
+
+			// Store in structured validation
+			this.structured_validation.name_format.name = name;
+			this.structured_validation.name_format.directory_name =
+				dir_name;
+			this.structured_validation.hard_limits.name.length =
+				name.length;
 
 			// Validate name format
 			if (!/^[a-z0-9-]+$/.test(name)) {
-				this.error(
-					`Skill name must be lowercase kebab-case: '${name}'`,
-				);
+				const err = `Skill name must be lowercase kebab-case: '${name}'`;
+				this.structured_validation.name_format.format_valid = false;
+				this.structured_validation.name_format.errors.push(err);
+				this.error(err);
 			}
 
-			// Check name matches directory
-			const dir_name = this.skill_path.split('/').pop() || '';
+			// Check name matches directory (spec requirement)
 			if (name !== dir_name) {
-				this.warning(
-					`Skill name '${name}' doesn't match directory name '${dir_name}'`,
-				);
+				const err = `Skill name '${name}' must match directory name '${dir_name}'`;
+				this.structured_validation.name_format.matches_directory = false;
+				this.structured_validation.name_format.errors.push(err);
+				this.error(err);
 			}
 
 			// Check name length
 			if (name.length > 64) {
-				this.error(
-					`Skill name too long (max 64 chars): ${name.length}`,
-				);
+				const err = `Skill name too long (max 64 chars): ${name.length}`;
+				this.structured_validation.hard_limits.name.valid = false;
+				this.structured_validation.hard_limits.name.error = err;
+				this.error(err);
 			}
 		}
 
@@ -336,11 +440,17 @@ export class SkillValidator {
 		if (desc_match) {
 			const description = desc_match[1].trim();
 
+			// Store in structured validation
+			this.structured_validation.hard_limits.description.length =
+				description.length;
+
 			// Hard limit check (Anthropic requirement)
 			if (description.length > 1024) {
-				this.error(
-					`Description too long (max 1024 chars per Anthropic): ${description.length}`,
-				);
+				const err = `Description too long (max 1024 chars per Anthropic): ${description.length}`;
+				this.structured_validation.hard_limits.description.valid = false;
+				this.structured_validation.hard_limits.description.error =
+					err;
+				this.error(err);
 			}
 
 			// Short description check
@@ -491,6 +601,7 @@ export class SkillValidator {
 				warnings: this.warnings,
 				is_valid: false,
 				stats: this.stats,
+				validation: this.structured_validation,
 			};
 		}
 
@@ -504,6 +615,7 @@ export class SkillValidator {
 			warnings: this.warnings,
 			is_valid: this.errors.length === 0,
 			stats: this.stats,
+			validation: this.structured_validation,
 		};
 	}
 

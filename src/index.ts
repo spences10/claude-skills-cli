@@ -29,7 +29,13 @@ function show_help(): void {
 	console.log('  --help, -h          Show help');
 	console.log('  --version, -v       Show version');
 	console.log(
-		'  --with-examples     Include example files when creating skill\n',
+		'  --with-examples     Include example files when creating skill',
+	);
+	console.log(
+		'  --format <type>     Output format: text (default) or json',
+	);
+	console.log(
+		'  --strict            Fail validation if warnings present\n',
 	);
 	console.log('Examples:');
 	console.log(
@@ -40,6 +46,12 @@ function show_help(): void {
 	);
 	console.log('  claude-skills-cli install skill-creator');
 	console.log('  claude-skills-cli validate .claude/skills/my-skill');
+	console.log(
+		'  claude-skills-cli validate .claude/skills/my-skill --format json',
+	);
+	console.log(
+		'  claude-skills-cli validate .claude/skills/my-skill --strict',
+	);
 	console.log('  claude-skills-cli package .claude/skills/my-skill');
 	console.log('  claude-skills-cli stats .claude/skills');
 	console.log('\n⚠️  IMPORTANT FOR LLMs:');
@@ -130,12 +142,16 @@ async function main() {
 			const skill_path = parsed._positional as string;
 			if (!skill_path) {
 				console.error('Error: skill path required');
-				console.log('\nUsage: claude-skills-cli validate <skill_path>');
+				console.log(
+					'\nUsage: claude-skills-cli validate <skill_path> [--format json] [--strict]',
+				);
 				process.exit(1);
 			}
+			const format = parsed.format as string | undefined;
 			validate_command({
 				skill_path,
 				strict: parsed.strict === true,
+				format: format === 'json' ? 'json' : 'text',
 			});
 			break;
 		}
@@ -144,7 +160,9 @@ async function main() {
 			const skill_path = parsed._positional as string;
 			if (!skill_path) {
 				console.error('Error: skill path required');
-				console.log('\nUsage: claude-skills-cli package <skill_path>');
+				console.log(
+					'\nUsage: claude-skills-cli package <skill_path>',
+				);
 				process.exit(1);
 			}
 			await package_command({

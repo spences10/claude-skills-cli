@@ -16,6 +16,7 @@ export interface InitOptions {
 export interface ValidateOptions {
 	skill_path: string;
 	strict?: boolean;
+	format?: 'text' | 'json';
 }
 
 export interface PackageOptions {
@@ -44,9 +45,56 @@ export interface ValidationStats {
 	long_paragraphs: number;
 }
 
+export interface HardLimitValidation {
+	name: {
+		length: number;
+		limit: number;
+		valid: boolean;
+		error: string | null;
+	};
+	description: {
+		length: number;
+		limit: number;
+		valid: boolean;
+		error: string | null;
+	};
+}
+
+export interface NameFormatValidation {
+	name: string;
+	format_valid: boolean;
+	directory_name: string;
+	matches_directory: boolean;
+	errors: string[];
+}
+
+export interface YAMLValidation {
+	valid: boolean;
+	has_frontmatter: boolean;
+	parse_error: string | null;
+	missing_fields: string[];
+}
+
+export interface PathFormatValidation {
+	invalid_paths: Array<{
+		line_number: number;
+		path: string;
+		error: string;
+		suggested_fix: string;
+	}>;
+}
+
+export interface StructuredValidation {
+	hard_limits: HardLimitValidation;
+	name_format: NameFormatValidation;
+	yaml_validation: YAMLValidation;
+	path_format: PathFormatValidation;
+}
+
 export interface ValidationResult {
 	errors: string[];
 	warnings: string[];
 	is_valid: boolean;
 	stats?: ValidationStats;
+	validation?: StructuredValidation;
 }

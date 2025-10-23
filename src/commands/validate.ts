@@ -9,14 +9,37 @@ import {
 } from '../utils/output.js';
 
 export function validate_command(options: ValidateOptions): void {
-	const { skill_path, strict } = options;
+	const { skill_path, strict, format = 'text' } = options;
 	const skill_name = basename(skill_path);
-
-	info(`Validating skill: ${skill_name}`);
-	console.log('='.repeat(60));
 
 	const validator = new SkillValidator(skill_path);
 	const result = validator.validate_all();
+
+	// JSON output
+	if (format === 'json') {
+		const json_output = {
+			skill_name,
+			valid: result.is_valid,
+			errors: result.errors,
+			warnings: result.warnings,
+			validation: result.validation,
+			stats: result.stats,
+		};
+		console.log(JSON.stringify(json_output, null, 2));
+
+		// Exit codes for JSON mode
+		if (!result.is_valid) {
+			process.exit(1);
+		}
+		if (strict && result.warnings.length > 0) {
+			process.exit(1);
+		}
+		process.exit(0);
+	}
+
+	// Text output (existing)
+	info(`Validating skill: ${skill_name}`);
+	console.log('='.repeat(60));
 
 	// Display progressive disclosure stats
 	if (result.stats) {
