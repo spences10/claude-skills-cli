@@ -36,7 +36,9 @@ export function init_command(options: InitOptions): void {
 		console.log(
 			'  claude-skills-cli init --name my-skill --description "Description"',
 		);
-		console.log('  claude-skills-cli init --path /custom/path/my-skill');
+		console.log(
+			'  claude-skills-cli init --path /custom/path/my-skill',
+		);
 		process.exit(1);
 	}
 
