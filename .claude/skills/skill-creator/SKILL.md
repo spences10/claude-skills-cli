@@ -50,10 +50,10 @@ Skills load in 3 levels:
 
 ## Reference Documentation
 
-- [writing-guide.md](references/writing-guide.md) - How to write
-  effective skills
+- [writing-guide.md](references/writing-guide.md) - Writing effective
+  skills
 - [development-process.md](references/development-process.md) -
-  Step-by-step creation workflow
+  Step-by-step workflow
 - [skill-examples.md](references/skill-examples.md) - Patterns and
   examples
 - [cli-reference.md](references/cli-reference.md) - CLI tool usage

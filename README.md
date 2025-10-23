@@ -39,8 +39,6 @@ lean and scannable.
 
 ## Commands
 
-For Claude Code to read, this id detailed in the CLI
-
 ### init
 
 ```bash
@@ -56,14 +54,41 @@ references/). Use `--with-examples` for example files.
 ```bash
 pnpx claude-skills-cli validate .claude/skills/my-skill
 pnpx claude-skills-cli validate .claude/skills/my-skill --strict
+pnpx claude-skills-cli validate .claude/skills/my-skill --format json
 ```
 
-Validates progressive disclosure compliance:
+Comprehensive validation including:
 
-- Level 1: Description length, trigger keywords, no list bloat
-- Level 2: Line count (~50), word count (<1000), code blocks (1-2),
-  sections (3-5)
-- Level 3: Referenced files exist, no broken links
+**Structure & Format:**
+
+- Name format (kebab-case) and directory matching
+- YAML frontmatter validity
+- Required fields presence
+
+**Level 1 (Metadata):**
+
+- Description length (<200 chars optimal, ~30 tokens)
+- Trigger phrase presence and specificity
+- User phrasing (third-person, action-oriented, gerunds)
+- Keyword richness and alignment with content
+
+**Level 2 (SKILL.md Body):**
+
+- Line count (~50 target, 150 max)
+- Word count (<1000 recommended, <5000 max)
+- Token estimates (<6500 budget)
+- Code blocks (1-2 optimal)
+- Sections (3-5 recommended)
+
+**Level 3 (References):**
+
+- Referenced files exist (no broken links)
+- Orphaned files detection
+- Nesting depth analysis
+- Progressive disclosure structure
+
+Use `--strict` to fail on warnings, `--format json` for programmatic
+use.
 
 ### stats
 
@@ -93,8 +118,8 @@ Creates uploadable zip for Claude.ai. Validates first unless
   creation workflow
 - [docs/SKILL-EXAMPLES.md](docs/SKILL-EXAMPLES.md) - Real-world
   examples
-- [skills/skill-creator/](skills/skill-creator/) - Skill for creating
-  skills
+- [.claude/skills/skill-creator/](.claude/skills/skill-creator/) -
+  Skill for creating skills (validated example)
 
 **Official Anthropic docs:**
 
