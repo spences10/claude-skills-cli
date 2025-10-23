@@ -84,11 +84,55 @@ export interface PathFormatValidation {
 	}>;
 }
 
+export interface TriggerPhraseAnalysis {
+	has_explicit_trigger: boolean;
+	trigger_phrase: string | null;
+	trigger_type: 'specific' | 'generic' | 'missing';
+}
+
+export interface UserPhrasingAnalysis {
+	style_checks: {
+		is_third_person: boolean;
+		uses_gerund_form: boolean;
+		is_action_oriented: boolean;
+	};
+	issues: Array<{
+		type: 'first_person' | 'passive_voice' | 'vague';
+		text: string;
+		suggestion: string;
+	}>;
+}
+
+export interface KeywordAnalysis {
+	description_keywords: string[];
+	content_keywords: string[];
+	overlap: string[];
+	description_only: string[];
+	content_only: string[];
+}
+
+export interface AlignmentAnalysis {
+	severity: 'good' | 'moderate' | 'critical';
+	description_focus: string[];
+	content_focus: string[];
+	matches: string[];
+	mismatches: string[];
+	explanation: string;
+}
+
+export interface TriggeringValidation {
+	trigger_phrase: TriggerPhraseAnalysis;
+	user_phrasing: UserPhrasingAnalysis;
+	keywords: KeywordAnalysis;
+	alignment: AlignmentAnalysis;
+}
+
 export interface StructuredValidation {
 	hard_limits: HardLimitValidation;
 	name_format: NameFormatValidation;
 	yaml_validation: YAMLValidation;
 	path_format: PathFormatValidation;
+	triggering?: TriggeringValidation;
 }
 
 export interface ValidationResult {

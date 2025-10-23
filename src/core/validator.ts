@@ -53,6 +53,36 @@ export class SkillValidator {
 		path_format: {
 			invalid_paths: [],
 		},
+		triggering: {
+			trigger_phrase: {
+				has_explicit_trigger: false,
+				trigger_phrase: null,
+				trigger_type: 'missing',
+			},
+			user_phrasing: {
+				style_checks: {
+					is_third_person: true,
+					uses_gerund_form: true,
+					is_action_oriented: true,
+				},
+				issues: [],
+			},
+			keywords: {
+				description_keywords: [],
+				content_keywords: [],
+				overlap: [],
+				description_only: [],
+				content_only: [],
+			},
+			alignment: {
+				severity: 'good',
+				description_focus: [],
+				content_focus: [],
+				matches: [],
+				mismatches: [],
+				explanation: '',
+			},
+		},
 	};
 
 	// Progressive disclosure limits (enforced as hard limits)
@@ -185,6 +215,196 @@ export class SkillValidator {
 			const words = this.count_words(p);
 			return words > 100;
 		}).length;
+	}
+
+	/**
+	 * Extract keywords from text (simplified extraction)
+	 */
+	private extract_keywords(text: string): string[] {
+		const words = text
+			.toLowerCase()
+			.replace(/[^\w\s-]/g, ' ')
+			.split(/\s+/)
+			.filter((w) => w.length > 3);
+
+		const unique = [...new Set(words)];
+		return unique.filter(
+			(w) =>
+				![
+					'this',
+					'that',
+					'with',
+					'from',
+					'have',
+					'will',
+					'when',
+					'what',
+					'where',
+					'which',
+					'their',
+					'them',
+					'then',
+					'than',
+					'these',
+					'those',
+					'there',
+				].includes(w),
+		);
+	}
+
+	/**
+	 * Analyze trigger phrase in description
+	 */
+	private analyze_trigger_phrase(description: string): void {
+		const lower = description.toLowerCase();
+		const has_trigger =
+			lower.includes('use when') ||
+			lower.includes('use for') ||
+			lower.includes('use to');
+
+		let trigger_phrase: string | null = null;
+		let trigger_type: 'specific' | 'generic' | 'missing' = 'missing';
+
+		if (has_trigger) {
+			const match = description.match(
+				/(use when|use for|use to)[^.!?]*/i,
+			);
+			if (match) {
+				trigger_phrase = match[0].trim();
+				trigger_type =
+					trigger_phrase.length > 50 ? 'specific' : 'generic';
+			}
+		}
+
+		// Store in structured validation
+		this.structured_validation.triggering!.trigger_phrase = {
+			has_explicit_trigger: has_trigger,
+			trigger_phrase,
+			trigger_type,
+		};
+
+		if (!has_trigger) {
+			this.warning(
+				`Description missing explicit trigger phrase ('Use when...', 'Use for...', 'Use to...')\n` +
+					`  → Help Claude know when to activate this skill`,
+			);
+		}
+	}
+
+	/**
+	 * Analyze user phrasing style
+	 */
+	private analyze_user_phrasing(description: string): void {
+		const issues: Array<{
+			type: 'first_person' | 'passive_voice' | 'vague';
+			text: string;
+			suggestion: string;
+		}> = [];
+
+		// Check for first person
+		const is_third_person = !/\b(I can|I will|I help|my|me)\b/i.test(
+			description,
+		);
+		const first_person_patterns = /\b(I can|I will|I help|my|me)\b/i;
+		if (first_person_patterns.test(description)) {
+			const match = description.match(first_person_patterns);
+			if (match) {
+				this.warning(
+					`Description uses first person: "${match[0]}"\n` +
+						`  → Prefer third person for clarity (not required but recommended)`,
+				);
+			}
+		}
+
+		// Check for vague terms
+		const vague_patterns =
+			/\b(helper|utility|tool|various|several|some)\b/i;
+		if (vague_patterns.test(description)) {
+			const match = description.match(vague_patterns);
+			if (match) {
+				this.warning(
+					`Description contains vague term: "${match[0]}"\n` +
+						`  → Be specific about what the skill does`,
+				);
+			}
+		}
+
+		// Check for gerund form (verbs ending in -ing)
+		const uses_gerund = /\b\w+ing\b/i.test(description);
+
+		// Check for action-oriented (starts with action verbs)
+		const action_verbs =
+			/^(create|build|design|analyze|test|validate|generate|process|manage|execute|handle|provide)/i;
+		const is_action_oriented = action_verbs.test(description.trim());
+
+		// Store in structured validation
+		this.structured_validation.triggering!.user_phrasing = {
+			style_checks: {
+				is_third_person,
+				uses_gerund_form: uses_gerund,
+				is_action_oriented,
+			},
+			issues,
+		};
+	}
+
+	/**
+	 * Analyze description and content alignment
+	 */
+	private analyze_alignment(description: string, body: string): void {
+		const desc_keywords = this.extract_keywords(description);
+		const content_keywords = this.extract_keywords(body);
+
+		const overlap = desc_keywords.filter((k) =>
+			content_keywords.includes(k),
+		);
+		const desc_only = desc_keywords.filter(
+			(k) => !content_keywords.includes(k),
+		);
+		const content_only = content_keywords
+			.filter((k) => !desc_keywords.includes(k))
+			.slice(0, 20);
+
+		const overlap_ratio =
+			desc_keywords.length > 0
+				? overlap.length / desc_keywords.length
+				: 0;
+
+		let severity: 'good' | 'moderate' | 'critical' = 'good';
+		let explanation = 'Description aligns well with content';
+
+		if (overlap_ratio < 0.2 && desc_keywords.length > 5) {
+			severity = 'critical';
+			explanation = `Very low keyword overlap (${Math.round(overlap_ratio * 100)}%). Description may not match skill content.`;
+		} else if (overlap_ratio < 0.3 && desc_keywords.length > 5) {
+			severity = 'moderate';
+			explanation = `Low keyword overlap (${Math.round(overlap_ratio * 100)}%). Description may not accurately reflect skill content.`;
+		}
+
+		// Store in structured validation
+		this.structured_validation.triggering!.keywords = {
+			description_keywords: desc_keywords,
+			content_keywords: content_keywords.slice(0, 30),
+			overlap,
+			description_only: desc_only,
+			content_only,
+		};
+
+		this.structured_validation.triggering!.alignment = {
+			severity,
+			description_focus: desc_keywords.slice(0, 10),
+			content_focus: content_keywords.slice(0, 10),
+			matches: overlap,
+			mismatches: desc_only,
+			explanation,
+		};
+
+		if (overlap_ratio < 0.3 && desc_keywords.length > 5) {
+			this.warning(
+				`Low keyword overlap between description and content (${Math.round(overlap_ratio * 100)}%)\n` +
+					`  → Description may not accurately reflect skill content`,
+			);
+		}
 	}
 
 	/**
@@ -462,6 +682,11 @@ export class SkillValidator {
 
 			// Comprehensive Level 1 validation
 			this.validate_description(description);
+
+			// Triggering analysis (Phase 2)
+			this.analyze_trigger_phrase(description);
+			this.analyze_user_phrasing(description);
+			this.analyze_alignment(description, body);
 		}
 
 		// Validate progressive disclosure (word count, token budget)
