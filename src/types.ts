@@ -127,12 +127,36 @@ export interface TriggeringValidation {
 	alignment: AlignmentAnalysis;
 }
 
+export interface ProgressiveDisclosureValidation {
+	skill_md_size: {
+		lines: number;
+		words: number;
+		tokens: number;
+		exceeds_line_limit: boolean;
+		exceeds_word_limit: boolean;
+	};
+	references: {
+		files_found: string[];
+		files_referenced: string[];
+		missing_files: string[];
+		orphaned_files: string[];
+		nesting: Array<{
+			file: string;
+			references: string[];
+			depth: number;
+			warning: string | null;
+		}>;
+		max_nesting_depth: number;
+	};
+}
+
 export interface StructuredValidation {
 	hard_limits: HardLimitValidation;
 	name_format: NameFormatValidation;
 	yaml_validation: YAMLValidation;
 	path_format: PathFormatValidation;
 	triggering?: TriggeringValidation;
+	progressive_disclosure?: ProgressiveDisclosureValidation;
 }
 
 export interface ValidationResult {
