@@ -90,6 +90,21 @@ Comprehensive validation including:
 Use `--strict` to fail on warnings, `--format json` for programmatic
 use.
 
+### doctor
+
+```bash
+pnpx claude-skills-cli doctor .claude/skills/my-skill
+```
+
+Automatically fixes common skill issues:
+
+- **Multi-line descriptions**: Adds `# prettier-ignore` and reflows
+  description to single line
+- Ensures Claude Code can recognize the skill
+
+Run after formatting or if validation warns about multi-line
+descriptions.
+
 ### stats
 
 ```bash

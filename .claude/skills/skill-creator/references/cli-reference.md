@@ -156,6 +156,8 @@ npx claude-skills-cli validate .claude/skills/skill-2
 
 - Description length: <200 chars (optimal), <300 chars (warning),
   <1024 chars (max)
+- Description format: Must be on single line (warns if multi-line,
+  suggests `doctor` command)
 - Description includes trigger keywords ("Use when...", "Use for...",
   "Use to...")
 - Description comma count (warns if >3, suggesting list bloat)
@@ -248,6 +250,112 @@ npx claude-skills-cli validate .claude/skills/skill-2
 
 ---
 
+### `doctor` - Fix Common Issues
+
+Automatically fix common skill issues to ensure compatibility with
+Claude Code.
+
+#### Syntax
+
+```bash
+claude-skills-cli doctor <skill_path>
+```
+
+#### Arguments
+
+| Argument       | Type   | Required | Description             |
+| -------------- | ------ | -------- | ----------------------- |
+| `<skill_path>` | string | Yes      | Path to skill directory |
+
+#### What It Fixes
+
+**Multi-line Descriptions:**
+
+When formatters like Prettier wrap descriptions across multiple lines,
+Claude Code cannot recognize the skill. The doctor command:
+
+1. Detects multi-line descriptions in YAML frontmatter
+2. Adds `# prettier-ignore` comment before the description field
+3. Reflows the description to a single line
+
+**Example:**
+
+Before:
+
+```yaml
+---
+name: my-skill
+description:
+  This is a long description that got wrapped by prettier across
+  multiple lines
+---
+```
+
+After:
+
+```yaml
+---
+name: my-skill
+# prettier-ignore
+description: This is a long description that got wrapped by prettier across multiple lines
+---
+```
+
+#### Examples
+
+```bash
+# Fix multi-line description
+npx claude-skills-cli doctor .claude/skills/my-skill
+
+# Common workflow after formatting
+npx prettier --write .claude/skills/my-skill/SKILL.md
+npx claude-skills-cli doctor .claude/skills/my-skill
+npx claude-skills-cli validate .claude/skills/my-skill
+```
+
+#### Output
+
+**When issues are found:**
+
+```
+📋 Running doctor on: my-skill
+============================================================
+📋 Found multi-line description. Fixing...
+✅ Fixed multi-line description!
+
+Changes made:
+  • Added # prettier-ignore comment before description
+  • Reflowed description to single line
+
+✓ Run validate command to confirm the fix
+```
+
+**When no issues exist:**
+
+```
+📋 Running doctor on: my-skill
+============================================================
+✅ No issues found. Description is already on a single line.
+```
+
+#### Exit Codes
+
+| Code | Meaning                      |
+| ---- | ---------------------------- |
+| 0    | Success (fixed or no issues) |
+| 1    | Error (file not found, etc.) |
+
+#### When to Use
+
+Run `doctor` when:
+
+- Validation warns about multi-line descriptions
+- After running code formatters (Prettier, dprint, etc.)
+- After manually editing SKILL.md files
+- Before packaging or distributing skills
+
+---
+
 ### `package` - Create Distribution Zip
 
 Package skill into a zip file for distribution.
@@ -334,13 +442,19 @@ vim .claude/skills/database-queries/SKILL.md
 # 3. Add references
 vim .claude/skills/database-queries/references/schema.md
 
-# 4. Validate
+# 4. Format (if using formatter)
+npx prettier --write .claude/skills/database-queries/SKILL.md
+
+# 5. Fix any formatting issues
+npx claude-skills-cli doctor .claude/skills/database-queries
+
+# 6. Validate
 npx claude-skills-cli validate .claude/skills/database-queries
 
-# 5. Fix any issues, re-validate
+# 7. Fix any remaining issues, re-validate
 npx claude-skills-cli validate .claude/skills/database-queries
 
-# 6. Package
+# 8. Package
 npx claude-skills-cli package .claude/skills/database-queries
 ```
 
