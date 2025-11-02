@@ -1,5 +1,11 @@
 # claude-skills-cli
 
+## 0.0.10
+
+### Patch Changes
+
+- 9bfb7d4: normalise path for skill
+
 ## 0.0.9
 
 ### Patch Changes
