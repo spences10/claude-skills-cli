@@ -1,5 +1,11 @@
 # claude-skills-cli
 
+## 0.0.9
+
+### Patch Changes
+
+- ef44a34: update skill creator to be spec compliant
+
 ## 0.0.8
 
 ### Patch Changes
