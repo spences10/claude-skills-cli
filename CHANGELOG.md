@@ -1,5 +1,12 @@
 # claude-skills-cli
 
+## 0.0.8
+
+### Patch Changes
+
+- a00cd14: validation for multiline descriptions + doctor command
+- 1ea18b5: update documentation for doctor + validation
+
 ## 0.0.7
 
 ### Patch Changes
