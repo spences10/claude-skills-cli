@@ -34,6 +34,10 @@ export interface InstallOptions {
 	force?: boolean;
 }
 
+export interface DoctorOptions {
+	skill_path: string;
+}
+
 export interface ValidationStats {
 	word_count: number;
 	estimated_tokens: number;

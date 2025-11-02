@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { doctor_command } from './commands/doctor.js';
 import { init_command } from './commands/init.js';
 import { install_command } from './commands/install.js';
 import { package_command } from './commands/package.js';
@@ -21,6 +22,7 @@ function show_help(): void {
 		'  install     Install a bundled skill (e.g., skill-creator)',
 	);
 	console.log('  validate    Validate a skill');
+	console.log('  doctor      Fix common skill issues automatically');
 	console.log('  package     Package a skill to zip');
 	console.log(
 		'  stats       Show overview of all skills in a directory\n',
@@ -52,6 +54,7 @@ function show_help(): void {
 	console.log(
 		'  claude-skills-cli validate .claude/skills/my-skill --strict',
 	);
+	console.log('  claude-skills-cli doctor .claude/skills/my-skill');
 	console.log('  claude-skills-cli package .claude/skills/my-skill');
 	console.log('  claude-skills-cli stats .claude/skills');
 	console.log('\n⚠️  IMPORTANT FOR LLMs:');
@@ -152,6 +155,19 @@ async function main() {
 				skill_path,
 				strict: parsed.strict === true,
 				format: format === 'json' ? 'json' : 'text',
+			});
+			break;
+		}
+
+		case 'doctor': {
+			const skill_path = parsed._positional as string;
+			if (!skill_path) {
+				console.error('Error: skill path required');
+				console.log('\nUsage: claude-skills-cli doctor <skill_path>');
+				process.exit(1);
+			}
+			doctor_command({
+				skill_path,
 			});
 			break;
 		}

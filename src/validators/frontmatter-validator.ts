@@ -12,6 +12,7 @@ export interface FrontmatterData {
 	name: string | null;
 	description: string | null;
 	body: string;
+	description_is_multiline: boolean;
 }
 
 /**
@@ -22,18 +23,76 @@ export function has_yaml_frontmatter(content: string): boolean {
 }
 
 /**
+ * Check if description field spans multiple lines in raw YAML
+ */
+export function is_description_multiline(
+	frontmatter: string,
+): boolean {
+	// Find the description line
+	const desc_line_match = frontmatter.match(/^description:\s*(.*)$/m);
+	if (!desc_line_match) {
+		return false;
+	}
+
+	const value_on_same_line = desc_line_match[1].trim();
+
+	// If there's no value on the same line as "description:", it's multi-line
+	if (!value_on_same_line) {
+		return true;
+	}
+
+	// Check if there are continuation lines (indented lines after description:)
+	// that are not other YAML fields
+	const lines = frontmatter.split('\n');
+	let found_desc = false;
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		if (line.match(/^description:/)) {
+			found_desc = true;
+			continue;
+		}
+		if (found_desc) {
+			// If next line starts with spaces/tabs and is not a comment and is not another field
+			if (
+				line.match(/^\s+\S/) &&
+				!line.trim().startsWith('#') &&
+				!line.match(/^[a-z_-]+:/)
+			) {
+				return true;
+			}
+			// Stop checking after we hit another field or end
+			if (line.match(/^[a-z_-]+:/)) {
+				break;
+			}
+		}
+	}
+
+	return false;
+}
+
+/**
  * Extract frontmatter and body from SKILL.md content
  */
 export function extract_frontmatter(
 	content: string,
 ): FrontmatterData {
 	if (!has_yaml_frontmatter(content)) {
-		return { name: null, description: null, body: content };
+		return {
+			name: null,
+			description: null,
+			body: content,
+			description_is_multiline: false,
+		};
 	}
 
 	const parts = content.split('---\n');
 	if (parts.length < 3) {
-		return { name: null, description: null, body: content };
+		return {
+			name: null,
+			description: null,
+			body: content,
+			description_is_multiline: false,
+		};
 	}
 
 	const frontmatter = parts[1];
@@ -49,7 +108,11 @@ export function extract_frontmatter(
 	);
 	const description = desc_match ? desc_match[1].trim() : null;
 
-	return { name, description, body };
+	// Check if description spans multiple lines in the raw YAML
+	const description_is_multiline =
+		is_description_multiline(frontmatter);
+
+	return { name, description, body, description_is_multiline };
 }
 
 /**

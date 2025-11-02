@@ -7,26 +7,26 @@ import type {
 } from '../types.js';
 
 // Import validators
+import { analyze_alignment } from '../validators/alignment-validator.js';
+import { validate_content } from '../validators/content-validator.js';
 import {
-	extract_frontmatter,
-	validate_frontmatter_structure,
-	validate_name_format,
-	validate_hard_limits,
-} from '../validators/frontmatter-validator.js';
-import {
-	validate_description_content,
 	analyze_trigger_phrase,
 	analyze_user_phrasing,
+	validate_description_content,
 } from '../validators/description-validator.js';
-import { validate_content } from '../validators/content-validator.js';
-import { analyze_alignment } from '../validators/alignment-validator.js';
-import { validate_references } from '../validators/references-validator.js';
 import {
+	validate_assets,
 	validate_directory,
 	validate_path_formats,
 	validate_scripts,
-	validate_assets,
 } from '../validators/file-structure-validator.js';
+import {
+	extract_frontmatter,
+	validate_frontmatter_structure,
+	validate_hard_limits,
+	validate_name_format,
+} from '../validators/frontmatter-validator.js';
+import { validate_references } from '../validators/references-validator.js';
 
 export class SkillValidator {
 	private skill_path: string;
@@ -149,13 +149,22 @@ export class SkillValidator {
 		}
 
 		// Extract frontmatter data
-		const { name, description, body } = extract_frontmatter(content);
+		const { name, description, body, description_is_multiline } =
+			extract_frontmatter(content);
 
 		if (!name || !description) {
 			this.error(
 				'Failed to extract name or description from frontmatter',
 			);
 			return false;
+		}
+
+		// Warn if description spans multiple lines
+		if (description_is_multiline) {
+			this.warning(
+				`Multi-line description detected. Claude Code cannot recognize skills with multi-line descriptions.\n` +
+					`  → Run 'claude-skills-cli doctor ${this.skill_path}' to fix automatically`,
+			);
 		}
 
 		// Get directory name

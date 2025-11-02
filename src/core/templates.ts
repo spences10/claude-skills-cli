@@ -6,6 +6,8 @@ export const SKILL_MD_TEMPLATE = (
 ) => {
 	const minimal_template = `---
 name: ${name}
+# IMPORTANT: Keep description on ONE line for Claude Code compatibility
+# prettier-ignore
 description: ${description}
 ---
 
@@ -49,11 +51,20 @@ PROGRESSIVE DISCLOSURE GUIDELINES:
 - Keep description <200 chars for Level 1 efficiency
 - Move detailed docs to references/ for Level 3 loading
 - This is Level 2 - quick reference ONLY, not a manual
+
+LLM WORKFLOW (when editing this file):
+1. Write/edit SKILL.md
+2. Format (if formatter available)
+3. Run: claude-skills-cli validate <path>
+4. If multi-line description warning: run claude-skills-cli doctor <path>
+5. Validate again to confirm
 -->
 `;
 
 	const full_template = `---
 name: ${name}
+# IMPORTANT: Keep description on ONE line for Claude Code compatibility
+# prettier-ignore
 description: ${description}
 ---
 
@@ -102,6 +113,13 @@ PROGRESSIVE DISCLOSURE GUIDELINES:
 - Keep description <200 chars for Level 1 efficiency
 - Move detailed docs to references/ for Level 3 loading
 - This is Level 2 - quick reference ONLY, not a manual
+
+LLM WORKFLOW (when editing this file):
+1. Write/edit SKILL.md
+2. Format (if formatter available)
+3. Run: claude-skills-cli validate <path>
+4. If multi-line description warning: run claude-skills-cli doctor <path>
+5. Validate again to confirm
 -->
 `;
 
