@@ -12,21 +12,9 @@ Create effective Claude Skills using progressive disclosure.
 
 Create a skill when you notice:
 
-- **Repeating context** across conversations (schemas, patterns,
-  rules)
-- **Domain expertise** needed repeatedly (API integration, framework
-  conventions)
+- **Repeating context** across conversations
+- **Domain expertise** needed repeatedly
 - **Project-specific knowledge** Claude should know automatically
-
-## Skill Structure
-
-```
-my-skill/
-├── SKILL.md          # Core instructions + metadata
-├── references/       # Detailed docs (loaded as needed)
-├── scripts/          # Executable operations
-└── assets/           # Templates, images, files
-```
 
 ## Progressive Disclosure
 
@@ -39,15 +27,20 @@ Skills load in 3 levels:
 
 **Key**: Keep Levels 1 & 2 lean. Move details to Level 3.
 
-## Quick Start
+## Structure
 
-1. Create directory: `.claude/skills/my-skill/`
-2. Create `SKILL.md` with frontmatter and body
-3. Test in conversation
-4. Add references/ as content grows
+```
+my-skill/
+├── SKILL.md       # Core instructions + metadata
+├── references/    # Detailed docs (loaded as needed)
+├── scripts/       # Executable operations
+└── assets/        # Templates, images, files
+```
 
-## Reference Documentation
+## References
 
+- [quick-start.md](references/quick-start.md) - Creating your first
+  skill
 - [writing-guide.md](references/writing-guide.md) - Writing effective
   skills
 - [development-process.md](references/development-process.md) -
