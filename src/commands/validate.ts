@@ -10,7 +10,9 @@ import {
 
 export function validate_command(options: ValidateOptions): void {
 	const { skill_path, strict, format = 'text' } = options;
-	const skill_name = basename(skill_path);
+	// Normalize path by removing trailing slashes before extracting basename
+	const normalized_path = skill_path.replace(/\/+$/, '');
+	const skill_name = basename(normalized_path);
 
 	const validator = new SkillValidator(skill_path);
 	const result = validator.validate_all();

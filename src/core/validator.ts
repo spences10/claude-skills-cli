@@ -167,8 +167,9 @@ export class SkillValidator {
 			);
 		}
 
-		// Get directory name
-		const dir_name = this.skill_path.split('/').pop() || '';
+		// Get directory name (normalize path to handle trailing slashes)
+		const normalized_path = this.skill_path.replace(/\/+$/, '');
+		const dir_name = normalized_path.split('/').pop() || '';
 
 		// Validate name format
 		const name_validation = validate_name_format(name, dir_name);
