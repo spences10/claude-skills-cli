@@ -123,36 +123,45 @@ pnpx claude-skills-cli package .claude/skills/my-skill
 Creates uploadable zip for Claude.ai. Validates first unless
 `--skip-validation` specified.
 
+### add-hook
+
+```bash
+pnpx claude-skills-cli add-hook            # Global (all projects)
+pnpx claude-skills-cli add-hook --project  # Project (committed)
+pnpx claude-skills-cli add-hook --local    # Project-local (gitignored)
+```
+
+Adds skill activation hook to improve reliability. By default, adds to
+global settings (`~/.claude/settings.json`) to apply across all
+projects. Use `--project` for team-shared settings or `--local` for
+personal overrides.
+
 ## Skill Activation in Claude Code
 
 Skills are designed to auto-activate in Claude Code, but, in reality,
 activation can be inconsistent. To improve reliability and make Claude
-check for relevant skills more consistently, add a hook to
-`.claude/settings.json`:
+check for relevant skills more consistently, use the `add-hook`
+command:
 
-```json
-{
-	"hooks": {
-		"UserPromptSubmit": [
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "echo '💡 Check .claude/skills/ for relevant skills before responding!'"
-					}
-				]
-			}
-		]
-	}
-}
+```bash
+pnpx claude-skills-cli add-hook  # Recommended: global (all projects)
 ```
 
-This reminder:
+This adds a hook that:
 
 - Fires before Claude processes each prompt (~15 tokens/prompt)
 - Makes Claude consistently check for relevant skills
 - Requires no maintenance (unlike pattern-based approaches)
 - Claude decides which skills apply to the current task
+
+**Scopes:**
+
+- **Global** (default): `~/.claude/settings.json` - applies to all
+  projects
+- **Project** (`--project`): `./.claude/settings.json` - committed to
+  git, team-shared
+- **Local** (`--local`): `./.claude/settings.local.json` - gitignored,
+  personal
 
 **Note:** This hook pattern is widely adopted by the community to
 improve skill activation reliability.

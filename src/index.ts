@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { add_hook_command } from './commands/add-hook.js';
 import { doctor_command } from './commands/doctor.js';
 import { init_command } from './commands/init.js';
 import { install_command } from './commands/install.js';
@@ -25,7 +26,10 @@ function show_help(): void {
 	console.log('  doctor      Fix common skill issues automatically');
 	console.log('  package     Package a skill to zip');
 	console.log(
-		'  stats       Show overview of all skills in a directory\n',
+		'  stats       Show overview of all skills in a directory',
+	);
+	console.log(
+		'  add-hook    Add skill activation hook to .claude/settings.json\n',
 	);
 	console.log('Options:');
 	console.log('  --help, -h          Show help');
@@ -57,6 +61,15 @@ function show_help(): void {
 	console.log('  claude-skills-cli doctor .claude/skills/my-skill');
 	console.log('  claude-skills-cli package .claude/skills/my-skill');
 	console.log('  claude-skills-cli stats .claude/skills');
+	console.log(
+		'  claude-skills-cli add-hook                  # Global',
+	);
+	console.log(
+		'  claude-skills-cli add-hook --project        # Project',
+	);
+	console.log(
+		'  claude-skills-cli add-hook --local          # Project-local',
+	);
 	console.log('\n⚠️  IMPORTANT FOR LLMs:');
 	console.log(
 		'  ALWAYS run validate after creating or editing a skill:',
@@ -196,6 +209,13 @@ async function main() {
 			});
 			break;
 		}
+
+		case 'add-hook':
+			add_hook_command({
+				local: parsed.local === true,
+				project: parsed.project === true,
+			});
+			break;
 
 		default:
 			console.error(`Unknown command: ${command}`);
