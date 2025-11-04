@@ -1,5 +1,12 @@
 # claude-skills-cli
 
+## 0.0.11
+
+### Patch Changes
+
+- 128c0f3: add UserPromptSubmit hook option for consistent skill
+  activation
+
 ## 0.0.10
 
 ### Patch Changes
