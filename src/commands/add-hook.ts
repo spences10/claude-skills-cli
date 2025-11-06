@@ -23,7 +23,7 @@ interface AddHookOptions {
 }
 
 const HOOK_COMMAND =
-	"echo '💡 Check .claude/skills/ for relevant skills before responding!'";
+	"echo 'INSTRUCTION: If the prompt matches any available skill keywords, use Skill(skill-name) to activate it.'";
 
 export function add_hook_command(options: AddHookOptions = {}): void {
 	// Determine which settings file to use
@@ -141,9 +141,9 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 		info(`Location: ${settings_path}`);
 		console.log('');
 		info(
-			'This hook improves skill activation reliability by reminding',
+			'This hook improves skill activation reliability by explicitly',
 		);
-		info('Claude to check for relevant skills before responding.');
+		info('instructing Claude to check AND activate matching skills.');
 		console.log('');
 		info('Next steps:');
 		console.log(

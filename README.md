@@ -138,21 +138,37 @@ personal overrides.
 
 ## Skill Activation in Claude Code
 
-Skills are designed to auto-activate in Claude Code, but, in reality,
-activation can be inconsistent. To improve reliability and make Claude
-check for relevant skills more consistently, use the `add-hook`
-command:
+Skills are designed to auto-activate in Claude Code, but in practice,
+**[activation is unreliable without explicit hooks](https://scottspence.com/posts/claude-code-skills-dont-auto-activate)**.
+Despite documentation claiming skills are "model-invoked," Claude
+often bypasses skills unless directly instructed.
+
+### The Solution: Explicit Activation Hooks
+
+Use the `add-hook` command to add an explicit activation instruction:
 
 ```bash
 pnpx claude-skills-cli add-hook  # Recommended: global (all projects)
 ```
 
-This adds a hook that:
+This adds a `UserPromptSubmit` hook that:
 
-- Fires before Claude processes each prompt (~15 tokens/prompt)
-- Makes Claude consistently check for relevant skills
-- Requires no maintenance (unlike pattern-based approaches)
-- Claude decides which skills apply to the current task
+- Uses explicit "INSTRUCTION:" prefix (critical for reliability)
+- Tells Claude to check skills AND activate them using `Skill()`
+  syntax
+- Scales automatically with new skills (no keyword management needed)
+- Fires on every prompt (~20 tokens/prompt overhead)
+
+**Why explicit instructions matter:**
+
+Testing shows vague hooks like "Check for skills" make Claude _read_
+skill files instead of _activating_ them. The instruction must be
+direct and unambiguous:
+
+```
+INSTRUCTION: Check available skills, match keywords to skill names/descriptions,
+and activate matching skills using Skill(skill-name).
+```
 
 **Scopes:**
 
@@ -163,8 +179,14 @@ This adds a hook that:
 - **Local** (`--local`): `./.claude/settings.local.json` - gitignored,
   personal
 
-**Note:** This hook pattern is widely adopted by the community to
-improve skill activation reliability.
+**Alternative: Keyword-based scripts**
+
+For 1-2 skills, bash scripts with keyword detection work but become
+brittle at scale (keyword collisions, manual maintenance per skill).
+The simple echo-based instruction hook is more maintainable.
+
+Read more:
+[Why Claude Code Skills Don't Auto-Activate](https://scottspence.com/posts/claude-code-skills-dont-auto-activate)
 
 ## Resources
 
