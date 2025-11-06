@@ -1,5 +1,11 @@
 # claude-skills-cli
 
+## 0.0.12
+
+### Patch Changes
+
+- 9709a29: update skill activation hook and documentation
+
 ## 0.0.11
 
 ### Patch Changes
