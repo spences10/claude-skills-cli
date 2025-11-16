@@ -41,7 +41,10 @@ function show_help(): void {
 		'  --format <type>     Output format: text (default) or json',
 	);
 	console.log(
-		'  --strict            Fail validation if warnings present\n',
+		'  --strict            Fail validation if warnings present',
+	);
+	console.log(
+		'  --force             Replace existing hook without prompting\n',
 	);
 	console.log('Examples:');
 	console.log(
@@ -72,6 +75,9 @@ function show_help(): void {
 	);
 	console.log(
 		'  claude-skills-cli add-hook --type simple-script --local   # Local, simple script',
+	);
+	console.log(
+		'  claude-skills-cli add-hook --type forced-eval --force    # Replace existing hook',
 	);
 	console.log('\nHook Types (--type):');
 	console.log(
@@ -234,6 +240,7 @@ async function main() {
 					| 'forced-eval'
 					| 'llm-eval'
 					| undefined,
+				force: parsed.force === true,
 			});
 			break;
 

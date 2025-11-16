@@ -46,6 +46,7 @@ export interface AddHookOptions {
 		| 'simple-script'
 		| 'forced-eval'
 		| 'llm-eval';
+	force?: boolean;
 }
 
 export interface ValidationStats {

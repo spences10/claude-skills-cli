@@ -115,25 +115,39 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 				// Get the first (and should be only) UserPromptSubmit object
 				const userPromptSubmit = settings.hooks.UserPromptSubmit[0];
 
-				// Check if a skill activation hook already exists
-				const has_skill_hook = userPromptSubmit.hooks?.some(
+				// Find existing skill activation hook (check for various patterns)
+				const existing_hook = userPromptSubmit.hooks?.find(
 					(h) =>
 						h.type === 'command' &&
 						(h.command.includes('skill-activation') ||
+							h.command.includes('skill-forced-eval-hook') ||
+							h.command.includes('skill-llm-eval-hook') ||
+							h.command.includes('skill-simple-instruction-hook') ||
 							h.command.includes(
 								'If the prompt matches any available skill keywords',
 							)),
 				);
 
-				if (has_skill_hook) {
+				if (existing_hook) {
 					warning(
 						`Skill activation hook already exists in ${scope} settings`,
 					);
-					info('No changes made.');
-					info(
-						'To replace, manually remove the existing hook first.',
-					);
-					return;
+					info(`Current hook: ${existing_hook.command}`);
+					console.log('');
+
+					if (options.force) {
+						info('--force flag provided, replacing existing hook...');
+						// Remove the existing hook
+						userPromptSubmit.hooks = userPromptSubmit.hooks?.filter(
+							(h) => h !== existing_hook,
+						);
+					} else {
+						info('No changes made.');
+						info(
+							'To replace, run with --force flag or manually remove the existing hook.',
+						);
+						return;
+					}
 				}
 			}
 		} catch (err) {
