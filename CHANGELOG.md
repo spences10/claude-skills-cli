@@ -1,5 +1,12 @@
 # claude-skills-cli
 
+## 0.0.13
+
+### Patch Changes
+
+- 113dcdc: add additional hooks as scripts
+- d446dde: additional logic for existing hooks
+
 ## 0.0.12
 
 ### Patch Changes
