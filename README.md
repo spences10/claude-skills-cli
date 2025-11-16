@@ -126,15 +126,34 @@ Creates uploadable zip for Claude.ai. Validates first unless
 ### add-hook
 
 ```bash
-pnpx claude-skills-cli add-hook            # Global (all projects)
-pnpx claude-skills-cli add-hook --project  # Project (committed)
-pnpx claude-skills-cli add-hook --local    # Project-local (gitignored)
+# Default: forced-eval hook (84% success), global scope
+pnpx claude-skills-cli add-hook
+
+# Specify hook type and scope
+pnpx claude-skills-cli add-hook --type llm-eval          # LLM eval, global
+pnpx claude-skills-cli add-hook --type forced-eval --project   # Forced eval, project
+pnpx claude-skills-cli add-hook --type simple-script --local   # Simple script, local
 ```
 
-Adds skill activation hook to improve reliability. By default, adds to
-global settings (`~/.claude/settings.json`) to apply across all
-projects. Use `--project` for team-shared settings or `--local` for
-personal overrides.
+Adds skill activation hook to improve reliability. Generates hook
+scripts in `.claude/hooks/` and updates settings.json.
+
+**Hook Types (--type):**
+
+| Type            | Success Rate | Description                 | Notes                        |
+| --------------- | ------------ | --------------------------- | ---------------------------- |
+| `forced-eval`   | **84%**      | Mandatory 3-step evaluation | Default, most consistent     |
+| `llm-eval`      | **80%**      | Claude API pre-evaluation   | Requires `ANTHROPIC_API_KEY` |
+| `simple-script` | 20%          | Basic script file           | For reference/debugging      |
+| `simple-inline` | 20%          | Echo in settings.json       | Legacy, backwards compatible |
+
+**Scopes:**
+
+- **Global** (default): `~/.claude/settings.json` - All projects
+- **Project** (`--project`): `./.claude/settings.json` - Committed,
+  team-shared
+- **Local** (`--local`): `./.claude/settings.local.json` - Gitignored,
+  personal
 
 ## Skill Activation in Claude Code
 
@@ -143,50 +162,49 @@ Skills are designed to auto-activate in Claude Code, but in practice,
 Despite documentation claiming skills are "model-invoked," Claude
 often bypasses skills unless directly instructed.
 
-### The Solution: Explicit Activation Hooks
+### The Solution: Activation Hooks
 
-Use the `add-hook` command to add an explicit activation instruction:
+Use the `add-hook` command to add skill activation instructions:
 
 ```bash
-pnpx claude-skills-cli add-hook  # Recommended: global (all projects)
+# Recommended: forced-eval hook (84% success)
+pnpx claude-skills-cli add-hook
 ```
 
-This adds a `UserPromptSubmit` hook that:
+After extensive testing (200+ prompts), two approaches emerged as
+significantly better than basic instructions:
 
-- Uses explicit "INSTRUCTION:" prefix (critical for reliability)
-- Tells Claude to check skills AND activate them using `Skill()`
-  syntax
-- Scales automatically with new skills (no keyword management needed)
-- Fires on every prompt (~20 tokens/prompt overhead)
+**Forced Eval Hook (84% success)** - Creates a mandatory 3-step
+process:
 
-**Why explicit instructions matter:**
+1. Explicitly evaluate each skill (YES/NO with reasoning)
+2. Activate matching skills using `Skill()` tool
+3. Only then proceed with implementation
 
-Testing shows vague hooks like "Check for skills" make Claude _read_
-skill files instead of _activating_ them. The instruction must be
-direct and unambiguous:
+**LLM Eval Hook (80% success)** - Pre-evaluates skills via Claude API:
 
-```
-INSTRUCTION: Check available skills, match keywords to skill names/descriptions,
-and activate matching skills using Skill(skill-name).
-```
+- Costs ~$0.0004 per prompt (0.04 cents)
+- 10% cheaper and 17% faster than forced eval
+- Can miss certain prompt types but "smarter" when it works
+- Requires `ANTHROPIC_API_KEY` environment variable
 
-**Scopes:**
+Both approaches are **massively better** than simple instructions (20%
+success rate).
 
-- **Global** (default): `~/.claude/settings.json` - applies to all
-  projects
-- **Project** (`--project`): `./.claude/settings.json` - committed to
-  git, team-shared
-- **Local** (`--local`): `./.claude/settings.local.json` - gitignored,
-  personal
+**Why explicit commitment matters:**
 
-**Alternative: Keyword-based scripts**
+Simple hooks like "If the prompt matches any skill keywords, use
+Skill(skill-name)" are passive suggestions that Claude often ignores.
+The forced-eval hook creates a commitment mechanism - Claude must
+write out its evaluation before proceeding, making it harder to skip
+activation.
 
-For 1-2 skills, bash scripts with keyword detection work but become
-brittle at scale (keyword collisions, manual maintenance per skill).
-The simple echo-based instruction hook is more maintainable.
+**Read more:**
 
-Read more:
-[Why Claude Code Skills Don't Auto-Activate](https://scottspence.com/posts/claude-code-skills-dont-auto-activate)
+- [How to Make Claude Code Skills Activate Reliably](https://scottspence.com/posts/how-to-make-claude-code-skills-activate-reliably) -
+  Full testing methodology and results
+- [Why Claude Code Skills Don't Auto-Activate](https://scottspence.com/posts/claude-code-skills-dont-auto-activate) -
+  Original problem analysis
 
 ## Resources
 

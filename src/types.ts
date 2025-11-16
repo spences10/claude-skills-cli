@@ -38,6 +38,16 @@ export interface DoctorOptions {
 	skill_path: string;
 }
 
+export interface AddHookOptions {
+	local?: boolean;
+	project?: boolean;
+	type?:
+		| 'simple-inline'
+		| 'simple-script'
+		| 'forced-eval'
+		| 'llm-eval';
+}
+
 export interface ValidationStats {
 	word_count: number;
 	estimated_tokens: number;

@@ -62,13 +62,27 @@ function show_help(): void {
 	console.log('  claude-skills-cli package .claude/skills/my-skill');
 	console.log('  claude-skills-cli stats .claude/skills');
 	console.log(
-		'  claude-skills-cli add-hook                  # Global',
+		'  claude-skills-cli add-hook                          # Global, forced-eval (84%)',
 	);
 	console.log(
-		'  claude-skills-cli add-hook --project        # Project',
+		'  claude-skills-cli add-hook --type llm-eval          # Global, LLM eval (80%)',
 	);
 	console.log(
-		'  claude-skills-cli add-hook --local          # Project-local',
+		'  claude-skills-cli add-hook --type forced-eval --project   # Project, forced-eval',
+	);
+	console.log(
+		'  claude-skills-cli add-hook --type simple-script --local   # Local, simple script',
+	);
+	console.log('\nHook Types (--type):');
+	console.log(
+		'  forced-eval     84% success - Mandatory 3-step evaluation (default)',
+	);
+	console.log(
+		'  llm-eval        80% success - Claude API pre-evaluation (requires API key)',
+	);
+	console.log('  simple-script   20% success - Basic script file');
+	console.log(
+		'  simple-inline   20% success - Echo command in settings.json',
 	);
 	console.log('\n⚠️  IMPORTANT FOR LLMs:');
 	console.log(
@@ -214,6 +228,12 @@ async function main() {
 			add_hook_command({
 				local: parsed.local === true,
 				project: parsed.project === true,
+				type: parsed.type as
+					| 'simple-inline'
+					| 'simple-script'
+					| 'forced-eval'
+					| 'llm-eval'
+					| undefined,
 			});
 			break;
 
