@@ -7,99 +7,20 @@ import { install_command } from './commands/install.js';
 import { package_command } from './commands/package.js';
 import { stats_command } from './commands/stats.js';
 import { validate_command } from './commands/validate.js';
+import {
+	ADD_HOOK_HELP,
+	DOCTOR_HELP,
+	INIT_HELP,
+	INSTALL_HELP,
+	PACKAGE_HELP,
+	STATS_HELP,
+	VALIDATE_HELP,
+	show_command_help,
+	show_main_help,
+} from './help.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
-
-function show_help(): void {
-	console.log(
-		'claude-skills-cli - CLI toolkit for creating Claude Agent Skills\n',
-	);
-	console.log('Usage:');
-	console.log('  claude-skills-cli <command> [options]\n');
-	console.log('Commands:');
-	console.log('  init        Create a new skill');
-	console.log(
-		'  install     Install a bundled skill (e.g., skill-creator)',
-	);
-	console.log('  validate    Validate a skill');
-	console.log('  doctor      Fix common skill issues automatically');
-	console.log('  package     Package a skill to zip');
-	console.log(
-		'  stats       Show overview of all skills in a directory',
-	);
-	console.log(
-		'  add-hook    Add skill activation hook to .claude/settings.json\n',
-	);
-	console.log('Options:');
-	console.log('  --help, -h          Show help');
-	console.log('  --version, -v       Show version');
-	console.log(
-		'  --with-examples     Include example files when creating skill',
-	);
-	console.log(
-		'  --format <type>     Output format: text (default) or json',
-	);
-	console.log(
-		'  --strict            Fail validation if warnings present',
-	);
-	console.log(
-		'  --force             Replace existing hook without prompting\n',
-	);
-	console.log('Examples:');
-	console.log(
-		'  claude-skills-cli init --name my-skill --description "Description"',
-	);
-	console.log(
-		'  claude-skills-cli init --name my-skill --description "..." --with-examples',
-	);
-	console.log('  claude-skills-cli install skill-creator');
-	console.log('  claude-skills-cli validate .claude/skills/my-skill');
-	console.log(
-		'  claude-skills-cli validate .claude/skills/my-skill --format json',
-	);
-	console.log(
-		'  claude-skills-cli validate .claude/skills/my-skill --strict',
-	);
-	console.log('  claude-skills-cli doctor .claude/skills/my-skill');
-	console.log('  claude-skills-cli package .claude/skills/my-skill');
-	console.log('  claude-skills-cli stats .claude/skills');
-	console.log(
-		'  claude-skills-cli add-hook                          # Global, forced-eval (84%)',
-	);
-	console.log(
-		'  claude-skills-cli add-hook --type llm-eval          # Global, LLM eval (80%)',
-	);
-	console.log(
-		'  claude-skills-cli add-hook --type forced-eval --project   # Project, forced-eval',
-	);
-	console.log(
-		'  claude-skills-cli add-hook --type simple-script --local   # Local, simple script',
-	);
-	console.log(
-		'  claude-skills-cli add-hook --type forced-eval --force    # Replace existing hook',
-	);
-	console.log('\nHook Types (--type):');
-	console.log(
-		'  forced-eval     84% success - Mandatory 3-step evaluation (default)',
-	);
-	console.log(
-		'  llm-eval        80% success - Claude API pre-evaluation (requires API key)',
-	);
-	console.log('  simple-script   20% success - Basic script file');
-	console.log(
-		'  simple-inline   20% success - Echo command in settings.json',
-	);
-	console.log('\n⚠️  IMPORTANT FOR LLMs:');
-	console.log(
-		'  ALWAYS run validate after creating or editing a skill:',
-	);
-	console.log('    claude-skills-cli validate <skill-path>');
-	console.log('  Skills MUST pass validation before use.');
-	console.log(
-		'  Fix all errors immediately. Address warnings promptly.',
-	);
-}
 
 function parse_args(
 	args: string[],
@@ -144,7 +65,8 @@ function parse_args(
 
 async function main() {
 	if (!command || command === '--help' || command === '-h') {
-		show_help();
+		const parsed = parse_args(args.slice(1));
+		show_main_help(parsed.format as string);
 		process.exit(0);
 	}
 
@@ -157,6 +79,10 @@ async function main() {
 
 	switch (command) {
 		case 'init':
+			if (parsed.help === true || parsed.h === true) {
+				show_command_help(INIT_HELP, parsed.format as string);
+				process.exit(0);
+			}
 			init_command({
 				name: parsed.name as string | undefined,
 				description: parsed.description as string | undefined,
@@ -166,6 +92,10 @@ async function main() {
 			break;
 
 		case 'install': {
+			if (parsed.help === true || parsed.h === true) {
+				show_command_help(INSTALL_HELP, parsed.format as string);
+				process.exit(0);
+			}
 			const skill_name = parsed._positional as string;
 			install_command({
 				skill_name,
@@ -176,6 +106,10 @@ async function main() {
 
 		case 'validate': {
 			const skill_path = parsed._positional as string;
+			if (parsed.help === true || parsed.h === true) {
+				show_command_help(VALIDATE_HELP, parsed.format as string);
+				process.exit(0);
+			}
 			if (!skill_path) {
 				console.error('Error: skill path required');
 				console.log(
@@ -193,6 +127,10 @@ async function main() {
 		}
 
 		case 'doctor': {
+			if (parsed.help === true || parsed.h === true) {
+				show_command_help(DOCTOR_HELP, parsed.format as string);
+				process.exit(0);
+			}
 			const skill_path = parsed._positional as string;
 			if (!skill_path) {
 				console.error('Error: skill path required');
@@ -207,6 +145,10 @@ async function main() {
 
 		case 'package': {
 			const skill_path = parsed._positional as string;
+			if (parsed.help === true || parsed.h === true) {
+				show_command_help(PACKAGE_HELP, parsed.format as string);
+				process.exit(0);
+			}
 			if (!skill_path) {
 				console.error('Error: skill path required');
 				console.log(
@@ -223,6 +165,10 @@ async function main() {
 		}
 
 		case 'stats': {
+			if (parsed.help === true || parsed.h === true) {
+				show_command_help(STATS_HELP, parsed.format as string);
+				process.exit(0);
+			}
 			const directory = parsed._positional as string | undefined;
 			stats_command({
 				directory,
@@ -231,6 +177,10 @@ async function main() {
 		}
 
 		case 'add-hook':
+			if (parsed.help === true || parsed.h === true) {
+				show_command_help(ADD_HOOK_HELP, parsed.format as string);
+				process.exit(0);
+			}
 			add_hook_command({
 				local: parsed.local === true,
 				project: parsed.project === true,
@@ -247,7 +197,7 @@ async function main() {
 		default:
 			console.error(`Unknown command: ${command}`);
 			console.log('');
-			show_help();
+			show_main_help(parsed.format as string);
 			process.exit(1);
 	}
 }
