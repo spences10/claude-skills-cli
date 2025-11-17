@@ -46,8 +46,8 @@ pnpx claude-skills-cli init --name my-skill --description "Brief description wit
 pnpx claude-skills-cli init --name my-skill --description "..." --with-examples
 ```
 
-Creates minimal skill scaffolding by default (SKILL.md, README.md,
-references/). Use `--with-examples` for example files.
+Creates minimal skill scaffolding by default (SKILL.md, references/).
+Use `--with-examples` for example files.
 
 ### validate
 

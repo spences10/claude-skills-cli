@@ -1,6 +1,5 @@
 import { join } from 'node:path';
 import {
-	README_TEMPLATE,
 	REFERENCE_TEMPLATE,
 	SCRIPT_TEMPLATE,
 	SKILL_MD_TEMPLATE,
@@ -82,10 +81,6 @@ function create_skill(
 		with_examples,
 	);
 	write_file(join(path, 'SKILL.md'), skill_md);
-
-	// Create README
-	const readme_md = README_TEMPLATE(title, description);
-	write_file(join(path, 'README.md'), readme_md);
 
 	// Only create example files if requested
 	if (with_examples) {

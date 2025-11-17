@@ -86,7 +86,6 @@ npx claude-skills-cli init --path /custom/path/my-skill \
 ```
 .claude/skills/my-skill/
 ├── SKILL.md          # Main skill instructions
-├── README.md         # Skill documentation
 └── references/       # Level 3 detailed documentation
 ```
 
