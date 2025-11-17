@@ -1,5 +1,11 @@
 # claude-skills-cli
 
+## 0.0.15
+
+### Patch Changes
+
+- 706f3bc: improve help output for CLI usage
+
 ## 0.0.14
 
 ### Patch Changes
