@@ -1,5 +1,11 @@
 # claude-skills-cli
 
+## 0.0.14
+
+### Patch Changes
+
+- bd7a6bf: remove adding README to the CLI
+
 ## 0.0.13
 
 ### Patch Changes
