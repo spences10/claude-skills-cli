@@ -53,9 +53,19 @@ Use `--with-examples` for example files.
 
 ```bash
 pnpx claude-skills-cli validate .claude/skills/my-skill
+pnpx claude-skills-cli validate .claude/skills/my-skill --lenient
+pnpx claude-skills-cli validate .claude/skills/my-skill --loose
 pnpx claude-skills-cli validate .claude/skills/my-skill --strict
 pnpx claude-skills-cli validate .claude/skills/my-skill --format json
 ```
+
+**Validation Modes:**
+
+| Mode        | Max Lines | Use Case                  |
+| ----------- | --------- | ------------------------- |
+| (default)   | 50        | Strict best practices     |
+| `--lenient` | 150       | More flexibility          |
+| `--loose`   | 500       | Anthropic official limits |
 
 Comprehensive validation including:
 
@@ -74,8 +84,9 @@ Comprehensive validation including:
 
 **Level 2 (SKILL.md Body):**
 
-- Line count (~50 target, 150 max)
-- Word count (<1000 recommended, <5000 max)
+- Line count (50 max default, use `--lenient` for 150, `--loose`
+  for 500)
+- Word count (<1000 max default)
 - Token estimates (<6500 budget)
 - Code blocks (1-2 optimal)
 - Sections (3-5 recommended)
@@ -87,8 +98,8 @@ Comprehensive validation including:
 - Nesting depth analysis
 - Progressive disclosure structure
 
-Use `--strict` to fail on warnings, `--format json` for programmatic
-use.
+Use `--strict` to fail on warnings, `--lenient`/`--loose` for relaxed
+limits, `--format json` for programmatic use.
 
 ### doctor
 

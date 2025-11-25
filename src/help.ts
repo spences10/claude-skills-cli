@@ -109,12 +109,23 @@ export const VALIDATE_HELP: CommandHelp = {
 			type: 'boolean',
 			description: 'Fail validation if warnings present',
 		},
+		{
+			flag: '--lenient',
+			type: 'boolean',
+			description: 'Use relaxed limits (150 lines max)',
+		},
+		{
+			flag: '--loose',
+			type: 'boolean',
+			description: 'Use Anthropic official limits (500 lines max)',
+		},
 		{ flag: '--help, -h', description: 'Show this help' },
 	],
 	examples: [
 		'claude-skills-cli validate .claude/skills/my-skill',
+		'claude-skills-cli validate .claude/skills/my-skill --lenient',
+		'claude-skills-cli validate .claude/skills/my-skill --loose',
 		'claude-skills-cli validate .claude/skills/my-skill --format json',
-		'claude-skills-cli validate .claude/skills/my-skill --strict',
 	],
 };
 
