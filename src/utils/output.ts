@@ -41,32 +41,36 @@ export function display_validation_stats(
 		),
 	);
 
-	// Line count
-	const line_status =
-		stats.line_count <= 50
-			? chalk.green('✅ Excellent')
-			: stats.line_count <= 80
-				? chalk.green('✅ Good')
-				: stats.line_count <= 150
-					? chalk.yellow('⚠️  Consider splitting')
-					: chalk.red('❌ Too large');
+	// Line count (strict defaults: max 50)
+	let line_status: string;
+	if (stats.line_count <= 30) {
+		line_status = chalk.green('✅ Excellent');
+	} else if (stats.line_count <= 40) {
+		line_status = chalk.green('✅ Good');
+	} else if (stats.line_count <= 50) {
+		line_status = chalk.yellow('⚠️  Consider splitting');
+	} else {
+		line_status = chalk.red('❌ Too large');
+	}
 
 	console.log(
-		`    Lines: ${stats.line_count} (target: ~50, max: ~150) ${line_status}`,
+		`    Lines: ${stats.line_count} (max: 50) ${line_status}`,
 	);
 
-	// Word count with recommendations
-	const word_status =
-		stats.word_count < 500
-			? chalk.green('✅ Excellent')
-			: stats.word_count < 1000
-				? chalk.green('✅ Good')
-				: stats.word_count < 5000
-					? chalk.yellow('⚠️  Consider splitting')
-					: chalk.red('❌ Too large');
+	// Word count with recommendations (strict defaults: max 1000)
+	let word_status: string;
+	if (stats.word_count < 300) {
+		word_status = chalk.green('✅ Excellent');
+	} else if (stats.word_count < 500) {
+		word_status = chalk.green('✅ Good');
+	} else if (stats.word_count < 1000) {
+		word_status = chalk.yellow('⚠️  Consider splitting');
+	} else {
+		word_status = chalk.red('❌ Too large');
+	}
 
 	console.log(
-		`    Words: ${stats.word_count} (recommended: <1000, max: <5000) ${word_status}`,
+		`    Words: ${stats.word_count} (max: 1000) ${word_status}`,
 	);
 
 	// Token estimation
@@ -117,14 +121,14 @@ export function display_validation_stats(
 		`    ${chalk.dim('Use references/ directory for detailed docs (unlimited size)')}`,
 	);
 
-	// Overall assessment
+	// Overall assessment (based on strict defaults)
 	console.log(chalk.bold('\n  Overall Assessment:'));
-	if (stats.line_count <= 50 && stats.description_length <= 200) {
+	if (stats.line_count <= 30 && stats.description_length <= 200) {
 		console.log(
 			chalk.green('    ✅ Excellent progressive disclosure!'),
 		);
 	} else if (
-		stats.line_count <= 80 &&
+		stats.line_count <= 50 &&
 		stats.description_length <= 300
 	) {
 		console.log(chalk.green('    ✅ Good progressive disclosure'));

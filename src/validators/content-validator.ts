@@ -42,9 +42,27 @@ export interface ContentValidation {
 	errors: ContentError[];
 }
 
-// Progressive disclosure limits (enforced as hard limits)
-const MAX_WORDS = 1000; // Hard limit (was recommended)
-const RECOMMENDED_WORDS = 500; // Warning threshold
+import type { ValidationMode } from '../types.js';
+
+// Progressive disclosure limits - three tiers
+const LIMITS = {
+	strict: {
+		lines: { excellent: 30, good: 40, max: 50 },
+		words: { excellent: 300, good: 500, max: 1000 },
+	},
+	lenient: {
+		lines: { excellent: 50, good: 100, max: 150 },
+		words: { excellent: 500, good: 1000, max: 2000 },
+	},
+	loose: {
+		lines: { excellent: 100, good: 200, max: 500 },
+		words: { excellent: 1000, good: 2000, max: 5000 },
+	},
+} as const;
+
+export interface ContentValidationOptions {
+	mode?: ValidationMode;
+}
 
 /**
  * Analyze content structure and patterns
@@ -78,7 +96,13 @@ export function analyze_content_structure(
 /**
  * Validate progressive disclosure (word count, token budget, and line count)
  */
-export function validate_content(body: string): ContentValidation {
+export function validate_content(
+	body: string,
+	options: ContentValidationOptions = {},
+): ContentValidation {
+	const { mode = 'strict' } = options;
+	const limits = LIMITS[mode];
+
 	const word_count = count_words(body);
 	const estimated_tokens = estimate_tokens(word_count);
 
@@ -100,41 +124,38 @@ export function validate_content(body: string): ContentValidation {
 		errors: [],
 	};
 
-	// Hard limit check (error) - enforced at 1000 words
-	if (word_count > MAX_WORDS) {
+	// Word count validation
+	if (word_count > limits.words.max) {
 		validation.errors.push({
 			type: 'word_count',
 			message:
-				`SKILL.md body has ${word_count} words (MAX: ${MAX_WORDS})\n` +
+				`SKILL.md body has ${word_count} words (MAX: ${limits.words.max})\n` +
 				`  → Move detailed content to references/ directory for Level 3 loading\n` +
 				`  → This is a hard limit - skills must be concise`,
 		});
-	}
-	// Warning threshold at 500 words
-	else if (word_count > RECOMMENDED_WORDS) {
+	} else if (word_count > limits.words.good) {
 		validation.warnings.push({
 			type: 'word_count',
 			message:
-				`SKILL.md body has ${word_count} words (recommended: <${RECOMMENDED_WORDS}, max: ${MAX_WORDS})\n` +
+				`SKILL.md body has ${word_count} words (recommended: <${limits.words.good}, max: ${limits.words.max})\n` +
 				`  → Consider moving examples/docs to references/ for better token efficiency`,
 		});
 	}
 
 	// Line count validation (Level 2 progressive disclosure)
-	// Hard limit: 50 lines (enforced)
-	if (line_count > 50) {
+	if (line_count > limits.lines.max) {
 		validation.errors.push({
 			type: 'line_count',
 			message:
-				`SKILL.md body is ${line_count} lines (MAX: 50 for Level 2 progressive disclosure)\n` +
+				`SKILL.md body is ${line_count} lines (MAX: ${limits.lines.max})\n` +
 				`  → Move detailed content to references/ directory\n` +
 				`  → This is a hard limit - skills must be concise`,
 		});
-	} else if (line_count > 40) {
+	} else if (line_count > limits.lines.good) {
 		validation.warnings.push({
 			type: 'line_count',
 			message:
-				`SKILL.md body is ${line_count} lines (recommended: ~40, max: 50)\n` +
+				`SKILL.md body is ${line_count} lines (recommended: <${limits.lines.good}, max: ${limits.lines.max})\n` +
 				`  → Consider moving examples to references/ for Level 3 loading`,
 		});
 	}
@@ -183,9 +204,9 @@ export function validate_content(body: string): ContentValidation {
 		});
 	}
 
-	// Check for references/ links when body is long
+	// Check for references/ links when body is long (warn when exceeding good threshold)
 	const has_references = body.includes('references/');
-	if (!has_references && line_count > 60) {
+	if (!has_references && line_count > limits.lines.good) {
 		validation.warnings.push({
 			type: 'no_references',
 			message:

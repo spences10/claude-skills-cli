@@ -28,8 +28,15 @@ import {
 } from '../validators/frontmatter-validator.js';
 import { validate_references } from '../validators/references-validator.js';
 
+import type { ValidationMode } from '../types.js';
+
+export interface ValidatorOptions {
+	mode?: ValidationMode;
+}
+
 export class SkillValidator {
 	private skill_path: string;
+	private options: ValidatorOptions;
 	private errors: string[] = [];
 	private warnings: string[] = [];
 	private stats: ValidationStats = {
@@ -102,8 +109,9 @@ export class SkillValidator {
 		},
 	};
 
-	constructor(skill_path: string) {
+	constructor(skill_path: string, options: ValidatorOptions = {}) {
 		this.skill_path = skill_path;
+		this.options = options;
 	}
 
 	private error(msg: string): void {
@@ -234,7 +242,9 @@ export class SkillValidator {
 		);
 
 		// Validate content (progressive disclosure)
-		const content_validation = validate_content(body);
+		const content_validation = validate_content(body, {
+			mode: this.options.mode,
+		});
 		this.stats.word_count = content_validation.stats.word_count;
 		this.stats.estimated_tokens =
 			content_validation.stats.estimated_tokens;
@@ -290,13 +300,26 @@ export class SkillValidator {
 		);
 
 		// Populate progressive disclosure structured validation
+		// Use mode-specific limits: strict (50), lenient (150), loose (500)
+		const line_limit =
+			this.options.mode === 'loose'
+				? 500
+				: this.options.mode === 'lenient'
+					? 150
+					: 50;
+		const word_limit =
+			this.options.mode === 'loose'
+				? 5000
+				: this.options.mode === 'lenient'
+					? 2000
+					: 1000;
 		this.structured_validation.progressive_disclosure = {
 			skill_md_size: {
 				lines: this.stats.line_count,
 				words: this.stats.word_count,
 				tokens: this.stats.estimated_tokens,
-				exceeds_line_limit: this.stats.line_count > 50,
-				exceeds_word_limit: this.stats.word_count > 1000,
+				exceeds_line_limit: this.stats.line_count > line_limit,
+				exceeds_word_limit: this.stats.word_count > word_limit,
 			},
 			references: refs_result.validation,
 		};

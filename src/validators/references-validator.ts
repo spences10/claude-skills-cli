@@ -32,6 +32,14 @@ export interface ReferencesResult {
 }
 
 /**
+ * Strip fenced code blocks from content to avoid parsing example links
+ */
+function strip_code_blocks(content: string): string {
+	// Remove fenced code blocks (``` or ~~~)
+	return content.replace(/```[\s\S]*?```|~~~[\s\S]*?~~~/g, '');
+}
+
+/**
  * Check nesting depth of reference files
  */
 function check_reference_nesting(
@@ -50,9 +58,13 @@ function check_reference_nesting(
 	}
 
 	const content = readFileSync(full_path, 'utf-8');
+	// Strip code blocks to avoid parsing example links inside them
+	const content_without_code = strip_code_blocks(content);
 	const reference_pattern =
 		/\[([^\]]+)\]\((references\/[^)]+\.md)\)/g;
-	const matches = [...content.matchAll(reference_pattern)];
+	const matches = [
+		...content_without_code.matchAll(reference_pattern),
+	];
 	const references = matches.map((m) => m[2]);
 
 	if (references.length === 0) {
@@ -120,12 +132,16 @@ export function validate_references(
 	// Level 3 validation: Check that all referenced files exist
 	if (existsSync(skill_md_path)) {
 		const skill_content = readFileSync(skill_md_path, 'utf-8');
+		// Strip code blocks to avoid parsing example links inside them
+		const content_without_code = strip_code_blocks(skill_content);
 
 		// Extract markdown links to references/ directory
 		// Matches: [text](references/file.md) or [text](references/subdir/file.md)
 		const reference_link_pattern =
 			/\[([^\]]+)\]\((references\/[^)]+\.md)\)/g;
-		const matches = skill_content.matchAll(reference_link_pattern);
+		const matches = content_without_code.matchAll(
+			reference_link_pattern,
+		);
 
 		for (const match of matches) {
 			const link_text = match[1];

@@ -9,12 +9,20 @@ import {
 } from '../utils/output.js';
 
 export function validate_command(options: ValidateOptions): void {
-	const { skill_path, strict, format = 'text' } = options;
+	const {
+		skill_path,
+		strict,
+		format = 'text',
+		lenient = false,
+		loose = false,
+	} = options;
 	// Normalize path by removing trailing slashes before extracting basename
 	const normalized_path = skill_path.replace(/\/+$/, '');
 	const skill_name = basename(normalized_path);
 
-	const validator = new SkillValidator(skill_path);
+	// Determine validation mode: loose > lenient > strict (default)
+	const mode = loose ? 'loose' : lenient ? 'lenient' : 'strict';
+	const validator = new SkillValidator(skill_path, { mode });
 	const result = validator.validate_all();
 
 	// JSON output

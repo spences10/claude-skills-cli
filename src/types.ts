@@ -13,10 +13,14 @@ export interface InitOptions {
 	with_examples?: boolean;
 }
 
+export type ValidationMode = 'strict' | 'lenient' | 'loose';
+
 export interface ValidateOptions {
 	skill_path: string;
 	strict?: boolean;
 	format?: 'text' | 'json';
+	lenient?: boolean;
+	loose?: boolean;
 }
 
 export interface PackageOptions {

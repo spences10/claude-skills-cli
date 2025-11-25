@@ -113,7 +113,7 @@ async function main() {
 			if (!skill_path) {
 				console.error('Error: skill path required');
 				console.log(
-					'\nUsage: claude-skills-cli validate <skill_path> [--format json] [--strict]',
+					'\nUsage: claude-skills-cli validate <skill_path> [--format json] [--strict] [--lenient] [--loose]',
 				);
 				process.exit(1);
 			}
@@ -122,6 +122,8 @@ async function main() {
 				skill_path,
 				strict: parsed.strict === true,
 				format: format === 'json' ? 'json' : 'text',
+				lenient: parsed.lenient === true,
+				loose: parsed.loose === true,
 			});
 			break;
 		}
