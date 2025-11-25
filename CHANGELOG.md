@@ -1,5 +1,13 @@
 # claude-skills-cli
 
+## 0.0.16
+
+### Patch Changes
+
+- d567124: update docs
+- 4691a9f: Added --lenient/--loose flags for flexible line limits,
+  fixed code block link parsing, aligned messaging.
+
 ## 0.0.15
 
 ### Patch Changes
