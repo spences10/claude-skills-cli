@@ -68,13 +68,14 @@ export const INIT_HELP: CommandHelp = {
 
 export const INSTALL_HELP: CommandHelp = {
 	command: 'install',
-	description: 'Install a bundled skill',
+	description:
+		'Install a bundled skill (see claude-code-toolkit for pre-built skills)',
 	usage: 'claude-skills-cli install <skill-name> [options]',
 	options: [
 		{
 			flag: '<skill-name>',
 			required: true,
-			description: 'Name of bundled skill (e.g., skill-creator)',
+			description: 'Name of bundled skill',
 		},
 		{
 			flag: '--force',
@@ -84,8 +85,8 @@ export const INSTALL_HELP: CommandHelp = {
 		{ flag: '--help, -h', description: 'Show this help' },
 	],
 	examples: [
-		'claude-skills-cli install skill-creator',
-		'claude-skills-cli install skill-creator --force',
+		'claude-skills-cli install my-skill',
+		'claude-skills-cli install my-skill --force',
 	],
 };
 
@@ -233,7 +234,7 @@ export const MAIN_HELP: MainHelp = {
 		{ command: 'init', description: 'Create a new skill' },
 		{
 			command: 'install',
-			description: 'Install a bundled skill (e.g., skill-creator)',
+			description: 'Install a bundled skill',
 		},
 		{ command: 'validate', description: 'Validate a skill' },
 		{
@@ -272,6 +273,9 @@ export const MAIN_HELP: MainHelp = {
 		'    claude-skills-cli validate <skill-path>',
 		'  Skills MUST pass validation before use.',
 		'  Fix all errors immediately. Address warnings promptly.',
+		'',
+		'Resources:',
+		'  Pre-built skills: https://github.com/spences10/claude-code-toolkit',
 	],
 };
 

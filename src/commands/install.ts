@@ -12,25 +12,29 @@ const __dirname = dirname(__filename);
 // Bundled skills are in dist/skills/ directory
 const BUNDLED_SKILLS_DIR = join(__dirname, '..', 'skills');
 
-const AVAILABLE_SKILLS = ['skill-creator'];
+const AVAILABLE_SKILLS: string[] = [];
 
 export function install_command(options: InstallOptions): void {
 	const skill_name = options.skill_name;
 
 	// Validate skill name
-	if (!skill_name) {
-		error('Skill name required');
-		console.log('\nUsage:');
-		console.log('  claude-skills-cli install <skill-name>');
-		console.log('\nAvailable bundled skills:');
-		AVAILABLE_SKILLS.forEach((name) => console.log(`  - ${name}`));
-		process.exit(1);
+	if (!skill_name || AVAILABLE_SKILLS.length === 0) {
+		info('No bundled skills available');
+		console.log(
+			'\nFor pre-built skills, see: https://github.com/spences10/claude-code-toolkit',
+		);
+		console.log(
+			'\nUse "claude-skills-cli init" to create new skills.',
+		);
+		process.exit(0);
 	}
 
 	if (!AVAILABLE_SKILLS.includes(skill_name)) {
 		error(`Unknown skill: ${skill_name}`);
-		console.log('\nAvailable bundled skills:');
-		AVAILABLE_SKILLS.forEach((name) => console.log(`  - ${name}`));
+		console.log('\nNo bundled skills available.');
+		console.log(
+			'For pre-built skills, see: https://github.com/spences10/claude-code-toolkit',
+		);
 		process.exit(1);
 	}
 
@@ -70,16 +74,6 @@ export function install_command(options: InstallOptions): void {
 			force: options.force || false,
 		});
 		success(`Installed ${skill_name} to: ${dest_path}`);
-
-		// Skill-specific tips
-		if (skill_name === 'skill-creator') {
-			console.log(
-				'\nThis meta skill teaches principles for designing effective skills.',
-			);
-			console.log(
-				'Use it when creating new skills or planning skill architecture.',
-			);
-		}
 	} catch (err) {
 		error(`Failed to install skill: ${(err as Error).message}`);
 		process.exit(1);
