@@ -1,5 +1,12 @@
 # claude-skills-cli
 
+## 0.0.17
+
+### Patch Changes
+
+- af8cf0b: Update help to reference claude-code-toolkit for pre-built
+  skills
+
 ## 0.0.16
 
 ### Patch Changes
