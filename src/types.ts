@@ -19,6 +19,7 @@ export interface InitOptions {
 	description?: string;
 	path?: string;
 	with_examples?: boolean;
+	global?: boolean;
 }
 
 export type ValidationMode = 'strict' | 'lenient' | 'loose';
