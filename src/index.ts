@@ -191,6 +191,7 @@ async function main() {
 					| 'simple-script'
 					| 'forced-eval'
 					| 'llm-eval'
+					| 'prompt-eval'
 					| undefined,
 				force: parsed.force === true,
 			});

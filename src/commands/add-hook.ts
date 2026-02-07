@@ -10,16 +10,21 @@ import type { AddHookOptions } from '../types.js';
 import { ensure_dir, make_executable } from '../utils/fs.js';
 import { error, info, success, warning } from '../utils/output.js';
 
+interface HookHandler {
+	type: string;
+	command?: string;
+	prompt?: string;
+	timeout?: number;
+}
+
 interface SettingsJson {
 	hooks?: {
 		UserPromptSubmit?: Array<{
-			hooks: Array<{
-				type: string;
-				command: string;
-			}>;
+			hooks: Array<HookHandler>;
 		}>;
 		[key: string]: unknown;
 	};
+	disableAllHooks?: boolean;
 	[key: string]: unknown;
 }
 
@@ -57,6 +62,15 @@ const HOOK_TYPES = {
 		script: 'skill-activation-llm-eval.sh',
 		template: LLM_EVAL_HOOK_TEMPLATE,
 	},
+	'prompt-eval': {
+		name: 'Native Prompt Evaluation',
+		success_rate: '80%',
+		description:
+			'Built-in Claude Code prompt hook (no API key needed)',
+		command: null,
+		script: null,
+		template: null,
+	},
 } as const;
 
 type HookType = keyof typeof HOOK_TYPES;
@@ -69,7 +83,7 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 	if (!HOOK_TYPES[hook_type]) {
 		error(`Invalid hook type: ${hook_type}`);
 		info(
-			'Valid types: simple-inline, simple-script, forced-eval, llm-eval',
+			'Valid types: simple-inline, simple-script, forced-eval, llm-eval, prompt-eval',
 		);
 		process.exit(1);
 	}
@@ -100,11 +114,18 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 
 	let settings: SettingsJson = {};
 
-	// Check if settings.json exists
+	// Check if settings.json exists and load it
 	if (existsSync(settings_path)) {
 		try {
 			const content = readFileSync(settings_path, 'utf-8');
 			settings = JSON.parse(content);
+
+			// Warn if all hooks are disabled
+			if (settings.disableAllHooks) {
+				warning(
+					'disableAllHooks is set to true in settings — hooks will not run',
+				);
+			}
 
 			// Check if UserPromptSubmit hook already exists
 			if (
@@ -118,21 +139,27 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 				// Find existing skill activation hook (check for various patterns)
 				const existing_hook = userPromptSubmit.hooks?.find(
 					(h) =>
-						h.type === 'command' &&
-						(h.command.includes('skill-activation') ||
-							h.command.includes('skill-forced-eval-hook') ||
-							h.command.includes('skill-llm-eval-hook') ||
-							h.command.includes('skill-simple-instruction-hook') ||
-							h.command.includes(
-								'If the prompt matches any available skill keywords',
-							)),
+						(h.type === 'command' &&
+							h.command &&
+							(h.command.includes('skill-activation') ||
+								h.command.includes('skill-forced-eval-hook') ||
+								h.command.includes('skill-llm-eval-hook') ||
+								h.command.includes('skill-simple-instruction-hook') ||
+								h.command.includes(
+									'If the prompt matches any available skill keywords',
+								))) ||
+						(h.type === 'prompt' &&
+							h.prompt &&
+							h.prompt.includes('available skills')),
 				);
 
 				if (existing_hook) {
 					warning(
 						`Skill activation hook already exists in ${scope} settings`,
 					);
-					info(`Current hook: ${existing_hook.command}`);
+					info(
+						`Current hook: ${existing_hook.command || existing_hook.prompt || 'unknown'}`,
+					);
 					console.log('');
 
 					if (options.force) {
@@ -156,10 +183,19 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 		}
 	}
 
-	// Determine the command to use
-	let hook_command: string;
+	// Determine the hook handler to use
+	let hook_handler: HookHandler;
 
-	if (hook_config.script) {
+	if (hook_type === 'prompt-eval') {
+		// Native prompt hook: no script needed
+		info(`Creating ${hook_config.name} hook...`);
+		hook_handler = {
+			type: 'prompt',
+			prompt:
+				'Evaluate if any available skills match this user prompt. For each skill in <available_skills>, determine YES/NO. If any are YES, activate them using the Skill(skill-name) tool BEFORE proceeding with implementation.',
+			timeout: 30,
+		};
+	} else if (hook_config.script) {
 		// Script-based hook: create the script file
 		const script_path = join(hooks_dir, hook_config.script);
 
@@ -183,14 +219,14 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 		}
 
 		// Use relative path for project hooks, absolute for global
-		if (scope === 'global') {
-			hook_command = script_path;
-		} else {
-			hook_command = `.claude/hooks/${hook_config.script}`;
-		}
+		const command =
+			scope === 'global'
+				? script_path
+				: `.claude/hooks/${hook_config.script}`;
+		hook_handler = { type: 'command', command };
 	} else {
 		// Inline command
-		hook_command = hook_config.command!;
+		hook_handler = { type: 'command', command: hook_config.command! };
 	}
 
 	// Update or create settings.json
@@ -203,10 +239,7 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 			if (!userPromptSubmit.hooks) {
 				userPromptSubmit.hooks = [];
 			}
-			userPromptSubmit.hooks.push({
-				type: 'command',
-				command: hook_command,
-			});
+			userPromptSubmit.hooks.push(hook_handler);
 
 			info(
 				`Adding ${hook_config.name} hook to existing ${scope} settings...`,
@@ -216,12 +249,7 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 			settings.hooks = settings.hooks || {};
 			settings.hooks.UserPromptSubmit = [
 				{
-					hooks: [
-						{
-							type: 'command',
-							command: hook_command,
-						},
-					],
+					hooks: [hook_handler],
 				},
 			];
 
@@ -236,12 +264,7 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 			hooks: {
 				UserPromptSubmit: [
 					{
-						hooks: [
-							{
-								type: 'command',
-								command: hook_command,
-							},
-						],
+						hooks: [hook_handler],
 					},
 				],
 			},
@@ -281,6 +304,10 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 			console.log('');
 		}
 
+		warning(
+			'Restart Claude Code for hooks to take effect (hooks are captured at startup)',
+		);
+		console.log('');
 		info('Next steps:');
 		console.log(
 			'  1. Create skills with: claude-skills-cli init --name <name>',

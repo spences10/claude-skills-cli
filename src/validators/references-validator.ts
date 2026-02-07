@@ -60,8 +60,7 @@ function check_reference_nesting(
 	const content = readFileSync(full_path, 'utf-8');
 	// Strip code blocks to avoid parsing example links inside them
 	const content_without_code = strip_code_blocks(content);
-	const reference_pattern =
-		/\[([^\]]+)\]\((references\/[^)]+\.md)\)/g;
+	const reference_pattern = /\[([^\]]+)\]\(([^)]+\.md)\)/g;
 	const matches = [
 		...content_without_code.matchAll(reference_pattern),
 	];
@@ -105,7 +104,7 @@ export function validate_references(
 	if (existsSync(references_dir)) {
 		const files = readdirSync(references_dir);
 		const md_files = files.filter((f) => f.endsWith('.md'));
-		files_found.push(...md_files);
+		files_found.push(...md_files.map((f) => `references/${f}`));
 
 		if (md_files.length === 0) {
 			warnings.push({
@@ -122,7 +121,30 @@ export function validate_references(
 				if (!skill_content.includes(md_file)) {
 					warnings.push({
 						type: 'orphaned_file',
-						message: `Reference file '${md_file}' not mentioned in SKILL.md`,
+						message: `Reference file 'references/${md_file}' not mentioned in SKILL.md`,
+					});
+				}
+			}
+		}
+	}
+
+	// Check root-level .md files (excluding SKILL.md)
+	if (existsSync(skill_path)) {
+		const root_files = readdirSync(skill_path);
+		const root_md_files = root_files.filter(
+			(f) =>
+				f.endsWith('.md') && f !== 'SKILL.md' && f !== 'README.md',
+		);
+		files_found.push(...root_md_files);
+
+		if (existsSync(skill_md_path)) {
+			const skill_content = readFileSync(skill_md_path, 'utf-8');
+
+			for (const md_file of root_md_files) {
+				if (!skill_content.includes(md_file)) {
+					warnings.push({
+						type: 'orphaned_file',
+						message: `Root file '${md_file}' not mentioned in SKILL.md`,
 					});
 				}
 			}
@@ -135,10 +157,9 @@ export function validate_references(
 		// Strip code blocks to avoid parsing example links inside them
 		const content_without_code = strip_code_blocks(skill_content);
 
-		// Extract markdown links to references/ directory
-		// Matches: [text](references/file.md) or [text](references/subdir/file.md)
-		const reference_link_pattern =
-			/\[([^\]]+)\]\((references\/[^)]+\.md)\)/g;
+		// Extract markdown links to .md files (references/ or root-level)
+		// Matches: [text](file.md), [text](references/file.md), etc.
+		const reference_link_pattern = /\[([^\]]+)\]\(([^)]+\.md)\)/g;
 		const matches = content_without_code.matchAll(
 			reference_link_pattern,
 		);

@@ -4,6 +4,14 @@ export interface SkillMetadata {
 	license?: string;
 	'allowed-tools'?: string[];
 	metadata?: Record<string, unknown>;
+	'disable-model-invocation'?: boolean;
+	'user-invocable'?: boolean;
+	'argument-hint'?: string;
+	model?: string;
+	context?: 'fork';
+	agent?: string;
+	hooks?: Record<string, unknown>;
+	compatibility?: string;
 }
 
 export interface InitOptions {
@@ -49,7 +57,8 @@ export interface AddHookOptions {
 		| 'simple-inline'
 		| 'simple-script'
 		| 'forced-eval'
-		| 'llm-eval';
+		| 'llm-eval'
+		| 'prompt-eval';
 	force?: boolean;
 }
 

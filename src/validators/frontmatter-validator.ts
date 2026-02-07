@@ -182,6 +182,38 @@ export function validate_name_format(
 		);
 	}
 
+	// Reject leading/trailing hyphens
+	if (name.startsWith('-') || name.endsWith('-')) {
+		validation.format_valid = false;
+		validation.errors.push(
+			`Skill name must not start or end with a hyphen: '${name}'`,
+		);
+	}
+
+	// Reject consecutive hyphens
+	if (name.includes('--')) {
+		validation.format_valid = false;
+		validation.errors.push(
+			`Skill name must not contain consecutive hyphens: '${name}'`,
+		);
+	}
+
+	// Reject reserved prefixes
+	if (name.startsWith('claude') || name.startsWith('anthropic')) {
+		validation.format_valid = false;
+		validation.errors.push(
+			`Skill name must not use reserved prefix 'claude' or 'anthropic': '${name}'`,
+		);
+	}
+
+	// Reject XML angle brackets in name (security)
+	if (name.includes('<') || name.includes('>')) {
+		validation.format_valid = false;
+		validation.errors.push(
+			`Skill name must not contain XML angle brackets: '${name}'`,
+		);
+	}
+
 	// Check name matches directory
 	if (name !== directory_name) {
 		validation.matches_directory = false;
@@ -220,6 +252,11 @@ export function validate_hard_limits(
 		if (description.length > 1024) {
 			limits.description.valid = false;
 			limits.description.error = `Description too long (max 1024 chars per Anthropic): ${description.length}`;
+		}
+		// Reject XML angle brackets in description (security)
+		if (description.includes('<') || description.includes('>')) {
+			limits.description.valid = false;
+			limits.description.error = `Description must not contain XML angle brackets`;
 		}
 	}
 
