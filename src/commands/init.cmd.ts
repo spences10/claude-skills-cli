@@ -20,6 +20,11 @@ export default defineCommand({
 			type: 'boolean',
 			description: 'Include example files (scripts/, assets/)',
 		},
+		global: {
+			type: 'boolean',
+			description:
+				'Install skill in ~/.claude/skills/ (available in all projects)',
+		},
 	},
 	run({ args }) {
 		init_command({
@@ -27,6 +32,7 @@ export default defineCommand({
 			description: args.description,
 			path: args.path,
 			with_examples: args['with-examples'],
+			global: args.global,
 		});
 	},
 });

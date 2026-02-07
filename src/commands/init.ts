@@ -1,3 +1,4 @@
+import { homedir } from 'node:os';
 import { join } from 'node:path';
 import {
 	REFERENCE_TEMPLATE,
@@ -27,8 +28,10 @@ export function init_command(options: InitOptions): void {
 	} else if (options.name) {
 		name = options.name;
 		description = options.description || 'TODO: Add description';
-		// Default to .claude/skills/ directory
-		skill_path = join('.claude', 'skills', name);
+		// Use ~/.claude/skills/ for global, .claude/skills/ for project
+		skill_path = options.global
+			? join(homedir(), '.claude', 'skills', name)
+			: join('.claude', 'skills', name);
 	} else {
 		error('Either --name or --path must be provided');
 		console.log('\nUsage:');
@@ -59,6 +62,7 @@ export function init_command(options: InitOptions): void {
 		name,
 		description,
 		options.with_examples || false,
+		options.global || false,
 	);
 }
 
@@ -67,6 +71,7 @@ function create_skill(
 	name: string,
 	description: string,
 	with_examples: boolean = false,
+	global: boolean = false,
 ): void {
 	// Create base directories
 	ensure_dir(path);
@@ -102,7 +107,8 @@ function create_skill(
 		make_executable(script_path);
 	}
 
-	success(`Skill created at: ${path}`);
+	const scope = global ? 'global' : 'project';
+	success(`Skill created at: ${path} (${scope})`);
 	console.log('\nNext steps:');
 	console.log(
 		`1. Edit ${path}/SKILL.md with your skill instructions`,
