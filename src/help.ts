@@ -198,7 +198,7 @@ export const ADD_HOOK_HELP: CommandHelp = {
 	options: [
 		{
 			flag: '--type',
-			type: 'forced-eval|llm-eval|prompt-eval|simple-script|simple-inline',
+			type: 'forced-eval|llm-eval|simple-script|simple-inline',
 			description: 'Hook type (default: forced-eval)',
 		},
 		{

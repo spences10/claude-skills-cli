@@ -57,8 +57,7 @@ export interface AddHookOptions {
 		| 'simple-inline'
 		| 'simple-script'
 		| 'forced-eval'
-		| 'llm-eval'
-		| 'prompt-eval';
+		| 'llm-eval';
 	force?: boolean;
 }
 

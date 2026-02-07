@@ -62,15 +62,6 @@ const HOOK_TYPES = {
 		script: 'skill-activation-llm-eval.sh',
 		template: LLM_EVAL_HOOK_TEMPLATE,
 	},
-	'prompt-eval': {
-		name: 'Native Prompt Evaluation',
-		success_rate: 'untested',
-		description:
-			'Built-in Claude Code prompt hook (no API key needed)',
-		command: null,
-		script: null,
-		template: null,
-	},
 } as const;
 
 type HookType = keyof typeof HOOK_TYPES;
@@ -83,7 +74,7 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 	if (!HOOK_TYPES[hook_type]) {
 		error(`Invalid hook type: ${hook_type}`);
 		info(
-			'Valid types: simple-inline, simple-script, forced-eval, llm-eval, prompt-eval',
+			'Valid types: simple-inline, simple-script, forced-eval, llm-eval',
 		);
 		process.exit(1);
 	}
@@ -139,18 +130,15 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 				// Find existing skill activation hook (check for various patterns)
 				const existing_hook = userPromptSubmit.hooks?.find(
 					(h) =>
-						(h.type === 'command' &&
-							h.command &&
-							(h.command.includes('skill-activation') ||
-								h.command.includes('skill-forced-eval-hook') ||
-								h.command.includes('skill-llm-eval-hook') ||
-								h.command.includes('skill-simple-instruction-hook') ||
-								h.command.includes(
-									'If the prompt matches any available skill keywords',
-								))) ||
-						(h.type === 'prompt' &&
-							h.prompt &&
-							h.prompt.includes('available skills')),
+						h.type === 'command' &&
+						h.command &&
+						(h.command.includes('skill-activation') ||
+							h.command.includes('skill-forced-eval-hook') ||
+							h.command.includes('skill-llm-eval-hook') ||
+							h.command.includes('skill-simple-instruction-hook') ||
+							h.command.includes(
+								'If the prompt matches any available skill keywords',
+							)),
 				);
 
 				if (existing_hook) {
@@ -186,16 +174,7 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 	// Determine the hook handler to use
 	let hook_handler: HookHandler;
 
-	if (hook_type === 'prompt-eval') {
-		// Native prompt hook: no script needed
-		info(`Creating ${hook_config.name} hook...`);
-		hook_handler = {
-			type: 'prompt',
-			prompt:
-				'Evaluate if any available skills match this user prompt. For each skill in <available_skills>, determine YES/NO. If any are YES, activate them using the Skill(skill-name) tool BEFORE proceeding with implementation.',
-			timeout: 30,
-		};
-	} else if (hook_config.script) {
+	if (hook_config.script) {
 		// Script-based hook: create the script file
 		const script_path = join(hooks_dir, hook_config.script);
 
