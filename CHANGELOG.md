@@ -1,5 +1,12 @@
 # claude-skills-cli
 
+## 0.0.19
+
+### Patch Changes
+
+- 07890bc: Remove dead postbuild script copying .claude/skills and
+  improve claude-code-toolkit references to mention activation hooks
+
 ## 0.0.18
 
 ### Patch Changes
