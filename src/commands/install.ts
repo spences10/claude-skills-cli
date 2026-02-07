@@ -25,7 +25,7 @@ export function install_command(options: InstallOptions): void {
 		);
 		console.log('See: https://code.claude.com/docs/en/plugins');
 		console.log(
-			'\nFor pre-built skills, see: https://github.com/spences10/claude-code-toolkit',
+			'\nFor pre-built skills & activation hooks, see: https://github.com/spences10/claude-code-toolkit',
 		);
 		console.log(
 			'\nUse "claude-skills-cli init" to create new skills.',
@@ -37,7 +37,7 @@ export function install_command(options: InstallOptions): void {
 		error(`Unknown skill: ${skill_name}`);
 		console.log('\nNo bundled skills available.');
 		console.log(
-			'For pre-built skills, see: https://github.com/spences10/claude-code-toolkit',
+			'For pre-built skills & activation hooks, see: https://github.com/spences10/claude-code-toolkit',
 		);
 		process.exit(1);
 	}

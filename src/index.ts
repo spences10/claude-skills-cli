@@ -15,7 +15,7 @@ const main = defineCommand({
 		name: 'claude-skills-cli',
 		version: pkg.version,
 		description:
-			'CLI toolkit for creating and managing Claude Agent Skills\n\nIMPORTANT FOR LLMs:\n  ALWAYS run validate after creating or editing a skill:\n    claude-skills-cli validate <skill-path>\n  Skills MUST pass validation before use.\n  Fix all errors immediately. Address warnings promptly.\n\nResources:\n  Pre-built skills: https://github.com/spences10/claude-code-toolkit',
+			'CLI toolkit for creating and managing Claude Agent Skills\n\nIMPORTANT FOR LLMs:\n  ALWAYS run validate after creating or editing a skill:\n    claude-skills-cli validate <skill-path>\n  Skills MUST pass validation before use.\n  Fix all errors immediately. Address warnings promptly.\n\nResources:\n  Pre-built skills & hooks: https://github.com/spences10/claude-code-toolkit\n  Includes a UserPromptSubmit hook for automatic skill activation.',
 	},
 	subCommands: {
 		init: () =>

@@ -17,7 +17,6 @@
 	},
 	"scripts": {
 		"build": "tsc",
-		"postbuild": "rm -rf dist/skills && cp -r .claude/skills dist/skills",
 		"dev": "tsc --watch",
 		"start": "node ./dist/index.js",
 		"format": "prettier --write .",
