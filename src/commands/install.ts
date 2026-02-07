@@ -21,6 +21,10 @@ export function install_command(options: InstallOptions): void {
 	if (!skill_name || AVAILABLE_SKILLS.length === 0) {
 		info('No bundled skills available');
 		console.log(
+			'\nOfficial method: /plugin install <skill>@<marketplace>',
+		);
+		console.log('See: https://code.claude.com/docs/en/plugins');
+		console.log(
 			'\nFor pre-built skills, see: https://github.com/spences10/claude-code-toolkit',
 		);
 		console.log(

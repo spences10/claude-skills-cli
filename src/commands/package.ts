@@ -16,6 +16,7 @@ import {
 	step,
 	success,
 	upload,
+	warning,
 } from '../utils/output.js';
 
 function validate_skill(skill_path: string): boolean {
@@ -168,6 +169,15 @@ export async function package_command(
 		success('Skill packaged successfully!');
 		console.log(`   File: ${output_file}`);
 		console.log(`   Size: ${size_kb.toFixed(1)} KB`);
+		console.log('');
+		warning(
+			'Note: ZIP packaging is not an official Claude Code distribution method.',
+		);
+		console.log(
+			'   Official distribution uses the plugin system (/plugin install)',
+		);
+		console.log('   or direct file placement in .claude/skills/.');
+		console.log('   See: https://code.claude.com/docs/en/plugins');
 		console.log('');
 		upload(
 			'Upload to Claude.ai: Settings > Features > Skills > Upload',
