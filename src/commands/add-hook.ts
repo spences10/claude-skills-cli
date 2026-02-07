@@ -64,7 +64,7 @@ const HOOK_TYPES = {
 	},
 	'prompt-eval': {
 		name: 'Native Prompt Evaluation',
-		success_rate: '80%',
+		success_rate: 'untested',
 		description:
 			'Built-in Claude Code prompt hook (no API key needed)',
 		command: null,
