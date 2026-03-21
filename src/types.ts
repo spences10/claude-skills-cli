@@ -127,7 +127,11 @@ export interface UserPhrasingAnalysis {
 		is_action_oriented: boolean;
 	};
 	issues: Array<{
-		type: 'first_person' | 'passive_voice' | 'vague';
+		type:
+			| 'first_person'
+			| 'second_person'
+			| 'passive_voice'
+			| 'vague';
 		text: string;
 		suggestion: string;
 	}>;

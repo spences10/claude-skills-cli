@@ -2,14 +2,11 @@
  * Description validation (Level 1 progressive disclosure)
  */
 
-import {
-	count_words,
-	estimate_string_tokens,
-} from './text-analysis.js';
 import type {
 	TriggerPhraseAnalysis,
 	UserPhrasingAnalysis,
 } from '../types.js';
+import { estimate_string_tokens } from './text-analysis.js';
 
 export interface DescriptionStats {
 	description_length: number;
@@ -23,7 +20,9 @@ export interface DescriptionWarning {
 		| 'list_bloat'
 		| 'short'
 		| 'first_person'
-		| 'vague';
+		| 'second_person'
+		| 'vague'
+		| 'passive';
 	message: string;
 }
 
@@ -65,13 +64,6 @@ export function validate_description_content(
 				`Description is ${desc_length} characters (MAX: 300 for efficiency)\n` +
 				`  → Keep descriptions concise - quality over quantity`,
 		});
-	} else if (desc_length > 200) {
-		validation.warnings.push({
-			type: 'length',
-			message:
-				`Description is ${desc_length} characters (recommended: <200)\n` +
-				`  → Estimated ~${desc_tokens} tokens - consider shortening`,
-		});
 	}
 
 	// Check for trigger keywords
@@ -103,11 +95,12 @@ export function validate_description_content(
 	}
 
 	// Short description check
-	if (desc_length < 20) {
+	if (desc_length < 50) {
 		validation.warnings.push({
 			type: 'short',
 			message:
-				'Description is very short (consider adding more detail)',
+				`Description is very short (${desc_length} chars, minimum recommended: 50)\n` +
+				`  → Must answer both "what does it do" AND "when to use it"`,
 		});
 	}
 
@@ -173,7 +166,22 @@ export function analyze_user_phrasing(description: string): {
 				type: 'first_person',
 				message:
 					`Description uses first person: "${match[0]}"\n` +
-					`  → Prefer third person for clarity (not required but recommended)`,
+					`  → Anthropic requires third-person voice (e.g., "Generates..." not "I can generate...")`,
+			});
+		}
+	}
+
+	// Check for second person
+	const second_person_patterns =
+		/\b(You can|You should|You could|You'll|You will|You need|your)\b/i;
+	if (second_person_patterns.test(description)) {
+		const match = description.match(second_person_patterns);
+		if (match) {
+			warnings.push({
+				type: 'second_person',
+				message:
+					`Description uses second person: "${match[0]}"\n` +
+					`  → Anthropic requires third-person voice (e.g., "Processes..." not "You can process...")`,
 			});
 		}
 	}
@@ -200,6 +208,16 @@ export function analyze_user_phrasing(description: string): {
 	const action_verbs =
 		/^(create|build|design|analyze|test|validate|generate|process|manage|execute|handle|provide)/i;
 	const is_action_oriented = action_verbs.test(description.trim());
+
+	// Suggest action-oriented language if neither gerund nor action verb
+	if (!uses_gerund && !is_action_oriented) {
+		warnings.push({
+			type: 'passive',
+			message:
+				`Description lacks action-oriented language\n` +
+				`  → Start with a verb or gerund (e.g., "Generates...", "Managing...", "Extract...")`,
+		});
+	}
 
 	const analysis: UserPhrasingAnalysis = {
 		style_checks: {

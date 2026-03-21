@@ -6,7 +6,7 @@ export const SKILL_MD_TEMPLATE = (
 ) => {
 	const minimal_template = `---
 name: ${name}
-# IMPORTANT: Keep description on ONE line for Claude Code compatibility
+# Keep on ONE line, third-person voice, include "Use when/for/to..." trigger
 # prettier-ignore
 description: ${description}
 ---
@@ -48,7 +48,7 @@ For detailed documentation, see:
 PROGRESSIVE DISCLOSURE GUIDELINES:
 - Keep this file ~50 lines total (max ~150 lines)
 - Use 1-2 code blocks only (recommend 1)
-- Keep description <200 chars for Level 1 efficiency
+- Keep description <300 chars for Level 1 efficiency
 - Move detailed docs to references/ for Level 3 loading
 - This is Level 2 - quick reference ONLY, not a manual
 
@@ -63,7 +63,7 @@ LLM WORKFLOW (when editing this file):
 
 	const full_template = `---
 name: ${name}
-# IMPORTANT: Keep description on ONE line for Claude Code compatibility
+# Keep on ONE line, third-person voice, include "Use when/for/to..." trigger
 # prettier-ignore
 description: ${description}
 ---
@@ -110,7 +110,7 @@ For detailed documentation, see:
 PROGRESSIVE DISCLOSURE GUIDELINES:
 - Keep this file ~50 lines total (max ~150 lines)
 - Use 1-2 code blocks only (recommend 1)
-- Keep description <200 chars for Level 1 efficiency
+- Keep description <300 chars for Level 1 efficiency
 - Move detailed docs to references/ for Level 3 loading
 - This is Level 2 - quick reference ONLY, not a manual
 

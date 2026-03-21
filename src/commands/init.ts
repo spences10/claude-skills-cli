@@ -24,10 +24,14 @@ export function init_command(options: InitOptions): void {
 	if (options.path) {
 		skill_path = options.path;
 		name = skill_path.split('/').pop() || '';
-		description = options.description || 'TODO: Add description';
+		description =
+			options.description ||
+			'TODO: [Domain] [operations]. Use when [trigger phrase]';
 	} else if (options.name) {
 		name = options.name;
-		description = options.description || 'TODO: Add description';
+		description =
+			options.description ||
+			'TODO: [Domain] [operations]. Use when [trigger phrase]';
 		// Use ~/.claude/skills/ for global, .claude/skills/ for project
 		skill_path = options.global
 			? join(homedir(), '.claude', 'skills', name)
