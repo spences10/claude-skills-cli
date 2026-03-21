@@ -1,5 +1,13 @@
 # claude-skills-cli
 
+## 0.0.20
+
+### Patch Changes
+
+- 1428150: Align description validator with Anthropic best practices:
+  add second-person detection, fix voice guidance, surface action-verb
+  check
+
 ## 0.0.19
 
 ### Patch Changes
