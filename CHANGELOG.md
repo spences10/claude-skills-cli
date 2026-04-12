@@ -1,5 +1,15 @@
 # claude-skills-cli
 
+## 0.0.21
+
+### Patch Changes
+
+- 3593bd9: Migrate build tooling from tsc/prettier to vite-plus/oxc; drop
+  archiver and chalk dependencies
+- 84270a6: Fix lint warnings, add colocated tests for frontmatter, description, and content validators
+- 324935d: Centralize validation constants, update description limit to 250, add
+  frontmatter field awareness
+
 ## 0.0.20
 
 ### Patch Changes
@@ -20,6 +30,7 @@
 ### Patch Changes
 
 - 796919f: Align validation with official Claude Code documentation
+
   - Add missing frontmatter fields to SkillMetadata
     (disable-model-invocation, user-invocable, argument-hint, model,
     context, agent, hooks, compatibility)

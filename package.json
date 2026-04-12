@@ -1,6 +1,6 @@
 {
 	"name": "claude-skills-cli",
-	"version": "0.0.20",
+	"version": "0.0.21",
 	"description": "CLI toolkit for creating and managing Claude Agent Skills",
 	"keywords": [
 		"agent",
