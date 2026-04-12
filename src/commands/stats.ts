@@ -1,8 +1,13 @@
-import { existsSync, readdirSync, statSync } from 'node:fs';
+import {
+	existsSync,
+	readdirSync,
+	readFileSync,
+	statSync,
+} from 'node:fs';
 import { join } from 'node:path';
 import { DESCRIPTION_MAX_LENGTH, LIMITS } from '../constants.js';
 import { SkillValidator } from '../core/validator.js';
-import type { StatsOptions } from '../types.js';
+import type { SkillComplexityTier, StatsOptions } from '../types.js';
 import { error } from '../utils/output.js';
 
 export function stats_command(options: StatsOptions): void {
@@ -53,6 +58,9 @@ export function stats_command(options: StatsOptions): void {
 		`${skills.length} skill${skills.length === 1 ? '' : 's'} found:\n`,
 	);
 
+	// Track complexity tiers for summary
+	const tier_counts = { simple: 0, standard: 0, advanced: 0 };
+
 	// Validate and display each skill
 	for (const skill_path of skills) {
 		const skill_name = skill_path.split('/').pop() || '';
@@ -71,6 +79,21 @@ export function stats_command(options: StatsOptions): void {
 		}
 
 		console.log(`${skill_name} (${status_icon} ${status_text})`);
+
+		// Show version if present
+		const skill_md_path = join(skill_path, 'SKILL.md');
+		if (existsSync(skill_md_path)) {
+			const content = readFileSync(skill_md_path, 'utf-8');
+			const version_match = content.match(/^version:\s*(.+)/m);
+			if (version_match) {
+				console.log(`  Version: ${version_match[1].trim()}`);
+			}
+		}
+
+		// Show complexity tier
+		const tier = classify_complexity(skill_path);
+		tier_counts[tier]++;
+		console.log(`  Complexity: ${tier}`);
 
 		if (result.stats) {
 			// Description length
@@ -183,5 +206,57 @@ export function stats_command(options: StatsOptions): void {
 		if (invalid_skills > 0) {
 			console.log(`  Invalid: ${invalid_skills}`);
 		}
+	}
+
+	// Complexity tier distribution
+	if (skills.length > 1) {
+		console.log(
+			`  Complexity: ${tier_counts.simple} simple, ${tier_counts.standard} standard, ${tier_counts.advanced} advanced`,
+		);
+	}
+}
+
+/**
+ * Classify skill complexity based on filesystem structure
+ */
+export function classify_complexity(
+	skill_path: string,
+): SkillComplexityTier {
+	const has_scripts =
+		existsSync(join(skill_path, 'scripts')) &&
+		dir_has_files(join(skill_path, 'scripts'));
+	const has_references =
+		existsSync(join(skill_path, 'references')) &&
+		dir_has_files(join(skill_path, 'references'));
+	const has_assets =
+		existsSync(join(skill_path, 'assets')) &&
+		dir_has_files(join(skill_path, 'assets'));
+
+	const script_count = has_scripts
+		? readdirSync(join(skill_path, 'scripts')).length
+		: 0;
+
+	// Advanced: assets, many scripts, or both scripts + references
+	if (
+		has_assets ||
+		script_count > 2 ||
+		(has_scripts && has_references)
+	) {
+		return 'advanced';
+	}
+
+	// Standard: has references or scripts
+	if (has_references || has_scripts) {
+		return 'standard';
+	}
+
+	return 'simple';
+}
+
+function dir_has_files(dir_path: string): boolean {
+	try {
+		return readdirSync(dir_path).length > 0;
+	} catch {
+		return false;
 	}
 }

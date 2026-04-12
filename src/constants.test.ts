@@ -6,6 +6,7 @@ import {
 	LONG_PARAGRAPH_WORDS,
 	MIN_BODY_LENGTH,
 	NAME_MAX_LENGTH,
+	SEMVER_REGEX,
 	TOKEN_BUDGET,
 } from './constants.js';
 
@@ -44,5 +45,32 @@ describe('constants', () => {
 
 	it('should have loose line limit at 500 per Anthropic docs', () => {
 		expect(LIMITS.loose.lines.max).toBe(500);
+	});
+});
+
+describe('SEMVER_REGEX', () => {
+	it('should match basic semver', () => {
+		expect(SEMVER_REGEX.test('1.0.0')).toBe(true);
+		expect(SEMVER_REGEX.test('0.1.0')).toBe(true);
+		expect(SEMVER_REGEX.test('12.34.56')).toBe(true);
+	});
+
+	it('should match semver with prerelease', () => {
+		expect(SEMVER_REGEX.test('1.0.0-alpha')).toBe(true);
+		expect(SEMVER_REGEX.test('1.0.0-beta.1')).toBe(true);
+		expect(SEMVER_REGEX.test('0.1.0-rc.2')).toBe(true);
+	});
+
+	it('should match semver with build metadata', () => {
+		expect(SEMVER_REGEX.test('1.0.0+build.123')).toBe(true);
+		expect(SEMVER_REGEX.test('1.0.0-beta+build')).toBe(true);
+	});
+
+	it('should reject invalid formats', () => {
+		expect(SEMVER_REGEX.test('v1.0.0')).toBe(false);
+		expect(SEMVER_REGEX.test('1.0')).toBe(false);
+		expect(SEMVER_REGEX.test('latest')).toBe(false);
+		expect(SEMVER_REGEX.test('1')).toBe(false);
+		expect(SEMVER_REGEX.test('')).toBe(false);
 	});
 });

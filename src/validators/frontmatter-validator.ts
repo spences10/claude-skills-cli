@@ -5,6 +5,7 @@
 import {
 	DESCRIPTION_MAX_LENGTH,
 	NAME_MAX_LENGTH,
+	SEMVER_REGEX,
 } from '../constants.js';
 import type {
 	HardLimitValidation,
@@ -120,12 +121,64 @@ export function extract_frontmatter(
 }
 
 /**
+ * Extract array field values from raw YAML frontmatter
+ * Handles both inline [a, b] and YAML list (- item) formats
+ */
+export function extract_array_field(
+	frontmatter: string,
+	field: string,
+): string[] | null {
+	const lines = frontmatter.split('\n');
+	let field_index = -1;
+
+	for (let i = 0; i < lines.length; i++) {
+		if (lines[i].match(new RegExp(`^${field}:`))) {
+			field_index = i;
+			break;
+		}
+	}
+
+	if (field_index === -1) return null;
+
+	const value = lines[field_index]
+		.replace(new RegExp(`^${field}:\\s*`), '')
+		.trim();
+
+	// Inline bracket syntax: [item1, item2]
+	if (value.startsWith('[')) {
+		const inner = value.slice(1, value.lastIndexOf(']'));
+		if (!inner.trim()) return [];
+		return inner
+			.split(',')
+			.map((s) => s.trim().replace(/^["']|["']$/g, ''));
+	}
+
+	// Empty value — check for YAML list items on following lines
+	if (!value) {
+		const items: string[] = [];
+		for (let i = field_index + 1; i < lines.length; i++) {
+			const item_match = lines[i].match(/^\s+-\s+(.+)/);
+			if (item_match) {
+				items.push(item_match[1].trim().replace(/^["']|["']$/g, ''));
+			} else if (lines[i].match(/^[a-z]/)) {
+				break; // next field
+			}
+		}
+		return items;
+	}
+
+	// Plain string value (not an array) — return null to signal format error
+	return null;
+}
+
+/**
  * Known frontmatter fields per Anthropic spec
  * https://code.claude.com/docs/en/skills#frontmatter-reference
  */
 const KNOWN_FRONTMATTER_FIELDS = new Set([
 	'name',
 	'description',
+	'version',
 	'argument-hint',
 	'disable-model-invocation',
 	'user-invocable',
@@ -137,6 +190,18 @@ const KNOWN_FRONTMATTER_FIELDS = new Set([
 	'hooks',
 	'paths',
 	'shell',
+	'depends-on-skills',
+	'depends-on-mcp',
+	'depends-on-packages',
+]);
+
+/**
+ * Fields that expect array values
+ */
+const ARRAY_FIELDS = new Set([
+	'depends-on-skills',
+	'depends-on-mcp',
+	'depends-on-packages',
 ]);
 
 /**
@@ -222,6 +287,29 @@ export function validate_frontmatter_structure(
 			validation.field_value_warnings!.push(
 				`'${field}' has value '${value}' (expected: ${allowed.join(', ')})`,
 			);
+		}
+
+		// Validate version format
+		if (field === 'version' && value) {
+			if (value.startsWith('v')) {
+				validation.field_value_warnings!.push(
+					`'version' should not start with 'v' prefix — use '${value.slice(1)}' instead`,
+				);
+			} else if (!SEMVER_REGEX.test(value)) {
+				validation.field_value_warnings!.push(
+					`'version' must be valid semver (e.g. 1.0.0) — got '${value}'`,
+				);
+			}
+		}
+
+		// Validate array fields have correct format
+		if (ARRAY_FIELDS.has(field) && value) {
+			// Inline bracket syntax [a, b] is valid
+			if (!value.startsWith('[')) {
+				validation.field_value_warnings!.push(
+					`'${field}' should be a YAML list (e.g. [item1, item2] or - item) — got plain string '${value}'`,
+				);
+			}
 		}
 	}
 

@@ -1,6 +1,7 @@
 export interface SkillMetadata {
 	name: string;
 	description: string;
+	version?: string;
 	license?: string;
 	'allowed-tools'?: string[];
 	metadata?: Record<string, unknown>;
@@ -15,6 +16,9 @@ export interface SkillMetadata {
 	paths?: string | string[];
 	shell?: 'bash' | 'powershell';
 	compatibility?: string;
+	'depends-on-skills'?: string[];
+	'depends-on-mcp'?: string[];
+	'depends-on-packages'?: string[];
 }
 
 export interface InitOptions {
@@ -63,6 +67,22 @@ export interface AddHookOptions {
 		| 'forced-eval'
 		| 'llm-eval';
 	force?: boolean;
+}
+
+export type SkillComplexityTier = 'simple' | 'standard' | 'advanced';
+
+export interface DependencyValidation {
+	depends_on_skills: {
+		name: string;
+		found: boolean;
+		path: string | null;
+	}[];
+	depends_on_mcp: { name: string; found: boolean }[];
+	depends_on_packages: {
+		name: string;
+		found: boolean;
+		type: 'node' | 'system' | 'unknown';
+	}[];
 }
 
 export interface ValidationStats {
@@ -198,6 +218,7 @@ export interface StructuredValidation {
 	path_format: PathFormatValidation;
 	triggering?: TriggeringValidation;
 	progressive_disclosure?: ProgressiveDisclosureValidation;
+	dependency_validation?: DependencyValidation;
 }
 
 export interface ValidationResult {

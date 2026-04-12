@@ -42,3 +42,7 @@ export const LIMITS = {
 		words: { excellent: 1000, good: 2000, max: 5000 },
 	},
 } as const;
+
+/** Semver format regex for version field validation */
+export const SEMVER_REGEX =
+	/^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?(\+[a-zA-Z0-9.]+)?$/;

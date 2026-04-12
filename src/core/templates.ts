@@ -9,6 +9,10 @@ name: ${name}
 # Keep on ONE line, third-person voice, include "Use when/for/to..." trigger
 # prettier-ignore
 description: ${description}
+# version: 0.1.0
+# depends-on-skills: []
+# depends-on-mcp: []
+# depends-on-packages: []
 ---
 
 # ${title}

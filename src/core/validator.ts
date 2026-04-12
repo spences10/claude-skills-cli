@@ -31,6 +31,7 @@ import {
 	validate_hard_limits,
 	validate_name_format,
 } from '../validators/frontmatter-validator.js';
+import { validate_dependencies } from '../validators/dependency-validator.js';
 import { validate_references } from '../validators/references-validator.js';
 
 import type { ValidationMode } from '../types.js';
@@ -286,6 +287,17 @@ export class SkillValidator {
 		content_validation.warnings.forEach((warn) =>
 			this.warning(warn.message),
 		);
+
+		// Validate dependencies (depends-on-* fields)
+		const parts = content.split('---\n');
+		if (parts.length >= 3) {
+			const frontmatter_raw = parts[1];
+			const dep_result = validate_dependencies(frontmatter_raw);
+			dep_result.errors.forEach((err) => this.error(err));
+			dep_result.warnings.forEach((warn) => this.warning(warn));
+			this.structured_validation.dependency_validation =
+				dep_result.validation;
+		}
 
 		return true;
 	}

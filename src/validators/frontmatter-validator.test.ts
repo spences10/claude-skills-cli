@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+	extract_array_field,
 	extract_frontmatter,
 	has_yaml_frontmatter,
 	is_description_multiline,
@@ -203,5 +204,125 @@ describe('validate_hard_limits', () => {
 			'<script>alert</script>',
 		);
 		expect(result.description.valid).toBe(false);
+	});
+});
+
+describe('validate_frontmatter_structure — version field', () => {
+	it('should accept valid semver version', () => {
+		const content =
+			'---\nname: test\ndescription: Desc\nversion: 1.0.0\n---\nBody';
+		const result = validate_frontmatter_structure(content);
+		expect(result.field_value_warnings).toHaveLength(0);
+	});
+
+	it('should accept semver with prerelease', () => {
+		const content =
+			'---\nname: test\ndescription: Desc\nversion: 0.1.0-beta.1\n---\nBody';
+		const result = validate_frontmatter_structure(content);
+		expect(result.field_value_warnings).toHaveLength(0);
+	});
+
+	it('should warn on v prefix', () => {
+		const content =
+			'---\nname: test\ndescription: Desc\nversion: v1.0.0\n---\nBody';
+		const result = validate_frontmatter_structure(content);
+		expect(result.field_value_warnings!.length).toBeGreaterThan(0);
+		expect(result.field_value_warnings![0]).toContain('v');
+	});
+
+	it('should warn on invalid semver', () => {
+		const content =
+			'---\nname: test\ndescription: Desc\nversion: latest\n---\nBody';
+		const result = validate_frontmatter_structure(content);
+		expect(result.field_value_warnings!.length).toBeGreaterThan(0);
+		expect(result.field_value_warnings![0]).toContain('semver');
+	});
+
+	it('should not flag version as unknown field', () => {
+		const content =
+			'---\nname: test\ndescription: Desc\nversion: 1.0.0\n---\nBody';
+		const result = validate_frontmatter_structure(content);
+		expect(result.unknown_fields).toHaveLength(0);
+	});
+});
+
+describe('validate_frontmatter_structure — dependency fields', () => {
+	it('should not flag depends-on-skills as unknown', () => {
+		const content =
+			'---\nname: test\ndescription: Desc\ndepends-on-skills: [my-skill]\n---\nBody';
+		const result = validate_frontmatter_structure(content);
+		expect(result.unknown_fields).toHaveLength(0);
+	});
+
+	it('should not flag depends-on-mcp as unknown', () => {
+		const content =
+			'---\nname: test\ndescription: Desc\ndepends-on-mcp: [server-a]\n---\nBody';
+		const result = validate_frontmatter_structure(content);
+		expect(result.unknown_fields).toHaveLength(0);
+	});
+
+	it('should not flag depends-on-packages as unknown', () => {
+		const content =
+			'---\nname: test\ndescription: Desc\ndepends-on-packages: [lodash]\n---\nBody';
+		const result = validate_frontmatter_structure(content);
+		expect(result.unknown_fields).toHaveLength(0);
+	});
+
+	it('should warn when depends-on field is plain string', () => {
+		const content =
+			'---\nname: test\ndescription: Desc\ndepends-on-skills: my-skill\n---\nBody';
+		const result = validate_frontmatter_structure(content);
+		expect(result.field_value_warnings!.length).toBeGreaterThan(0);
+		expect(result.field_value_warnings![0]).toContain('YAML list');
+	});
+
+	it('should not warn when depends-on field is bracket array', () => {
+		const content =
+			'---\nname: test\ndescription: Desc\ndepends-on-skills: [a, b]\n---\nBody';
+		const result = validate_frontmatter_structure(content);
+		const dep_warnings = result.field_value_warnings!.filter((w) =>
+			w.includes('depends-on'),
+		);
+		expect(dep_warnings).toHaveLength(0);
+	});
+});
+
+describe('extract_array_field', () => {
+	it('should extract inline bracket array', () => {
+		const fm = 'name: test\ndepends-on-skills: [a, b, c]\n';
+		const result = extract_array_field(fm, 'depends-on-skills');
+		expect(result).toEqual(['a', 'b', 'c']);
+	});
+
+	it('should extract empty bracket array', () => {
+		const fm = 'name: test\ndepends-on-skills: []\n';
+		const result = extract_array_field(fm, 'depends-on-skills');
+		expect(result).toEqual([]);
+	});
+
+	it('should extract YAML list items', () => {
+		const fm =
+			'name: test\ndepends-on-skills:\n  - skill-a\n  - skill-b\nversion: 1.0.0\n';
+		const result = extract_array_field(fm, 'depends-on-skills');
+		expect(result).toEqual(['skill-a', 'skill-b']);
+	});
+
+	it('should return null for missing field', () => {
+		const fm = 'name: test\n';
+		const result = extract_array_field(fm, 'depends-on-skills');
+		expect(result).toBeNull();
+	});
+
+	it('should return null for plain string value', () => {
+		const fm = 'name: test\ndepends-on-skills: just-a-string\n';
+		const result = extract_array_field(fm, 'depends-on-skills');
+		expect(result).toBeNull();
+	});
+
+	it('should strip quotes from array items', () => {
+		const fm =
+			'name: test\ndepends-on-mcp: ["server-a", "server-b"]\n';
+		const result = extract_array_field(fm, 'depends-on-mcp');
+		expect(result).toEqual(['server-a', 'server-b']);
 	});
 });

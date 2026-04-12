@@ -2,8 +2,11 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import type { DoctorOptions } from '../types.js';
 import { error, info, success } from '../utils/output.js';
+import { check_package_dependencies } from '../validators/dependency-validator.js';
 import {
+	extract_array_field,
 	extract_frontmatter,
+	has_yaml_frontmatter,
 	is_description_multiline,
 } from '../validators/frontmatter-validator.js';
 
@@ -24,35 +27,77 @@ export function doctor_command(options: DoctorOptions): void {
 		process.exit(1);
 	}
 
-	// Extract frontmatter
+	let fixes_applied = 0;
+	let issues_found = 0;
+
+	// Check 1: Multi-line description
 	const frontmatter_data = extract_frontmatter(content);
 
-	if (!frontmatter_data.description_is_multiline) {
-		success(
-			'No issues found. Description is already on a single line.',
-		);
-		process.exit(0);
+	if (frontmatter_data.description_is_multiline) {
+		issues_found++;
+		info('Found multi-line description. Fixing...');
+
+		const fixed_content = fix_multiline_description(content);
+
+		try {
+			writeFileSync(skill_md_path, fixed_content, 'utf-8');
+			content = fixed_content;
+			fixes_applied++;
+			success('Fixed multi-line description');
+			console.log(
+				'  • Added # prettier-ignore comment before description',
+			);
+			console.log('  • Reflowed description to single line');
+		} catch (err) {
+			error(`Failed to write SKILL.md: ${String(err)}`);
+		}
 	}
 
-	info('Found multi-line description. Fixing...');
+	// Check 2: Missing package dependencies
+	if (has_yaml_frontmatter(content)) {
+		const parts = content.split('---\n');
+		if (parts.length >= 3) {
+			const frontmatter_raw = parts[1];
+			const packages = extract_array_field(
+				frontmatter_raw,
+				'depends-on-packages',
+			);
 
-	// Fix the multi-line description
-	const fixed_content = fix_multiline_description(content);
+			if (packages && packages.length > 0) {
+				const results = check_package_dependencies(packages);
+				const missing = results.filter((r) => !r.found);
 
-	// Write fixed content back
-	try {
-		writeFileSync(skill_md_path, fixed_content, 'utf-8');
-		success('Fixed multi-line description!');
-		console.log('\nChanges made:');
+				if (missing.length > 0) {
+					issues_found++;
+					console.log('');
+					info(
+						`Missing ${missing.length} package dependenc${missing.length === 1 ? 'y' : 'ies'}:`,
+					);
+					for (const dep of missing) {
+						console.log(`  • ${dep.name}`);
+					}
+					console.log('\nSuggested commands:');
+					for (const dep of missing) {
+						console.log(
+							`  npm install ${dep.name}  # or: pip install ${dep.name}`,
+						);
+					}
+				}
+			}
+		}
+	}
+
+	// Summary
+	console.log('');
+	if (issues_found === 0) {
+		success('No issues found');
+	} else {
 		console.log(
-			'  • Added # prettier-ignore comment before description',
+			`Found ${issues_found} issue${issues_found === 1 ? '' : 's'}, applied ${fixes_applied} fix${fixes_applied === 1 ? '' : 'es'}`,
 		);
-		console.log('  • Reflowed description to single line');
-		console.log('\n✓ Run validate command to confirm the fix');
-		process.exit(0);
-	} catch (err) {
-		error(`Failed to write SKILL.md: ${String(err)}`);
-		process.exit(1);
+		if (fixes_applied > 0) {
+			console.log('\n✓ Run validate command to confirm the fixes');
+		}
 	}
 }
 
