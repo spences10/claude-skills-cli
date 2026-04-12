@@ -48,7 +48,7 @@ For detailed documentation, see:
 PROGRESSIVE DISCLOSURE GUIDELINES:
 - Keep this file ~50 lines total (max ~150 lines)
 - Use 1-2 code blocks only (recommend 1)
-- Keep description <300 chars for Level 1 efficiency
+- Keep description <250 chars (Claude truncates at this limit)
 - Move detailed docs to references/ for Level 3 loading
 - This is Level 2 - quick reference ONLY, not a manual
 
@@ -110,7 +110,7 @@ For detailed documentation, see:
 PROGRESSIVE DISCLOSURE GUIDELINES:
 - Keep this file ~50 lines total (max ~150 lines)
 - Use 1-2 code blocks only (recommend 1)
-- Keep description <300 chars for Level 1 efficiency
+- Keep description <250 chars (Claude truncates at this limit)
 - Move detailed docs to references/ for Level 3 loading
 - This is Level 2 - quick reference ONLY, not a manual
 

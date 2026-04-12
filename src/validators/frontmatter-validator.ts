@@ -2,6 +2,10 @@
  * YAML frontmatter validation for SKILL.md
  */
 
+import {
+	DESCRIPTION_MAX_LENGTH,
+	NAME_MAX_LENGTH,
+} from '../constants.js';
 import type {
 	HardLimitValidation,
 	NameFormatValidation,
@@ -116,6 +120,53 @@ export function extract_frontmatter(
 }
 
 /**
+ * Known frontmatter fields per Anthropic spec
+ * https://code.claude.com/docs/en/skills#frontmatter-reference
+ */
+const KNOWN_FRONTMATTER_FIELDS = new Set([
+	'name',
+	'description',
+	'argument-hint',
+	'disable-model-invocation',
+	'user-invocable',
+	'allowed-tools',
+	'model',
+	'effort',
+	'context',
+	'agent',
+	'hooks',
+	'paths',
+	'shell',
+]);
+
+/**
+ * Fields with constrained values
+ */
+const FIELD_VALUES: Record<string, readonly string[]> = {
+	effort: ['low', 'medium', 'high', 'max'],
+	context: ['fork'],
+	shell: ['bash', 'powershell'],
+	'disable-model-invocation': ['true', 'false'],
+	'user-invocable': ['true', 'false'],
+};
+
+/**
+ * Extract top-level field names from raw YAML frontmatter
+ */
+function extract_field_names(
+	frontmatter: string,
+): Map<string, string> {
+	const fields = new Map<string, string>();
+	for (const line of frontmatter.split('\n')) {
+		const match = line.match(/^([a-z][a-z0-9_-]*):\s*(.*)/);
+		if (match) {
+			fields.set(match[1], match[2].trim());
+		}
+	}
+	return fields;
+}
+
+/**
  * Validate YAML frontmatter structure
  */
 export function validate_frontmatter_structure(
@@ -126,6 +177,8 @@ export function validate_frontmatter_structure(
 		has_frontmatter: false,
 		parse_error: null,
 		missing_fields: [],
+		unknown_fields: [],
+		field_value_warnings: [],
 	};
 
 	if (!has_yaml_frontmatter(content)) {
@@ -154,6 +207,22 @@ export function validate_frontmatter_structure(
 	if (!frontmatter.includes('description:')) {
 		validation.missing_fields.push('description');
 		validation.valid = false;
+	}
+
+	// Check for unknown fields
+	const fields = extract_field_names(frontmatter);
+	for (const [field, value] of fields) {
+		if (!KNOWN_FRONTMATTER_FIELDS.has(field)) {
+			validation.unknown_fields!.push(field);
+		}
+
+		// Validate constrained field values
+		const allowed = FIELD_VALUES[field];
+		if (allowed && value && !allowed.includes(value)) {
+			validation.field_value_warnings!.push(
+				`'${field}' has value '${value}' (expected: ${allowed.join(', ')})`,
+			);
+		}
 	}
 
 	return validation;
@@ -234,24 +303,29 @@ export function validate_hard_limits(
 ): HardLimitValidation {
 	const limits: HardLimitValidation = {
 		name: { length: 0, limit: 64, valid: true, error: null },
-		description: { length: 0, limit: 1024, valid: true, error: null },
+		description: {
+			length: 0,
+			limit: DESCRIPTION_MAX_LENGTH,
+			valid: true,
+			error: null,
+		},
 	};
 
 	// Validate name length
 	if (name) {
 		limits.name.length = name.length;
-		if (name.length > 64) {
+		if (name.length > NAME_MAX_LENGTH) {
 			limits.name.valid = false;
-			limits.name.error = `Skill name too long (max 64 chars): ${name.length}`;
+			limits.name.error = `Skill name too long (max ${NAME_MAX_LENGTH} chars): ${name.length}`;
 		}
 	}
 
-	// Validate description length (Anthropic hard limit)
+	// Validate description length (truncated at limit in skill listing)
 	if (description) {
 		limits.description.length = description.length;
-		if (description.length > 1024) {
+		if (description.length > DESCRIPTION_MAX_LENGTH) {
 			limits.description.valid = false;
-			limits.description.error = `Description too long (max 1024 chars per Anthropic): ${description.length}`;
+			limits.description.error = `Description too long (max ${DESCRIPTION_MAX_LENGTH} chars — Claude truncates at this limit): ${description.length}`;
 		}
 		// Reject XML angle brackets in description (security)
 		if (description.includes('<') || description.includes('>')) {

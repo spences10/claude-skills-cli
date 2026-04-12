@@ -2,6 +2,10 @@
  * Description validation (Level 1 progressive disclosure)
  */
 
+import {
+	DESCRIPTION_MAX_LENGTH,
+	DESCRIPTION_MIN_LENGTH,
+} from '../constants.js';
 import type {
 	TriggerPhraseAnalysis,
 	UserPhrasingAnalysis,
@@ -55,14 +59,13 @@ export function validate_description_content(
 		errors: [],
 	};
 
-	// Enforced limit: 300 chars (prevents Claude from bloating descriptions)
-	// Anthropic allows 1024, but that leads to verbose, inefficient descriptions
-	if (desc_length > 300) {
+	// Enforced limit: Claude truncates descriptions at this limit in skill listing
+	if (desc_length > DESCRIPTION_MAX_LENGTH) {
 		validation.errors.push({
 			type: 'length',
 			message:
-				`Description is ${desc_length} characters (MAX: 300 for efficiency)\n` +
-				`  → Keep descriptions concise - quality over quantity`,
+				`Description is ${desc_length} characters (MAX: ${DESCRIPTION_MAX_LENGTH} — Claude truncates at this limit)\n` +
+				`  → Keep descriptions concise - anything past ${DESCRIPTION_MAX_LENGTH} chars is never seen`,
 		});
 	}
 
@@ -95,11 +98,11 @@ export function validate_description_content(
 	}
 
 	// Short description check
-	if (desc_length < 50) {
+	if (desc_length < DESCRIPTION_MIN_LENGTH) {
 		validation.warnings.push({
 			type: 'short',
 			message:
-				`Description is very short (${desc_length} chars, minimum recommended: 50)\n` +
+				`Description is very short (${desc_length} chars, minimum recommended: ${DESCRIPTION_MIN_LENGTH})\n` +
 				`  → Must answer both "what does it do" AND "when to use it"`,
 		});
 	}

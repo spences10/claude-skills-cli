@@ -1,3 +1,8 @@
+import {
+	DESCRIPTION_MAX_LENGTH,
+	LIMITS,
+	TOKEN_BUDGET,
+} from '../constants.js';
 import type { ValidationStats } from '../types.js';
 
 export const success = (msg: string) => console.log(`✅ ${msg}`);
@@ -8,6 +13,8 @@ export const step = (msg: string) => console.log(`  ${msg}`);
 export const package_ = (msg: string) => console.log(`📦 ${msg}`);
 export const upload = (msg: string) => console.log(`📤 ${msg}`);
 export const search = (msg: string) => console.log(`🔍 ${msg}`);
+
+const S = LIMITS.strict;
 
 /**
  * Display progressive disclosure statistics
@@ -20,65 +27,60 @@ export function display_validation_stats(
 	// Level 1: Description
 	console.log('\n  Level 1 (Metadata - Always Loaded):');
 	const desc_status =
-		stats.description_length <= 200
+		stats.description_length <= DESCRIPTION_MAX_LENGTH
 			? '✅ Optimal'
-			: stats.description_length <= 300
-				? '⚠️  Long'
-				: '❌ Too long';
+			: '❌ Too long';
 
 	console.log(
 		`    Description: ${stats.description_length} chars, ~${stats.description_tokens} tokens ${desc_status}`,
 	);
 	console.log(
-		'    (Target: <200 chars, <30 tokens for Level 1 efficiency)',
+		`    (Target: <${DESCRIPTION_MAX_LENGTH} chars for Level 1 efficiency)`,
 	);
 
 	// Level 2: SKILL.md Body
-	console.log(
-		'\n  Level 2 (SKILL.md Body - Loaded when triggered):',
-	);
+	console.log('\n  Level 2 (SKILL.md Body - Loaded when triggered):');
 
-	// Line count (strict defaults: max 50)
+	// Line count
 	let line_status: string;
-	if (stats.line_count <= 30) {
+	if (stats.line_count <= S.lines.excellent) {
 		line_status = '✅ Excellent';
-	} else if (stats.line_count <= 40) {
+	} else if (stats.line_count <= S.lines.good) {
 		line_status = '✅ Good';
-	} else if (stats.line_count <= 50) {
+	} else if (stats.line_count <= S.lines.max) {
 		line_status = '⚠️  Consider splitting';
 	} else {
 		line_status = '❌ Too large';
 	}
 
 	console.log(
-		`    Lines: ${stats.line_count} (max: 50) ${line_status}`,
+		`    Lines: ${stats.line_count} (max: ${S.lines.max}) ${line_status}`,
 	);
 
-	// Word count with recommendations (strict defaults: max 1000)
+	// Word count
 	let word_status: string;
-	if (stats.word_count < 300) {
+	if (stats.word_count < S.words.excellent) {
 		word_status = '✅ Excellent';
-	} else if (stats.word_count < 500) {
+	} else if (stats.word_count < S.words.good) {
 		word_status = '✅ Good';
-	} else if (stats.word_count < 1000) {
+	} else if (stats.word_count < S.words.max) {
 		word_status = '⚠️  Consider splitting';
 	} else {
 		word_status = '❌ Too large';
 	}
 
 	console.log(
-		`    Words: ${stats.word_count} (max: 1000) ${word_status}`,
+		`    Words: ${stats.word_count} (max: ${S.words.max}) ${word_status}`,
 	);
 
 	// Token estimation
-	const token_budget = 6500;
 	const token_status =
-		stats.estimated_tokens < token_budget
+		stats.estimated_tokens < TOKEN_BUDGET
 			? 'within budget'
 			: 'exceeds budget';
 
 	console.log(
-		`    Est. tokens: ~${stats.estimated_tokens} (budget: <${token_budget}) ${token_status}`,
+		`    Est. tokens: ~${stats.estimated_tokens} (budget: <${TOKEN_BUDGET}) ${token_status}`,
 	);
 
 	// Code blocks
@@ -111,25 +113,27 @@ export function display_validation_stats(
 	}
 
 	// Level 3 info
-	console.log(
-		'\n  Level 3+ (References - Loaded as needed):',
-	);
+	console.log('\n  Level 3+ (References - Loaded as needed):');
 	console.log(
 		'    Use references/ directory for detailed docs (unlimited size)',
 	);
 
 	// Overall assessment (based on strict defaults)
 	console.log('\n  Overall Assessment:');
-	if (stats.line_count <= 30 && stats.description_length <= 200) {
-		console.log(
-			'    ✅ Excellent progressive disclosure!',
-		);
+	if (
+		stats.line_count <= S.lines.excellent &&
+		stats.description_length <= DESCRIPTION_MAX_LENGTH
+	) {
+		console.log('    ✅ Excellent progressive disclosure!');
 	} else if (
-		stats.line_count <= 50 &&
-		stats.description_length <= 300
+		stats.line_count <= S.lines.max &&
+		stats.description_length <= DESCRIPTION_MAX_LENGTH
 	) {
 		console.log('    ✅ Good progressive disclosure');
-	} else if (stats.line_count <= 150 && stats.word_count < 5000) {
+	} else if (
+		stats.line_count <= LIMITS.lenient.lines.max &&
+		stats.word_count < LIMITS.lenient.words.max
+	) {
 		console.log(
 			'    ⚠️  Consider splitting content into references/',
 		);

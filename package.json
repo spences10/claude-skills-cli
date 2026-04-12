@@ -3,12 +3,12 @@
 	"version": "0.0.20",
 	"description": "CLI toolkit for creating and managing Claude Agent Skills",
 	"keywords": [
-		"claude",
-		"skills",
-		"cli",
 		"agent",
 		"anthropic",
-		"claude-code"
+		"claude",
+		"claude-code",
+		"cli",
+		"skills"
 	],
 	"homepage": "https://github.com/spences10/claude-skills-cli#readme",
 	"bugs": {
@@ -23,13 +23,13 @@
 	"bin": {
 		"claude-skills-cli": "./dist/index.js"
 	},
-	"type": "module",
-	"main": "./dist/index.js",
 	"files": [
 		"dist",
 		"docs",
 		"README.md"
 	],
+	"type": "module",
+	"main": "./dist/index.js",
 	"scripts": {
 		"build": "vp pack",
 		"dev": "vp pack --watch",

@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { DESCRIPTION_MAX_LENGTH, LIMITS } from '../constants.js';
 import { SkillValidator } from '../core/validator.js';
 import type { StatsOptions } from '../types.js';
 import { error } from '../utils/output.js';
@@ -76,12 +77,10 @@ export function stats_command(options: StatsOptions): void {
 			const desc_length = result.stats.description_length;
 			let desc_status = '';
 			if (desc_length > 0) {
-				if (desc_length <= 200) {
+				if (desc_length <= DESCRIPTION_MAX_LENGTH) {
 					desc_status = 'optimal';
-				} else if (desc_length <= 300) {
-					desc_status = 'good';
 				} else {
-					desc_status = 'long';
+					desc_status = 'too long';
 				}
 				console.log(
 					`  Description: ${desc_length} chars (${desc_status})`,
@@ -92,23 +91,24 @@ export function stats_command(options: StatsOptions): void {
 			const lines = result.stats.line_count;
 			const words = result.stats.word_count;
 
+			const S = LIMITS.strict;
 			let line_status = '';
-			if (lines <= 50) {
+			if (lines <= S.lines.excellent) {
 				line_status = 'excellent';
-			} else if (lines <= 80) {
+			} else if (lines <= S.lines.good) {
 				line_status = 'good';
-			} else if (lines <= 150) {
+			} else if (lines <= S.lines.max) {
 				line_status = 'consider splitting';
 			} else {
 				line_status = 'too long';
 			}
 
 			let word_status = '';
-			if (words < 500) {
+			if (words < S.words.excellent) {
 				word_status = 'excellent';
-			} else if (words < 1000) {
+			} else if (words < S.words.good) {
 				word_status = 'good';
-			} else if (words < 5000) {
+			} else if (words < S.words.max) {
 				word_status = 'acceptable';
 			} else {
 				word_status = 'too long';

@@ -3,6 +3,11 @@
  */
 
 import {
+	LIMITS,
+	LONG_PARAGRAPH_WORDS,
+	MIN_BODY_LENGTH,
+} from '../constants.js';
+import {
 	count_words,
 	estimate_tokens,
 	strip_html_comments,
@@ -44,22 +49,6 @@ export interface ContentValidation {
 
 import type { ValidationMode } from '../types.js';
 
-// Progressive disclosure limits - three tiers
-const LIMITS = {
-	strict: {
-		lines: { excellent: 30, good: 40, max: 50 },
-		words: { excellent: 300, good: 500, max: 1000 },
-	},
-	lenient: {
-		lines: { excellent: 50, good: 100, max: 150 },
-		words: { excellent: 500, good: 1000, max: 2000 },
-	},
-	loose: {
-		lines: { excellent: 100, good: 200, max: 500 },
-		words: { excellent: 1000, good: 2000, max: 5000 },
-	},
-} as const;
-
 export interface ContentValidationOptions {
 	mode?: ValidationMode;
 }
@@ -83,11 +72,11 @@ export function analyze_content_structure(
 	const heading_matches = body.match(/^#{1,6}\s/gm);
 	const sections = heading_matches ? heading_matches.length : 0;
 
-	// Count long paragraphs (>100 words)
+	// Count long paragraphs
 	const paragraphs = body.split(/\n\n+/);
 	const long_paragraphs = paragraphs.filter((p) => {
 		const words = count_words(p);
-		return words > 100;
+		return words > LONG_PARAGRAPH_WORDS;
 	}).length;
 
 	return { code_blocks, sections, long_paragraphs };
@@ -176,7 +165,7 @@ export function validate_content(
 		validation.warnings.push({
 			type: 'long_paragraphs',
 			message:
-				`SKILL.md contains ${structure.long_paragraphs} lengthy paragraphs (>100 words)\n` +
+				`SKILL.md contains ${structure.long_paragraphs} lengthy paragraphs (>${LONG_PARAGRAPH_WORDS} words)\n` +
 				`  → Consider moving detailed explanations to references/`,
 		});
 	}
@@ -216,7 +205,7 @@ export function validate_content(
 	}
 
 	// Check body content
-	if (body.trim().length < 100) {
+	if (body.trim().length < MIN_BODY_LENGTH) {
 		validation.warnings.push({
 			type: 'short_body',
 			message: 'SKILL.md body is very short',

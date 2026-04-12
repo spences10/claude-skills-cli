@@ -1,5 +1,10 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import {
+	DESCRIPTION_MAX_LENGTH,
+	LIMITS,
+	NAME_MAX_LENGTH,
+} from '../constants.js';
 import type {
 	StructuredValidation,
 	ValidationResult,
@@ -53,10 +58,15 @@ export class SkillValidator {
 	// Structured validation data
 	private structured_validation: StructuredValidation = {
 		hard_limits: {
-			name: { length: 0, limit: 64, valid: true, error: null },
+			name: {
+				length: 0,
+				limit: NAME_MAX_LENGTH,
+				valid: true,
+				error: null,
+			},
 			description: {
 				length: 0,
-				limit: 1024,
+				limit: DESCRIPTION_MAX_LENGTH,
 				valid: true,
 				error: null,
 			},
@@ -154,6 +164,23 @@ export class SkillValidator {
 				this.error(`SKILL.md frontmatter missing '${field}' field`);
 			});
 			return false;
+		}
+
+		// Warn about unknown frontmatter fields
+		if (frontmatter_validation.unknown_fields?.length) {
+			for (const field of frontmatter_validation.unknown_fields) {
+				this.warning(
+					`Unknown frontmatter field '${field}'\n` +
+						`  → See https://code.claude.com/docs/en/skills#frontmatter-reference`,
+				);
+			}
+		}
+
+		// Warn about invalid field values
+		if (frontmatter_validation.field_value_warnings?.length) {
+			for (const warn of frontmatter_validation.field_value_warnings) {
+				this.warning(warn);
+			}
 		}
 
 		// Extract frontmatter data
@@ -300,19 +327,9 @@ export class SkillValidator {
 		);
 
 		// Populate progressive disclosure structured validation
-		// Use mode-specific limits: strict (50), lenient (150), loose (500)
-		const line_limit =
-			this.options.mode === 'loose'
-				? 500
-				: this.options.mode === 'lenient'
-					? 150
-					: 50;
-		const word_limit =
-			this.options.mode === 'loose'
-				? 5000
-				: this.options.mode === 'lenient'
-					? 2000
-					: 1000;
+		const mode_limits = LIMITS[this.options.mode || 'strict'];
+		const line_limit = mode_limits.lines.max;
+		const word_limit = mode_limits.words.max;
 		this.structured_validation.progressive_disclosure = {
 			skill_md_size: {
 				lines: this.stats.line_count,

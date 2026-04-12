@@ -8,9 +8,12 @@ export interface SkillMetadata {
 	'user-invocable'?: boolean;
 	'argument-hint'?: string;
 	model?: string;
+	effort?: 'low' | 'medium' | 'high' | 'max';
 	context?: 'fork';
 	agent?: string;
 	hooks?: Record<string, unknown>;
+	paths?: string | string[];
+	shell?: 'bash' | 'powershell';
 	compatibility?: string;
 }
 
@@ -101,6 +104,8 @@ export interface YAMLValidation {
 	has_frontmatter: boolean;
 	parse_error: string | null;
 	missing_fields: string[];
+	unknown_fields?: string[];
+	field_value_warnings?: string[];
 }
 
 export interface PathFormatIssue {

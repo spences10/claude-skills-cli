@@ -1,5 +1,6 @@
 ---
-"claude-skills-cli": patch
+'claude-skills-cli': patch
 ---
 
-Migrate build tooling from tsc/prettier to vite-plus/oxc; drop archiver and chalk dependencies
+Migrate build tooling from tsc/prettier to vite-plus/oxc; drop
+archiver and chalk dependencies

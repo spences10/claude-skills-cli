@@ -118,12 +118,8 @@ export async function package_command(
 		console.log(
 			'   Official distribution uses the plugin system (/plugin install)',
 		);
-		console.log(
-			'   or direct file placement in .claude/skills/.',
-		);
-		console.log(
-			'   See: https://code.claude.com/docs/en/plugins',
-		);
+		console.log('   or direct file placement in .claude/skills/.');
+		console.log('   See: https://code.claude.com/docs/en/plugins');
 		console.log('');
 		upload(
 			'Upload to Claude.ai: Settings > Features > Skills > Upload',
