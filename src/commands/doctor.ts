@@ -20,7 +20,7 @@ export function doctor_command(options: DoctorOptions): void {
 	try {
 		content = readFileSync(skill_md_path, 'utf-8');
 	} catch (err) {
-		error(`Failed to read SKILL.md: ${err}`);
+		error(`Failed to read SKILL.md: ${String(err)}`);
 		process.exit(1);
 	}
 
@@ -51,7 +51,7 @@ export function doctor_command(options: DoctorOptions): void {
 		console.log('\n✓ Run validate command to confirm the fix');
 		process.exit(0);
 	} catch (err) {
-		error(`Failed to write SKILL.md: ${err}`);
+		error(`Failed to write SKILL.md: ${String(err)}`);
 		process.exit(1);
 	}
 }
@@ -66,7 +66,6 @@ function fix_multiline_description(content: string): string {
 	let frontmatter_count = 0;
 	let in_description = false;
 	let description_parts: string[] = [];
-	let description_line_index = -1;
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
@@ -105,7 +104,6 @@ function fix_multiline_description(content: string): string {
 			}
 
 			in_description = true;
-			description_line_index = fixed_lines.length;
 
 			// Extract value on same line (if any)
 			const match = line.match(/^description:\s*(.*)$/);

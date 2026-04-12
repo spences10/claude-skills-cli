@@ -22,7 +22,7 @@ function validate_skill(skill_path: string): boolean {
 	if (result.errors.length > 0) {
 		console.log('\n❌ Errors:');
 		for (const err of result.errors) {
-			console.log(`  ${err}`);
+			console.log(`  ${String(err)}`);
 		}
 	}
 
@@ -125,7 +125,7 @@ export async function package_command(
 			'Upload to Claude.ai: Settings > Features > Skills > Upload',
 		);
 	} catch (err) {
-		error(`Failed to package skill: ${err}`);
+		error(`Failed to package skill: ${String(err)}`);
 		process.exit(1);
 	}
 }

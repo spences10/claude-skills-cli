@@ -166,7 +166,7 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 				}
 			}
 		} catch (err) {
-			error(`Failed to parse ${settings_path}: ${err}`);
+			error(`Failed to parse ${settings_path}: ${String(err)}`);
 			process.exit(1);
 		}
 	}
@@ -193,7 +193,7 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 
 			success(`Script created: ${script_path}`);
 		} catch (err) {
-			error(`Failed to create hook script: ${err}`);
+			error(`Failed to create hook script: ${String(err)}`);
 			process.exit(1);
 		}
 
@@ -295,7 +295,7 @@ export function add_hook_command(options: AddHookOptions = {}): void {
 			'  2. Validate with: claude-skills-cli validate <path>',
 		);
 	} catch (err) {
-		error(`Failed to write ${settings_path}: ${err}`);
+		error(`Failed to write ${settings_path}: ${String(err)}`);
 		process.exit(1);
 	}
 }

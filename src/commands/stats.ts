@@ -115,7 +115,7 @@ export function stats_command(options: StatsOptions): void {
 			}
 
 			console.log(
-				`  Body: ${lines} lines, ${words} words (${line_status})`,
+				`  Body: ${lines} lines (${line_status}), ${words} words (${word_status})`,
 			);
 
 			// Count reference files
