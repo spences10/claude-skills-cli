@@ -1,5 +1,13 @@
 # claude-skills-cli
 
+## 0.0.22
+
+### Patch Changes
+
+- 85213d6: Add dependency declaration/validation, semver version
+  field, and complexity tier classification to skill validation and
+  stats
+
 ## 0.0.21
 
 ### Patch Changes
