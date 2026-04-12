@@ -1,11 +1,6 @@
-import archiver from 'archiver';
-import {
-	createWriteStream,
-	existsSync,
-	readdirSync,
-	statSync,
-} from 'node:fs';
-import { basename, join } from 'node:path';
+import { execSync } from 'node:child_process';
+import { existsSync, statSync } from 'node:fs';
+import { basename, join, resolve } from 'node:path';
 import { SkillValidator } from '../core/validator.js';
 import type { PackageOptions } from '../types.js';
 import { ensure_dir } from '../utils/fs.js';
@@ -13,7 +8,6 @@ import {
 	error,
 	package_,
 	search,
-	step,
 	success,
 	upload,
 	warning,
@@ -52,78 +46,26 @@ function validate_skill(skill_path: string): boolean {
 function package_skill(
 	skill_path: string,
 	output_dir: string,
-): Promise<string> {
-	return new Promise((resolve, reject) => {
-		const skill_name = basename(skill_path);
-		const output_file = join(output_dir, `${skill_name}.zip`);
+): string {
+	const skill_name = basename(skill_path);
+	const output_file = resolve(output_dir, `${skill_name}.zip`);
 
-		package_(`Packaging skill: ${skill_name}`);
+	package_(`Packaging skill: ${skill_name}`);
 
-		// Ensure output directory exists
-		ensure_dir(output_dir);
+	ensure_dir(output_dir);
 
-		// Create output stream
-		const output = createWriteStream(output_file);
-		const archive = archiver('zip', {
-			zlib: { level: 9 },
-		});
+	// Remove existing zip if present
+	if (existsSync(output_file)) {
+		execSync(`rm ${output_file}`);
+	}
 
-		// Listen for all archive data to be written
-		output.on('close', () => {
-			resolve(output_file);
-		});
+	// Use system zip command — available on all target platforms
+	const parent_dir = resolve(skill_path, '..');
+	execSync(
+		`cd "${parent_dir}" && zip -r "${output_file}" "${skill_name}" -x '${skill_name}/.*' '${skill_name}/*.swp' '${skill_name}/*~' '${skill_name}/.DS_Store'`,
+	);
 
-		// Handle errors
-		archive.on('error', (err) => {
-			reject(err);
-		});
-
-		// Pipe archive data to the file
-		archive.pipe(output);
-
-		// Add files recursively
-		function add_files(dir_path: string, base_path: string) {
-			const items = readdirSync(dir_path);
-
-			for (const item of items) {
-				const item_path = join(dir_path, item);
-				const stats = statSync(item_path);
-
-				// Skip hidden files and directories
-				if (item.startsWith('.')) {
-					continue;
-				}
-
-				// Skip common temporary files
-				if (item.endsWith('.swp') || item.endsWith('~')) {
-					continue;
-				}
-
-				if (item === '.DS_Store') {
-					continue;
-				}
-
-				if (stats.isDirectory()) {
-					add_files(item_path, base_path);
-				} else {
-					const relative_path = item_path.replace(
-						base_path + '/',
-						'',
-					);
-					archive.file(item_path, { name: relative_path });
-					step(`+ ${relative_path}`);
-				}
-			}
-		}
-
-		add_files(
-			skill_path,
-			skill_path.substring(0, skill_path.lastIndexOf('/')),
-		);
-
-		// Finalize the archive
-		archive.finalize();
-	});
+	return output_file;
 }
 
 export async function package_command(
@@ -159,7 +101,7 @@ export async function package_command(
 	// Package skill
 	try {
 		const output_dir = output || 'dist';
-		const output_file = await package_skill(skill_path, output_dir);
+		const output_file = package_skill(skill_path, output_dir);
 
 		// Print success
 		const file_stats = statSync(output_file);
@@ -176,8 +118,12 @@ export async function package_command(
 		console.log(
 			'   Official distribution uses the plugin system (/plugin install)',
 		);
-		console.log('   or direct file placement in .claude/skills/.');
-		console.log('   See: https://code.claude.com/docs/en/plugins');
+		console.log(
+			'   or direct file placement in .claude/skills/.',
+		);
+		console.log(
+			'   See: https://code.claude.com/docs/en/plugins',
+		);
 		console.log('');
 		upload(
 			'Upload to Claude.ai: Settings > Features > Skills > Upload',

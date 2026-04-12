@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import type { ValidationStats } from '../types.js';
 
 export const success = (msg: string) => console.log(`✅ ${msg}`);
@@ -11,46 +10,44 @@ export const upload = (msg: string) => console.log(`📤 ${msg}`);
 export const search = (msg: string) => console.log(`🔍 ${msg}`);
 
 /**
- * Display progressive disclosure statistics with color-coded feedback
+ * Display progressive disclosure statistics
  */
 export function display_validation_stats(
 	stats: ValidationStats,
 ): void {
-	console.log(chalk.cyan('\n📊 Progressive Disclosure Stats:'));
+	console.log('\n📊 Progressive Disclosure Stats:');
 
 	// Level 1: Description
-	console.log(chalk.bold('\n  Level 1 (Metadata - Always Loaded):'));
+	console.log('\n  Level 1 (Metadata - Always Loaded):');
 	const desc_status =
 		stats.description_length <= 200
-			? chalk.green('✅ Optimal')
+			? '✅ Optimal'
 			: stats.description_length <= 300
-				? chalk.yellow('⚠️  Long')
-				: chalk.red('❌ Too long');
+				? '⚠️  Long'
+				: '❌ Too long';
 
 	console.log(
 		`    Description: ${stats.description_length} chars, ~${stats.description_tokens} tokens ${desc_status}`,
 	);
 	console.log(
-		`    ${chalk.dim('(Target: <200 chars, <30 tokens for Level 1 efficiency)')}`,
+		'    (Target: <200 chars, <30 tokens for Level 1 efficiency)',
 	);
 
 	// Level 2: SKILL.md Body
 	console.log(
-		chalk.bold(
-			'\n  Level 2 (SKILL.md Body - Loaded when triggered):',
-		),
+		'\n  Level 2 (SKILL.md Body - Loaded when triggered):',
 	);
 
 	// Line count (strict defaults: max 50)
 	let line_status: string;
 	if (stats.line_count <= 30) {
-		line_status = chalk.green('✅ Excellent');
+		line_status = '✅ Excellent';
 	} else if (stats.line_count <= 40) {
-		line_status = chalk.green('✅ Good');
+		line_status = '✅ Good';
 	} else if (stats.line_count <= 50) {
-		line_status = chalk.yellow('⚠️  Consider splitting');
+		line_status = '⚠️  Consider splitting';
 	} else {
-		line_status = chalk.red('❌ Too large');
+		line_status = '❌ Too large';
 	}
 
 	console.log(
@@ -60,13 +57,13 @@ export function display_validation_stats(
 	// Word count with recommendations (strict defaults: max 1000)
 	let word_status: string;
 	if (stats.word_count < 300) {
-		word_status = chalk.green('✅ Excellent');
+		word_status = '✅ Excellent';
 	} else if (stats.word_count < 500) {
-		word_status = chalk.green('✅ Good');
+		word_status = '✅ Good';
 	} else if (stats.word_count < 1000) {
-		word_status = chalk.yellow('⚠️  Consider splitting');
+		word_status = '⚠️  Consider splitting';
 	} else {
-		word_status = chalk.red('❌ Too large');
+		word_status = '❌ Too large';
 	}
 
 	console.log(
@@ -74,11 +71,11 @@ export function display_validation_stats(
 	);
 
 	// Token estimation
-	const token_budget = 6500; // Level 2 budget (~5000 words * 1.3)
+	const token_budget = 6500;
 	const token_status =
 		stats.estimated_tokens < token_budget
-			? chalk.green('within budget')
-			: chalk.red('exceeds budget');
+			? 'within budget'
+			: 'exceeds budget';
 
 	console.log(
 		`    Est. tokens: ~${stats.estimated_tokens} (budget: <${token_budget}) ${token_status}`,
@@ -87,18 +84,18 @@ export function display_validation_stats(
 	// Code blocks
 	const code_status =
 		stats.code_blocks > 3
-			? chalk.yellow(' (recommended: 1-2)')
+			? ' (recommended: 1-2)'
 			: stats.code_blocks <= 2
-				? chalk.green(' ✅')
+				? ' ✅'
 				: '';
 	console.log(`    Code blocks: ${stats.code_blocks}${code_status}`);
 
 	// Sections
 	const section_status =
 		stats.sections > 8
-			? chalk.yellow(' (recommended: 3-5)')
+			? ' (recommended: 3-5)'
 			: stats.sections >= 3 && stats.sections <= 5
-				? chalk.green(' ✅')
+				? ' ✅'
 				: '';
 	console.log(`    Sections: ${stats.sections}${section_status}`);
 
@@ -106,7 +103,7 @@ export function display_validation_stats(
 	if (stats.long_paragraphs > 0) {
 		const para_status =
 			stats.long_paragraphs > 3
-				? chalk.yellow(' (consider moving to references/)')
+				? ' (consider moving to references/)'
 				: '';
 		console.log(
 			`    Long paragraphs: ${stats.long_paragraphs}${para_status}`,
@@ -115,34 +112,30 @@ export function display_validation_stats(
 
 	// Level 3 info
 	console.log(
-		chalk.bold('\n  Level 3+ (References - Loaded as needed):'),
+		'\n  Level 3+ (References - Loaded as needed):',
 	);
 	console.log(
-		`    ${chalk.dim('Use references/ directory for detailed docs (unlimited size)')}`,
+		'    Use references/ directory for detailed docs (unlimited size)',
 	);
 
 	// Overall assessment (based on strict defaults)
-	console.log(chalk.bold('\n  Overall Assessment:'));
+	console.log('\n  Overall Assessment:');
 	if (stats.line_count <= 30 && stats.description_length <= 200) {
 		console.log(
-			chalk.green('    ✅ Excellent progressive disclosure!'),
+			'    ✅ Excellent progressive disclosure!',
 		);
 	} else if (
 		stats.line_count <= 50 &&
 		stats.description_length <= 300
 	) {
-		console.log(chalk.green('    ✅ Good progressive disclosure'));
+		console.log('    ✅ Good progressive disclosure');
 	} else if (stats.line_count <= 150 && stats.word_count < 5000) {
 		console.log(
-			chalk.yellow(
-				'    ⚠️  Consider splitting content into references/',
-			),
+			'    ⚠️  Consider splitting content into references/',
 		);
 	} else {
 		console.log(
-			chalk.red(
-				'    ❌ Violates progressive disclosure (move content to references/)',
-			),
+			'    ❌ Violates progressive disclosure (move content to references/)',
 		);
 	}
 }
