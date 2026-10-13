@@ -46,7 +46,7 @@
 		"citty": "^0.2.2"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.31.0",
+		"@changesets/cli": "^3.0.0",
 		"@types/node": "^25.6.0",
 		"vite-plus": "^0.1.18",
 		"vitest": "^4.1.4"
