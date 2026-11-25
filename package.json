@@ -49,7 +49,7 @@
 		"@changesets/cli": "^2.31.0",
 		"@types/node": "^22.20.5",
 		"vite-plus": "^1.6.0",
-		"vitest": "5.1.0"
+		"vitest": "5.1.2"
 	},
 	"engines": {
 		"node": ">=22.0.0"
